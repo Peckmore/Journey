@@ -65,17 +65,6 @@ namespace Journey
                 {
                     await _webView.CoreWebView2.CapturePreviewAsync(CoreWebView2CapturePreviewImageFormat.Png, snapshotStream);
                     snapshot = BitmapFrame.Create(snapshotStream, BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
-
-                    //if (!active)
-                    //{
-                    //    var grayScaleSnapshot = new FormatConvertedBitmap();
-                    //    grayScaleSnapshot.BeginInit();
-                    //    grayScaleSnapshot.Source = snapshot;
-                    //    grayScaleSnapshot.DestinationFormat = PixelFormats.Gray32Float;
-                    //    grayScaleSnapshot.EndInit();
-                    //    snapshot = BitmapFrame.Create(grayScaleSnapshot);
-                    //}
-
                 }
                 catch (Exception ex)
                 {

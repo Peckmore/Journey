@@ -3,6 +3,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:journey="clr-namespace:Journey"
+             xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.AeroLite"
              x:Class="Journey.JourneyStep"
              x:ClassModifier="internal"
              mc:Ignorable="d"
@@ -13,20 +14,13 @@
         <journey:JourneyEntry/>
     </UserControl.DataContext>
 
+    <themes:SystemDropShadowChrome CornerRadius="8">
     <Grid Background="White">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-
-        <Grid.Effect>
-            <DropShadowEffect ShadowDepth="30"
-                                    Direction="270"
-                                    Color="DarkGray"
-                                    Opacity="0.5"
-                                    BlurRadius="50"/>
-        </Grid.Effect>
 
         <!-- Use a VisualBrush as a mask to clip the border rounded corners -->
         <Grid.OpacityMask>
@@ -126,5 +120,6 @@
         </Grid>
 
     </Grid>
+    </themes:SystemDropShadowChrome>
 
 </UserControl>
