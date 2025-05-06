@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>JourneyBrowser</RootNamespace>
+    <AssemblyName>JourneyBrowser</AssemblyName>
+    <AssemblyTitle>JourneyBrowser</AssemblyTitle>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dragablz" Version="0.0.3.234" />
+    <PackageReference Include="ModernWpfUI" Version="0.9.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Journey\Journey.csproj" />
+    <ProjectReference Include="..\JourneyBrowser.Tabs\JourneyBrowser.Tabs.csproj" />
+  </ItemGroup>
+
+</Project>

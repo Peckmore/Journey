@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>JourneyBrowser.Tabs</RootNamespace>
+    <AssemblyName>JourneyBrowser.Tabs</AssemblyName>
+    <AssemblyTitle>JourneyBrowser.Tabs</AssemblyTitle>
+  </PropertyGroup>
+
+</Project>

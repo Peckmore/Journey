@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JourneyBrowser", "JourneyBrowser\JourneyBrowser.csproj", "{8A221C80-CDB4-4569-BFBB-53AAA42954B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Journey", "Journey\Journey.csproj", "{1FBD69DB-A88D-4B9E-8E05-AAFD7A92D43C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JourneyBrowser.Tabs", "JourneyBrowser.Tabs\JourneyBrowser.Tabs.csproj", "{503961C5-8A38-432B-A5D7-61FCE78DB377}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8A221C80-CDB4-4569-BFBB-53AAA42954B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A221C80-CDB4-4569-BFBB-53AAA42954B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A221C80-CDB4-4569-BFBB-53AAA42954B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A221C80-CDB4-4569-BFBB-53AAA42954B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FBD69DB-A88D-4B9E-8E05-AAFD7A92D43C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FBD69DB-A88D-4B9E-8E05-AAFD7A92D43C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FBD69DB-A88D-4B9E-8E05-AAFD7A92D43C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FBD69DB-A88D-4B9E-8E05-AAFD7A92D43C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{503961C5-8A38-432B-A5D7-61FCE78DB377}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{503961C5-8A38-432B-A5D7-61FCE78DB377}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{503961C5-8A38-432B-A5D7-61FCE78DB377}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{503961C5-8A38-432B-A5D7-61FCE78DB377}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
