@@ -123,8 +123,8 @@ namespace Journey
             if (_isMouseDown)
             {
                 var currentMousePosition = e.GetPosition(JourneyCanvas);
-                var deltaX = (currentMousePosition.X - _lastMouseMovePosition.X) / _zoomLevel;
-                var deltaY = (currentMousePosition.Y - _lastMouseMovePosition.Y) / _zoomLevel;
+                var deltaX = (currentMousePosition.X - _lastMouseMovePosition.X);
+                var deltaY = (currentMousePosition.Y - _lastMouseMovePosition.Y);
                 IncrementScroll(deltaX, deltaY);
                 _lastMouseMovePosition = currentMousePosition;
                 e.Handled = true;
