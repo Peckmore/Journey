@@ -12,7 +12,7 @@ namespace Journey
     {
         #region Constants
 
-        private const float AnimationTime = 0.35f;
+        private const float AnimationTime = 0.5f;
 
         #endregion
 
@@ -20,7 +20,6 @@ namespace Journey
 
         private bool _isDisposed;
         private bool _isMouseDown;
-        private readonly List<UIElement> _journeyElements;
         private readonly JourneyManager _journeyManager;
         private double _journeyStepHeight;
         private double _journeyStepSpacing;
@@ -29,7 +28,6 @@ namespace Journey
         private Point _lastMouseMovePosition;
         private JourneyStep? _selectedStep;
         private double _zoomLevel;
-        private double zoomLevel;
 
         #endregion
 
@@ -49,7 +47,6 @@ namespace Journey
             WebView.EnsureCoreWebView2Async(null);
 
             _journeyManager = new(WebView);
-            _journeyElements = new();
             _journeyStepHeight = SystemParameters.PrimaryScreenHeight / 5;
             _journeyStepWidth = SystemParameters.PrimaryScreenWidth / 5;
             _journeyStepSpacing = _journeyStepHeight / 2;
@@ -97,10 +94,13 @@ namespace Journey
 
         private void IncrementScroll(double deltaX, double deltaY)
         {
-            foreach (var element in _journeyElements)
+            foreach (var child in JourneyCanvas.Children)
             {
-                Canvas.SetLeft(element, Canvas.GetLeft(element) + deltaX);
-                Canvas.SetTop(element, Canvas.GetTop(element) + deltaY);
+                if (child is UIElement element)
+                {
+                    Canvas.SetLeft(element, Canvas.GetLeft(element) + deltaX);
+                    Canvas.SetTop(element, Canvas.GetTop(element) + deltaY);
+                }
             }
         }
 
@@ -112,10 +112,9 @@ namespace Journey
             _selectedStep.BeginAnimation(Canvas.LeftProperty, null);
             _selectedStep.BeginAnimation(Canvas.TopProperty, null);
 
-            JourneyCanvas.Visibility = Visibility.Collapsed;
             WebViewGrid.Visibility = Visibility.Visible;
+            JourneyCanvas.Visibility = Visibility.Collapsed;
 
-            _journeyElements.Clear();
             JourneyCanvas.Children.Clear();
         }
         private void JourneyCanvas_MouseMove(object sender, MouseEventArgs e)
@@ -255,7 +254,7 @@ namespace Journey
                 IsJourneyVisible = false;
 
                 var duration = TimeSpan.FromSeconds(AnimationTime);
-                var easingFunction = new CubicEase
+                var easingFunction = new CircleEase
                 {
                     EasingMode = EasingMode.EaseInOut
                 };
@@ -290,12 +289,12 @@ namespace Journey
                 };
                 var titleAnimation = new DoubleAnimation
                 {
-                    From = 0.8,
-                    To = 0,
+                    From = 0.9,
+                    To = -0.5,
                     Duration = duration,
                     EasingFunction = easingFunction
                 };
-                
+
                 scaleXAnimation.Completed += HideJourneyAnimation_Completed;
 
                 Panel.SetZIndex(_selectedStep, 2);
@@ -335,17 +334,19 @@ namespace Journey
                     };
 
                     JourneyCanvas.Children.Add(step);
-                    _journeyElements.Add(step);
 
                     if (entry.IsActive)
                     {
                         _selectedStep = step;
                         activeStepOffset = centerY - topOffset;
 
-                        foreach (var existingStep in _journeyElements)
+                        foreach (var child in JourneyCanvas.Children)
                         {
-                            var existingStepTop = Canvas.GetTop(existingStep);
-                            Canvas.SetTop(existingStep, existingStepTop + activeStepOffset);
+                            if (child is UIElement element)
+                            {
+                                var existingStepTop = Canvas.GetTop(element);
+                                Canvas.SetTop(element, existingStepTop + activeStepOffset);
+                            }
                         }
 
                         topOffset = centerY + _journeyStepHeight + _journeyStepSpacing;
@@ -370,7 +371,7 @@ namespace Journey
                 var width = WebViewGrid.ActualWidth;
                 var height = WebViewGrid.ActualHeight;
                 var duration = TimeSpan.FromSeconds(AnimationTime);
-                var snapshotEasingFunction = new CubicEase()
+                var snapshotEasingFunction = new CircleEase()
                 {
                     EasingMode = EasingMode.EaseInOut
                 };
@@ -405,8 +406,8 @@ namespace Journey
                 };
                 var titleAnimation = new DoubleAnimation
                 {
-                    From = 0,
-                    To = 0.8,
+                    From = -0.5,
+                    To = 0.9,
                     Duration = duration,
                     EasingFunction = snapshotEasingFunction
                 };

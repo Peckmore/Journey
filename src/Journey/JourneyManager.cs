@@ -112,10 +112,13 @@ namespace Journey
         }
         public async Task GoToStep(JourneyEntry step)
         {
-            var index = _steps.IndexOf(step);
+            if (!step.IsActive)
+            {
+                var index = _steps.IndexOf(step);
 
-            await _webView.EnsureCoreWebView2Async();
-            _webView.CoreWebView2.Navigate(step.Url);
+                await _webView.EnsureCoreWebView2Async();
+                _webView.CoreWebView2.Navigate(step.Url);
+            }
         }
 
         #endregion

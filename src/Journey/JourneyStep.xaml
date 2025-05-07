@@ -15,111 +15,111 @@
     </UserControl.DataContext>
 
     <themes:SystemDropShadowChrome CornerRadius="8">
-    <Grid Background="White">
+        <Grid Background="White">
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-        <!-- Use a VisualBrush as a mask to clip the border rounded corners -->
-        <Grid.OpacityMask>
-            <VisualBrush Visual="{Binding ElementName=BorderMask}"/>
-        </Grid.OpacityMask>
+            <!-- Use a VisualBrush as a mask to clip the border rounded corners -->
+            <Grid.OpacityMask>
+                <VisualBrush Visual="{Binding ElementName=BorderMask}"/>
+            </Grid.OpacityMask>
 
-        <!-- The border used as a mask to clip rounded corners -->
-        <Border Name="BorderMask"
-                Grid.Row="0"
-                Grid.RowSpan="2"
-                Background="White"
-                CornerRadius="8"/>
-
-        <!-- Snapshot Area -->
-        <Image x:Name="SnapshotImage"
+            <!-- The border used as a mask to clip rounded corners -->
+            <Border Name="BorderMask"
                     Grid.Row="0"
                     Grid.RowSpan="2"
-                    Source="{Binding Snapshot}"
-                    Stretch="UniformToFill"/>
-
-        <!-- Text Area -->
-        <Border Grid.Row="1"
-                    x:Name="TextArea"
-                    x:FieldModifier="public"
                     Background="White"
-                    BorderThickness="0,1,0,0"
-                    BorderBrush="DarkGray"
-                    Opacity="0.88">
+                    CornerRadius="8"/>
 
-            <Viewbox Stretch="UniformToFill"
-                            HorizontalAlignment="Left">
+            <!-- Snapshot Area -->
+            <Image x:Name="SnapshotImage"
+                        Grid.Row="0"
+                        Grid.RowSpan="2"
+                        Source="{Binding Snapshot}"
+                        Stretch="UniformToFill"/>
 
-                <Grid Margin="5">
+            <!-- Text Area -->
+            <Border Grid.Row="1"
+                        x:Name="TextArea"
+                        x:FieldModifier="public"
+                        Background="White"
+                        BorderThickness="0,1,0,0"
+                        BorderBrush="DarkGray"
+                        Opacity="0.9">
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="5"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+                <Viewbox Stretch="UniformToFill"
+                                HorizontalAlignment="Left">
 
-                    <!-- Entry Page Title -->
-                    <TextBlock Grid.Row="0"
-                                    Text="{Binding Title}"
-                                    TextWrapping="Wrap"
-                                    Background="White"
-                                    Foreground="DimGray"
-                                    FontWeight="Bold"
-                                    FontSize="14"
-                                    Padding="5"
-                                    FontFamily="Arial"
-                                    FontStretch="Normal"
-                                    Width="384"
-                                    MaxHeight="40"
-                                    VerticalAlignment="Center"/>
+                    <Grid Margin="5">
 
-                    <!-- Entry Page URL -->
-                    <TextBlock Grid.Row="2"
-                                    Text="{Binding Url}"
-                                    TextWrapping="NoWrap"
-                                    Background="White"
-                                    Foreground="Gray"
-                                    FontSize="12"
-                                    Padding="5"
-                                    FontFamily="Arial"
-                                    FontStretch="Normal"
-                                    Width="384"
-                                    Height="25"/>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
-                </Grid>
+                        <!-- Entry Page Title -->
+                        <TextBlock Grid.Row="0"
+                                        Text="{Binding Title}"
+                                        TextWrapping="Wrap"
+                                        Background="White"
+                                        Foreground="DimGray"
+                                        FontWeight="Bold"
+                                        FontSize="14"
+                                        Padding="5"
+                                        FontFamily="Arial"
+                                        FontStretch="Normal"
+                                        Width="384"
+                                        MaxHeight="40"
+                                        VerticalAlignment="Center"/>
 
-            </Viewbox>
+                        <!-- Entry Page URL -->
+                        <TextBlock Grid.Row="2"
+                                        Text="{Binding Url}"
+                                        TextWrapping="NoWrap"
+                                        Background="White"
+                                        Foreground="Gray"
+                                        FontSize="12"
+                                        Padding="5"
+                                        FontFamily="Arial"
+                                        FontStretch="Normal"
+                                        Width="384"
+                                        Height="25"/>
 
-        </Border>
+                    </Grid>
 
-        <Grid x:Name="HoverGrid"
-              Grid.Row="0"
-              Grid.RowSpan="2"
-              Background="DodgerBlue"
-              Opacity="0.5">
+                </Viewbox>
 
-            <Grid.Style>
-                <Style TargetType="Grid">
-                    <Setter Property="Visibility" Value="Collapsed"/>
-                    <Style.Triggers>
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}}" Value="True"/>
-                                <Condition Binding="{Binding IsAnimating}" Value="False"/>
-                            </MultiDataTrigger.Conditions>
-                            <Setter Property="Visibility" Value="Visible"/>
-                            <Setter Property="Cursor" Value="Hand"/>
-                        </MultiDataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
+            </Border>
+
+            <Grid x:Name="HoverGrid"
+                  Grid.Row="0"
+                  Grid.RowSpan="2"
+                  Background="DodgerBlue"
+                  Opacity="0.5">
+
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}}" Value="True"/>
+                                    <Condition Binding="{Binding IsAnimating}" Value="False"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Setter Property="Cursor" Value="Hand"/>
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+
+            </Grid>
 
         </Grid>
-
-    </Grid>
     </themes:SystemDropShadowChrome>
 
 </UserControl>
