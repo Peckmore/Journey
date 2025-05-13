@@ -71,7 +71,7 @@ namespace WPFSample
 
         private async void ButtonJourney_Click(object sender, RoutedEventArgs e)
         {
-            var view = ((JourneyView)_webView2Tabs[SelectedIndex].Content);
+            var view = ((JourneyWebView2)_webView2Tabs[SelectedIndex].Content);
             //DoubleAnimation fadeAnimation;
             //if (view.IsJourneyVisible)
             //{
@@ -122,7 +122,7 @@ namespace WPFSample
                 userDataFolder = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetExecutingAssembly().Location) + _tabCount);
 
             //create new instance setting userDataFolder
-            JourneyView journeyWebView = new JourneyView();
+            JourneyWebView2 journeyWebView = new JourneyWebView2();
             journeyWebView.WebView.CoreWebView2InitializationCompleted += WebView2_CoreWebView2InitializationCompleted;
 
             //create TextBlock
@@ -186,7 +186,7 @@ namespace WPFSample
         {
             if (index >= 0 && index < _webView2Tabs.Count)
             {
-                JourneyView wv = (JourneyView)_webView2Tabs[index].Content;
+                JourneyWebView2 wv = (JourneyWebView2)_webView2Tabs[index].Content;
 
                 //get userDataFolder location
                 string userDataFolder = wv.WebView.CoreWebView2.Environment.UserDataFolder;
@@ -229,7 +229,7 @@ namespace WPFSample
             if (_webView2Tabs.Count > 0)
             {
                 //get instance of WebView2 from last tab
-                JourneyView wv = (JourneyView)_webView2Tabs[_webView2Tabs.Count - 1].Content;
+                JourneyWebView2 wv = (JourneyWebView2)_webView2Tabs[_webView2Tabs.Count - 1].Content;
 
                 //if CoreWebView2 hasn't finished initializing, it will be null
                 if (wv.WebView.CoreWebView2?.BrowserProcessId > 0)

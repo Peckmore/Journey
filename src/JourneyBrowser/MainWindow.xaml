@@ -7,8 +7,8 @@
         xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
         mc:Ignorable="d"
         Title="MainWindow"
-        Height="450"
-        Width="800"
+        Height="720"
+        Width="1280"
         WindowStartupLocation="CenterScreen"
         Closing="Window_Closing"
         Loaded="Window_Loaded"
@@ -62,7 +62,7 @@
                                    Grid.Column="0"
                                    Margin="0,0,100,0">
 
-                             <!--Add New Tab Button--> 
+                            <!--Add New Tab Button-->
                             <Button DockPanel.Dock="Left"
                                     Content="+"
                                     Width="30"
@@ -70,7 +70,7 @@
                                     VerticalAlignment="Center"
                                     Click="Button_Click" />
 
-                             <!--Tab Headers--> 
+                            <!--Tab Headers-->
                             <ScrollViewer DockPanel.Dock="Left"
                                       HorizontalScrollBarVisibility="Disabled"
                                       VerticalScrollBarVisibility="Disabled">
@@ -84,23 +84,17 @@
 
                         </DockPanel>
 
-                            <ContentPresenter Grid.Row="2" x:Name="ContentPanel"
+                        <ContentPresenter Grid.Row="2" x:Name="ContentPanel"
                                               Margin="1,0,1,1"
                                               ContentSource="SelectedContent" />
 
-                         <!--Content--> 
+                        <!--Content-->
                         <Grid Grid.Row="1">
 
                             <Border x:Name="ButtonBar"
                                     BorderBrush="LightGray"
                                     BorderThickness="0,0,0,1">
-                                
-                                    <!--<Border.Effect>
-                                        <DropShadowEffect ShadowDepth="10"
-                                                          Direction="270"
-                                                          Color="DarkGray" Opacity="0.55" BlurRadius="25"/>
-                                    </Border.Effect>-->
-                                
+
                                 <Grid Background="White">
 
                                     <Grid.ColumnDefinitions>

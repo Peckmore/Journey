@@ -1,7 +1,10 @@
-﻿using Microsoft.Web.WebView2.Core;
+﻿using Journey.Tree.Overby.Collections;
+using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
-using System.Diagnostics;
+using Newtonsoft.Json;
+using System;
 using System.IO;
+using System.Security.Policy;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -12,8 +15,8 @@ namespace Journey
     {
         #region Fields
 
-        private bool _hasCompletedFirstNavigation;
-        private readonly List<JourneyEntry> _steps;
+        private JourneyEntry? _activeStep;
+        private readonly TreeNode<JourneyEntry> _steps;
         private readonly WebView2 _webView;
 
         #endregion
@@ -23,10 +26,49 @@ namespace Journey
         internal JourneyManager(WebView2 webView)
         {
             _webView = webView;
-            _steps = new();
 
-            _webView.NavigationStarting += _webView_NavigationStarting;
+            var root = new JourneyEntry(0, "Root", "Root", string.Empty, string.Empty);
+            _steps = new(root);
+
+            _webView.CoreWebView2InitializationCompleted += WebView_CoreWebView2InitializationCompleted;
+            _webView.NavigationCompleted += WebView_NavigationCompleted;
+            _webView.NavigationStarting += WebView_NavigationStarting;
+
+            _webView.EnsureCoreWebView2Async();
         }
+
+        #endregion
+
+        #region Properties
+
+        #region Private
+
+        private JourneyEntry? ActiveStep
+        {
+            get => _activeStep;
+            set
+            {
+                if (value != null && _activeStep != value)
+                {
+                    if (_activeStep != null)
+                    {
+                        _activeStep.IsActive = false;
+                    }
+
+                    _activeStep = value;
+                    _activeStep.IsActive = true;
+                }
+            }
+        }
+
+        #endregion
+
+        #region Public
+
+        public bool BrowserCanGoBack { get; private set; }
+        public bool BrowserCanGoForward { get; private set; }
+
+        #endregion
 
         #endregion
 
@@ -34,58 +76,85 @@ namespace Journey
 
         #region Event Handlers
 
-        private async void _webView_NavigationStarting(object? sender, CoreWebView2NavigationStartingEventArgs e)
+        private async void CoreWebView2_HistoryChanged(object? sender, object e)
         {
-            if (_hasCompletedFirstNavigation)
+            var history = await GetHistory();
+            var root = _steps;
+            
+
+            foreach (var entry in history.Entries)
             {
-                _steps.Add(new()
+                if (root.Children.FirstOrDefault(x => x.Value.Id == entry.Id) is { } childElement)
                 {
-                    IsActive = false,
-                    Url = _webView.Source.AbsoluteUri,
-                    Title = _webView.CoreWebView2.DocumentTitle,
-                    Snapshot = await TakeSnapshot(false)
-                });
+                    childElement.Value.Update(entry);
+                }
+                else
+                { 
+                    root.AddChild(entry);
+                }
+
+                if (entry == history.Entries[history.CurrentIndex])
+                {
+                    ActiveStep = entry;
+                }
+
+                root = root.Children.First(x => x.Value.Id == entry.Id);
             }
-            else
+
+        }
+        private void WebView_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
+        {
+            _webView.CoreWebView2InitializationCompleted -= WebView_CoreWebView2InitializationCompleted;
+            _webView.CoreWebView2.HistoryChanged += CoreWebView2_HistoryChanged;
+        }
+        private async void WebView_NavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
+        {
+            await UpdateActiveStepSnapshot();
+            if (ActiveStep != null)
             {
-                _hasCompletedFirstNavigation = true;
+                ActiveStep.Title = _webView.CoreWebView2.DocumentTitle;
             }
+        }
+        private async void WebView_NavigationStarting(object? sender, CoreWebView2NavigationStartingEventArgs e)
+        {
+            // We're leaving the current step, so update the snapshot.
+            await UpdateActiveStepSnapshot();
         }
 
         #endregion
 
         #region Private
 
-        private async Task<BitmapFrame> TakeSnapshot(bool active)
+        private async Task<HistoryWrapper> GetHistory()
         {
-            BitmapFrame? snapshot;
+            var history = await _webView.CoreWebView2.CallDevToolsProtocolMethodAsync("Page.getNavigationHistory", "{}");
+            return JsonConvert.DeserializeObject<HistoryWrapper>(history)!;
+        }
+        private async Task<BitmapFrame?> TakeSnapshot()
+        {
             using (var snapshotStream = new MemoryStream())
             {
                 try
                 {
                     await _webView.CoreWebView2.CapturePreviewAsync(CoreWebView2CapturePreviewImageFormat.Png, snapshotStream);
-                    snapshot = BitmapFrame.Create(snapshotStream, BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
+                    return BitmapFrame.Create(snapshotStream, BitmapCreateOptions.IgnoreImageCache, BitmapCacheOption.OnLoad);
                 }
-                catch (Exception ex)
-                {
-                    Debug.Assert(false, ex.Message);
-                    var bitmap = new RenderTargetBitmap((int)SystemParameters.PrimaryScreenWidth,
-                                                        (int)SystemParameters.PrimaryScreenHeight,
-                                                        96,
-                                                        96,
-                                                        PixelFormats.Pbgra32);
-                    var pngEncoder = new PngBitmapEncoder();
-                    pngEncoder.Frames.Add(BitmapFrame.Create(bitmap));
-
-                    using (var stream = new FileStream("blank_screen_resolution.png", FileMode.Create))
-                    {
-                        pngEncoder.Save(stream);
-                    snapshot = BitmapFrame.Create(stream);
-                    }
-                }
+                catch
+                { }
             }
 
-            return snapshot;
+            return null;
+        }
+        private async Task UpdateActiveStepSnapshot()
+        {
+            if (_activeStep != null)
+            {
+                var snapshot = await TakeSnapshot();
+                if (snapshot != null)
+                {
+                    _activeStep.Snapshot = snapshot;
+                }
+            }
         }
 
         #endregion
@@ -94,30 +163,28 @@ namespace Journey
 
         public void Dispose()
         {
-            _webView.NavigationStarting -= _webView_NavigationStarting;
-            _steps.Clear();
+            _webView.NavigationStarting -= WebView_NavigationStarting;
+            //_steps.Clear();
         }
-        public async Task<List<JourneyEntry>> GetSteps()
+        public async Task<TreeNode<JourneyEntry>> GetJourney()
         {
-            var steps = _steps.ToList();
-
-            steps.Add(new()
-            {
-                Title = _webView.CoreWebView2.DocumentTitle,
-                Url = _webView.Source.AbsoluteUri,
-                Snapshot = await TakeSnapshot(true),
-                IsActive = true
-            });
-            return steps;
+            // Update current webpage snapshot
+            await UpdateActiveStepSnapshot();
+            return _steps;
         }
         public async Task GoToStep(JourneyEntry step)
         {
             if (!step.IsActive)
             {
-                var index = _steps.IndexOf(step);
-
-                await _webView.EnsureCoreWebView2Async();
-                _webView.CoreWebView2.Navigate(step.Url);
+                var history = await GetHistory();
+                if (history.Entries.FirstOrDefault(s => s.Id == step.Id) is { })
+                {
+                    await _webView.CoreWebView2.CallDevToolsProtocolMethodAsync("Page.navigateToHistoryEntry", JsonConvert.SerializeObject(new { entryId = step.Id }));
+                }
+                else
+                {
+                    await _webView.CoreWebView2.ExecuteScriptAsync($"window.open('{step.Url}', '_blank');");
+                }
             }
         }
 

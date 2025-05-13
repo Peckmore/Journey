@@ -1,14 +1,17 @@
-﻿using System.ComponentModel;
+﻿using Journey.Tree.Overby.Collections;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Shapes;
+using System.Xml.Linq;
 
 namespace Journey
 {
-    public partial class JourneyView : IDisposable, INotifyPropertyChanged
+    public partial class JourneyWebView2 : IDisposable, INotifyPropertyChanged
     {
         #region Constants
 
@@ -39,7 +42,7 @@ namespace Journey
 
         #region Construction
 
-        public JourneyView()
+        public JourneyWebView2()
         {
             InitializeComponent();
             DataContext = this;
@@ -60,7 +63,7 @@ namespace Journey
 
         #region Finalize
 
-        ~JourneyView()
+        ~JourneyWebView2()
         {
             Dispose(false);
         }
@@ -96,7 +99,14 @@ namespace Journey
         {
             foreach (var child in JourneyCanvas.Children)
             {
-                if (child is UIElement element)
+                if (child is Line line)
+                {
+                    line.X1 += deltaX;
+                    line.Y1 += deltaY;
+                    line.X2 += deltaX;
+                    line.Y2 += deltaY;
+                }
+                else if (child is UIElement element)
                 {
                     Canvas.SetLeft(element, Canvas.GetLeft(element) + deltaX);
                     Canvas.SetTop(element, Canvas.GetTop(element) + deltaY);
@@ -307,6 +317,204 @@ namespace Journey
 
             return Task.CompletedTask;
         }
+
+        private double NodeWidth => _journeyStepWidth;
+        private double NodeHeight => _journeyStepHeight;
+        private double HorizontalSpacing = 20;
+        private double VerticalSpacing = 50;
+
+        private void CalculateNodePositions<T>(TreeNode<T> node, double x, double y, Dictionary<TreeNode<T>, Point> positions)
+        {
+            positions[node] = new Point(x, y);
+
+            double childX = x - (node.Children.Count - 1) * (NodeWidth + HorizontalSpacing) / 2;
+            foreach (var child in node.Children)
+            {
+                CalculateNodePositions(child, childX, y + NodeHeight + VerticalSpacing, positions);
+                childX += NodeWidth + HorizontalSpacing;
+            }
+        }
+        private void DrawNodesAndConnections<T>(TreeNode<T> node, Dictionary<TreeNode<T>, Point> positions)
+        {
+            // Draw the current node
+            var position = positions[node];
+            var entry = node.Value;
+
+
+            var rect = new JourneyStep
+            {
+                DataContext = entry,
+                Width = _journeyStepWidth,
+                Height = _journeyStepHeight
+            };
+            Canvas.SetLeft(rect, position.X);
+            Canvas.SetTop(rect, position.Y);
+            JourneyCanvas.Children.Add(rect);
+
+
+            rect.MouseUp += JourneyStep_MouseUp;
+
+
+
+            
+
+            // Draw connections to children
+            foreach (var child in node.Children)
+            {
+                var childPosition = positions[child];
+                var line = new Line
+                {
+                    X1 = position.X + NodeWidth / 2,
+                    Y1 = position.Y + NodeHeight,
+                    X2 = childPosition.X + NodeWidth / 2,
+                    Y2 = childPosition.Y,
+                    Stroke = Brushes.Black,
+                    StrokeThickness = 1
+                };
+                JourneyCanvas.Children.Add(line);
+
+                // Recursively draw the child nodes
+                DrawNodesAndConnections(child, positions);
+            }
+
+
+
+
+
+
+        }
+        private TreeNodeLayout<T> CalculateTreeLayout<T>(TreeNode<T> root, double siblingSpacing, double levelSpacing)
+        {
+            var rootLayout = BuildLayoutTree(root, null);
+            FirstPass(rootLayout, siblingSpacing);
+            SecondPass(rootLayout, 0, levelSpacing);
+            return rootLayout;
+        }
+
+        private TreeNodeLayout<T> BuildLayoutTree<T>(TreeNode<T> node, TreeNodeLayout<T>? parent)
+        {
+            var layout = new TreeNodeLayout<T>(node) { Parent = parent };
+            foreach (var child in node.Children)
+            {
+                layout.Children.Add(BuildLayoutTree(child, layout));
+            }
+            return layout;
+        }
+
+        private void FirstPass<T>(TreeNodeLayout<T> node, double siblingSpacing)
+        {
+            if (node.Children.Count == 0)
+            {
+                // Leaf node: No adjustment needed
+                node.X = 0;
+            }
+            else
+            {
+                // Process children recursively
+                foreach (var child in node.Children)
+                {
+                    FirstPass(child, siblingSpacing);
+                }
+
+                // Center the parent node above its children
+                var leftmost = node.Children.First();
+                var rightmost = node.Children.Last();
+                var midpoint = (leftmost.X + rightmost.X) / 2;
+                node.X = midpoint;
+
+                // Resolve overlaps between siblings
+                ResolveSiblingConflicts(node, siblingSpacing);
+            }
+        }
+
+        private void ResolveSiblingConflicts<T>(TreeNodeLayout<T> node, double siblingSpacing)
+        {
+            for (int i = 1; i < node.Children.Count; i++)
+            {
+                var leftChild = node.Children[i - 1];
+                var rightChild = node.Children[i];
+                var gap = (leftChild.X + siblingSpacing) - rightChild.X;
+                if (gap > 0)
+                {
+                    ShiftSubtree(rightChild, gap);
+                }
+            }
+        }
+
+        private void ShiftSubtree<T>(TreeNodeLayout<T> node, double shift)
+        {
+            node.X += shift;
+            foreach (var child in node.Children)
+            {
+                ShiftSubtree(child, shift);
+            }
+        }
+
+        private void SecondPass<T>(TreeNodeLayout<T> node, double modSum, double levelSpacing)
+        {
+            node.X += modSum;
+            node.Y = (node.Parent?.Y ?? 0) + levelSpacing;
+
+            foreach (var child in node.Children)
+            {
+                SecondPass(child, modSum + node.Mod, levelSpacing);
+            }
+        }
+
+        private void DrawTree<T>(TreeNodeLayout<T> rootLayout, Canvas canvas, double nodeWidth, double nodeHeight)
+        {
+            canvas.Children.Clear();
+
+            // Draw nodes and connections recursively
+            DrawNodeAndConnections(rootLayout, canvas, nodeWidth, nodeHeight);
+        }
+
+        private void DrawNodeAndConnections<T>(TreeNodeLayout<T> node, Canvas canvas, double nodeWidth, double nodeHeight)
+        {
+            // Draw the node
+            var rect = new JourneyStep
+            {
+                DataContext = node.Node.Value,
+                Width = _journeyStepWidth,
+                Height = _journeyStepHeight
+            };
+            rect.MouseUp += JourneyStep_MouseUp;
+            Canvas.SetLeft(rect, node.X * nodeWidth);
+            Canvas.SetTop(rect, node.Y * nodeHeight);
+            canvas.Children.Add(rect);
+
+            // Add a label for the node's value
+            var label = new TextBlock
+            {
+                Text = node.Node.Value?.ToString() ?? "Node",
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                TextAlignment = TextAlignment.Center
+            };
+            Canvas.SetLeft(label, node.X * nodeWidth + 10);
+            Canvas.SetTop(label, node.Y * nodeHeight + 5);
+            canvas.Children.Add(label);
+
+            // Draw connections to children
+            foreach (var child in node.Children)
+            {
+                var line = new Line
+                {
+                    X1 = node.X * nodeWidth + nodeWidth / 2,
+                    Y1 = node.Y * nodeHeight + nodeHeight,
+                    X2 = child.X * nodeWidth + nodeWidth / 2,
+                    Y2 = child.Y * nodeHeight,
+                    Stroke = Brushes.Black,
+                    StrokeThickness = 1
+                };
+                canvas.Children.Add(line);
+
+                // Recursively draw the child nodes
+                DrawNodeAndConnections(child, canvas, nodeWidth, nodeHeight);
+            }
+        }
+
+
         public async Task ShowJourney()
         {
             if (!IsJourneyVisible)
@@ -324,49 +532,28 @@ namespace Journey
                 var centerY = (WebViewGrid.ActualHeight / 2) - (_journeyStepHeight / 2f);
                 var topOffset = 0d;
                 var activeStepOffset = 0d;
-                foreach (var entry in await _journeyManager.GetSteps())
-                {
-                    var step = new JourneyStep
-                    {
-                        DataContext = entry,
-                        Width = _journeyStepWidth,
-                        Height = _journeyStepHeight
-                    };
 
-                    JourneyCanvas.Children.Add(step);
+                var journeySteps = await _journeyManager.GetJourney();
 
-                    if (entry.IsActive)
-                    {
-                        _selectedStep = step;
-                        activeStepOffset = centerY - topOffset;
+                JourneyCanvas.Children.Clear();
+                var canvas = JourneyCanvas;
+                var root = journeySteps;
 
-                        foreach (var child in JourneyCanvas.Children)
-                        {
-                            if (child is UIElement element)
-                            {
-                                var existingStepTop = Canvas.GetTop(element);
-                                Canvas.SetTop(element, existingStepTop + activeStepOffset);
-                            }
-                        }
+                canvas.Children.Clear();
 
-                        topOffset = centerY + _journeyStepHeight + _journeyStepSpacing;
+                var rootLayout = CalculateTreeLayout(root, siblingSpacing: 1.5, levelSpacing: 2.0);
+                DrawTree(rootLayout, JourneyCanvas, nodeWidth: _journeyStepWidth, nodeHeight: _journeyStepHeight);
 
-                        Canvas.SetLeft(step, 0);
-                        Canvas.SetTop(step, 0);
-                        step.Width = WebViewGrid.ActualWidth;
-                        step.Height = WebViewGrid.ActualHeight;
-                        step.TextArea.Opacity = 0;
-                    }
-                    else
-                    {
-                        Canvas.SetLeft(step, centerX);
-                        Canvas.SetTop(step, topOffset);
 
-                        topOffset += _journeyStepHeight + _journeyStepSpacing;
-                    }
 
-                    step.MouseUp += JourneyStep_MouseUp;
-                }
+
+
+
+
+
+
+
+
 
                 var width = WebViewGrid.ActualWidth;
                 var height = WebViewGrid.ActualHeight;
