@@ -23,7 +23,6 @@ namespace Journey
         public JourneyStep()
         {
             InitializeComponent();
-
             RenderOptions.SetBitmapScalingMode(SnapshotImage, BitmapScalingMode.LowQuality);
         }
 

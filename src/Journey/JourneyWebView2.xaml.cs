@@ -1,5 +1,5 @@
-﻿using NetEx.Collections;
-using System.ComponentModel;
+﻿using Microsoft.Win32;
+using NetEx.Collections;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,11 +10,14 @@ using System.Windows.Shapes;
 
 namespace Journey
 {
-    public partial class JourneyWebView2 : IDisposable, INotifyPropertyChanged
+    public partial class JourneyWebView2 : IDisposable
     {
         #region Constants
 
         private const float AnimationTime = 0.5f;
+
+        public static readonly DependencyProperty JourneyHighlightColorProperty = DependencyProperty.Register(nameof(JourneyHighlightColor), typeof(Color), typeof(JourneyWebView2));
+        public static readonly DependencyProperty JourneyZoomFactorProperty = DependencyProperty.Register(nameof(JourneyZoomFactor), typeof(double), typeof(JourneyWebView2));
 
         #endregion
 
@@ -23,19 +26,10 @@ namespace Journey
         private bool _isDisposed;
         private bool _isMouseDown;
         private readonly JourneyManager _journeyManager;
-        private double _journeyStepHeight;
-        private double _journeyStepSpacing;
-        private double _journeyStepWidth;
+        private Size _journeyStepSize;
         private Point _lastMouseDownPosition;
         private Point _lastMouseMovePosition;
         private JourneyStep? _selectedStep;
-        private double _zoomLevel;
-
-        #endregion
-
-        #region Events
-
-        public event PropertyChangedEventHandler? PropertyChanged;
 
         #endregion
 
@@ -45,17 +39,16 @@ namespace Journey
         {
             InitializeComponent();
             DataContext = this;
-
-            WebView.EnsureCoreWebView2Async(null);
-
+            
             _journeyManager = new(WebView);
-            _journeyStepHeight = SystemParameters.PrimaryScreenHeight / 5;
-            _journeyStepWidth = SystemParameters.PrimaryScreenWidth / 5;
-            _journeyStepSpacing = _journeyStepHeight / 2;
+            
+            RefreshJourneyStepSize();
+            SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
+            
             _lastMouseDownPosition = new(0, 0);
             _lastMouseMovePosition = new(0, 0);
             
-            ZoomLevel = 1;
+            JourneyZoomFactor = 1;
         }
 
         #endregion
@@ -71,47 +64,132 @@ namespace Journey
 
         #region Properties
 
-        public bool IsJourneyVisible { get; set; }
+        public bool IsJourneyVisible { get; private set; }
+        public Color JourneyHighlightColor
+        {
+            get => (Color)GetValue(JourneyHighlightColorProperty);
+            set => SetValue(JourneyHighlightColorProperty, value);
+        }
+        public double JourneyZoomFactor
+        {
+            get => (double)GetValue(JourneyZoomFactorProperty);
+            set => SetValue(JourneyZoomFactorProperty, value);
+        }
         public Uri Source
         {
             get => WebView.Source;
             set => WebView.Source = value;
-        }
-        public double ZoomLevel
-        {
-            get => _zoomLevel;
-            set
-            {
-                if (_zoomLevel != value)
-                {
-                    _zoomLevel = value;
-                    OnPropertyChanged(nameof(ZoomLevel));
-                }
-            }
         }
 
         #endregion
 
         #region Methods
 
-        private void IncrementScroll(double deltaX, double deltaY)
+        #region Event Handlers
+
+        private void JourneyCanvas_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            _isMouseDown = false;
+        }
+        private void JourneyCanvas_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                var currentZoom = JourneyZoomFactor;
+                var zoomIncrement = currentZoom / 5;
+                JourneyZoomFactor = e.Delta > 0 ? Math.Min(currentZoom + zoomIncrement, 2.1) : Math.Max(currentZoom - zoomIncrement, 0.4);
+            }
+            else
+            {
+                var scrollOffset = e.Delta < 0 ? -50 : 50;
+                if (Keyboard.Modifiers == ModifierKeys.Shift)
+                {
+                    PanCanvas(scrollOffset, 0);
+                }
+                else
+                {
+
+                    PanCanvas(0, scrollOffset);
+                }
+            }
+
+            e.Handled = true;
+        }
+        private void SystemEvents_DisplaySettingsChanged(object? sender, EventArgs e)
+        {
+            RefreshJourneyStepSize();
+        }
+
+        #endregion
+
+        #region Private
+
+        private void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    JourneyCanvas.Children.Clear();
+                    _journeyManager.Dispose();
+                    WebView.Dispose();
+                }
+
+                // Free unmanaged resources (unmanaged objects) and override finalizer
+                // Set large fields to null
+                _isDisposed = true;
+            }
+        }
+        private void PanCanvas(double x, double y)
         {
             foreach (var child in JourneyCanvas.Children)
             {
                 if (child is Line line)
                 {
-                    line.X1 += deltaX;
-                    line.Y1 += deltaY;
-                    line.X2 += deltaX;
-                    line.Y2 += deltaY;
+                    line.X1 += x;
+                    line.Y1 += y;
+                    line.X2 += x;
+                    line.Y2 += y;
                 }
                 else if (child is UIElement element)
                 {
-                    Canvas.SetLeft(element, Canvas.GetLeft(element) + deltaX);
-                    Canvas.SetTop(element, Canvas.GetTop(element) + deltaY);
+                    Canvas.SetLeft(element, Canvas.GetLeft(element) + x);
+                    Canvas.SetTop(element, Canvas.GetTop(element) + y);
                 }
             }
         }
+        private void RefreshJourneyStepSize()
+        {
+            var divisor = 6;
+            var width = SystemParameters.PrimaryScreenWidth / divisor;
+            var height = SystemParameters.PrimaryScreenHeight / divisor;
+            _journeyStepSize = new(width, height);
+        }
+
+        #endregion
+
+        #endregion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         #region Event Handlers
 
@@ -133,7 +211,7 @@ namespace Journey
                 var currentMousePosition = e.GetPosition(JourneyCanvas);
                 var deltaX = (currentMousePosition.X - _lastMouseMovePosition.X);
                 var deltaY = (currentMousePosition.Y - _lastMouseMovePosition.Y);
-                IncrementScroll(deltaX, deltaY);
+                PanCanvas(deltaX, deltaY);
                 _lastMouseMovePosition = currentMousePosition;
                 e.Handled = true;
             }
@@ -144,37 +222,6 @@ namespace Journey
             _lastMouseDownPosition = e.GetPosition(JourneyCanvas);
             _lastMouseMovePosition = _lastMouseDownPosition;
             e.Handled = true;
-        }
-        private void JourneyCanvas_PreviewMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            _isMouseDown = false;
-        }
-        private void JourneyCanvas_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            if (Keyboard.Modifiers == ModifierKeys.Control)
-            {
-                if (JourneyCanvas.LayoutTransform is ScaleTransform matTrans)
-                {
-                    var mousePos = e.GetPosition(JourneyCanvas);
-                    var zoomIncrement = _zoomLevel / 5;
-                    ZoomLevel = e.Delta > 0 ? Math.Min(ZoomLevel + zoomIncrement, 2.1) : Math.Max(ZoomLevel - zoomIncrement, 0.4);
-                    e.Handled = true;
-                }
-            }
-            else
-            {
-                var scrollOffset = e.Delta < 0 ? -50 : 50;
-                if (Keyboard.Modifiers == ModifierKeys.Shift)
-                {
-                    IncrementScroll(scrollOffset, 0);
-                }
-                else
-                {
-
-                    IncrementScroll(0, scrollOffset);
-                }
-                e.Handled = true;
-            }
         }
         private void JourneyStep_MouseUp(object sender, MouseButtonEventArgs e)
         {
@@ -194,8 +241,8 @@ namespace Journey
             // force them into the correct position to make sure that everything is where it should be
             // if this happens. However, this is a workaround, as the performance shouldn't be that slow,
             // and seems to be an issue wuth certain machines?
-            var left = (JourneyCanvas.ActualWidth / 2) - (_journeyStepWidth / 2f);
-            var top = ((JourneyCanvas.ActualHeight / 2) - (_journeyStepHeight / 2f));
+            var left = (JourneyCanvas.ActualWidth / 2) - (_journeyStepSize.Width / 2f);
+            var top = ((JourneyCanvas.ActualHeight / 2) - (_journeyStepSize.Height / 2f));
 
             // Clear animations.
             _selectedStep.BeginAnimation(Canvas.LeftProperty, null);
@@ -206,30 +253,6 @@ namespace Journey
             Canvas.SetTop(_selectedStep, top);
 
             _selectedStep.IsAnimating = false;
-        }
-
-        #endregion
-
-        #region Private
-        
-        private void Dispose(bool disposing)
-        {
-            if (!_isDisposed)
-            {
-                if (disposing)
-                {
-                    _journeyManager.Dispose();
-                    WebView.Dispose();
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
-                _isDisposed = true;
-            }
-        }
-        private void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         #endregion
@@ -270,14 +293,14 @@ namespace Journey
 
                 var scaleXAnimation = new DoubleAnimation
                 {
-                    From = _journeyStepWidth,
+                    From = _journeyStepSize.Width,
                     To = JourneyCanvas.ActualWidth,
                     Duration = duration,
                     EasingFunction = easingFunction
                 };
                 var scaleYAnimation = new DoubleAnimation
                 {
-                    From = _journeyStepHeight,
+                    From = _journeyStepSize.Height,
                     To = JourneyCanvas.ActualHeight,
                     Duration = duration,
                     EasingFunction = easingFunction
@@ -317,8 +340,8 @@ namespace Journey
             return Task.CompletedTask;
         }
 
-        private double NodeWidth => _journeyStepWidth;
-        private double NodeHeight => _journeyStepHeight;
+        private double NodeWidth => _journeyStepSize.Width;
+        private double NodeHeight => _journeyStepSize.Height;
         private double HorizontalSpacing = 20;
         private double VerticalSpacing = 50;
 
@@ -343,8 +366,8 @@ namespace Journey
             var rect = new JourneyStep
             {
                 DataContext = entry,
-                Width = _journeyStepWidth,
-                Height = _journeyStepHeight
+                Width = _journeyStepSize.Width,
+                Height = _journeyStepSize.Height
             };
             Canvas.SetLeft(rect, position.X);
             Canvas.SetTop(rect, position.Y);
@@ -355,7 +378,7 @@ namespace Journey
 
 
 
-            
+
 
             // Draw connections to children
             foreach (var child in node.Children)
@@ -382,7 +405,7 @@ namespace Journey
 
 
         }
-        private TreeNodeLayout<T> CalculateTreeLayout<T>(TreeNode<T> root, double siblingSpacing, double levelSpacing)
+        private TreeNodeLayout<JourneyEntry> CalculateTreeLayout(TreeNode<JourneyEntry> root, double siblingSpacing, double levelSpacing)
         {
             var rootLayout = BuildLayoutTree(root, null);
             FirstPass(rootLayout, siblingSpacing);
@@ -460,7 +483,7 @@ namespace Journey
             }
         }
 
-        private void DrawTree<T>(TreeNodeLayout<T> rootLayout, Canvas canvas, double nodeWidth, double nodeHeight)
+        private void DrawTree(TreeNodeLayout<JourneyEntry> rootLayout, Canvas canvas, double nodeWidth, double nodeHeight)
         {
             canvas.Children.Clear();
 
@@ -468,31 +491,24 @@ namespace Journey
             DrawNodeAndConnections(rootLayout, canvas, nodeWidth, nodeHeight);
         }
 
-        private void DrawNodeAndConnections<T>(TreeNodeLayout<T> node, Canvas canvas, double nodeWidth, double nodeHeight)
+        private void DrawNodeAndConnections(TreeNodeLayout<JourneyEntry> node, Canvas canvas, double nodeWidth, double nodeHeight)
         {
             // Draw the node
             var rect = new JourneyStep
             {
                 DataContext = node.Node.Value,
-                Width = _journeyStepWidth,
-                Height = _journeyStepHeight
+                Width = _journeyStepSize.Width,
+                Height = _journeyStepSize.Height
             };
             rect.MouseUp += JourneyStep_MouseUp;
             Canvas.SetLeft(rect, node.X * nodeWidth);
             Canvas.SetTop(rect, node.Y * nodeHeight);
             canvas.Children.Add(rect);
 
-            // Add a label for the node's value
-            var label = new TextBlock
+            if (node.Node.Value.IsActive)
             {
-                Text = node.Node.Value?.ToString() ?? "Node",
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                TextAlignment = TextAlignment.Center
-            };
-            Canvas.SetLeft(label, node.X * nodeWidth + 10);
-            Canvas.SetTop(label, node.Y * nodeHeight + 5);
-            canvas.Children.Add(label);
+                _selectedStep = rect;
+            }
 
             // Draw connections to children
             foreach (var child in node.Children)
@@ -523,14 +539,12 @@ namespace Journey
                 var stopWatch = new Stopwatch();
                 stopWatch.Start();
 
-                ZoomLevel = 1;
+                JourneyZoomFactor = 1;
                 JourneyCanvas.RenderTransformOrigin = new Point(0, 0);
                 JourneyCanvas.Visibility = Visibility.Visible;
 
-                var centerX = (WebViewGrid.ActualWidth / 2) - (_journeyStepWidth / 2f);
-                var centerY = (WebViewGrid.ActualHeight / 2) - (_journeyStepHeight / 2f);
-                var topOffset = 0d;
-                var activeStepOffset = 0d;
+                var centerX = (WebViewGrid.ActualWidth / 2) - (_journeyStepSize.Width / 2f);
+                var centerY = (WebViewGrid.ActualHeight / 2) - (_journeyStepSize.Height / 2f);
 
                 var journeySteps = await _journeyManager.GetJourney();
 
@@ -541,13 +555,18 @@ namespace Journey
                 canvas.Children.Clear();
 
                 var rootLayout = CalculateTreeLayout(root, siblingSpacing: 1.5, levelSpacing: 2.0);
-                DrawTree(rootLayout, JourneyCanvas, nodeWidth: _journeyStepWidth, nodeHeight: _journeyStepHeight);
+                DrawTree(rootLayout, JourneyCanvas, nodeWidth: _journeyStepSize.Width, nodeHeight: _journeyStepSize.Height);
 
+                if (_selectedStep != null)
+                {
+                    PanCanvas(centerX - Canvas.GetLeft(_selectedStep), centerY - Canvas.GetTop(_selectedStep));
 
-
-
-
-
+                    Canvas.SetLeft(_selectedStep, 0);
+                    Canvas.SetTop(_selectedStep, 0);
+                    _selectedStep.Width = WebViewGrid.ActualWidth;
+                    _selectedStep.Height = WebViewGrid.ActualHeight;
+                    _selectedStep.TextArea.Opacity = 0;
+                }
 
 
 
@@ -565,14 +584,14 @@ namespace Journey
                 var scaleXAnimation = new DoubleAnimation
                 {
                     From = width,
-                    To = _journeyStepWidth,
+                    To = _journeyStepSize.Width,
                     Duration = duration,
                     EasingFunction = snapshotEasingFunction
                 };
                 var scaleYAnimation = new DoubleAnimation
                 {
                     From = height,
-                    To = _journeyStepHeight,
+                    To = _journeyStepSize.Height,
                     Duration = duration,
                     EasingFunction = snapshotEasingFunction
                 };
@@ -600,7 +619,7 @@ namespace Journey
 
                 scaleXAnimation.Completed += ShowJourneyAnimation_Completed;
 
-                var delay = 500;
+                var delay = 400;
                 stopWatch.Stop();
                 if (stopWatch.ElapsedMilliseconds < delay)
                 {
@@ -638,8 +657,6 @@ namespace Journey
                 await ShowJourney();
             }
         }
-
-        #endregion
 
         #endregion
     }

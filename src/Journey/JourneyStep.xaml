@@ -10,6 +10,14 @@
              d:DesignHeight="50"
              d:DesignWidth="50">
 
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Journey;component/Themes/Generic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
     <UserControl.DataContext>
         <journey:JourneyEntry/>
     </UserControl.DataContext>
@@ -97,7 +105,7 @@
             <Grid x:Name="HoverGrid"
                   Grid.Row="0"
                   Grid.RowSpan="2"
-                  Background="{DynamicResource HighlightColor}"
+                  Background="{StaticResource HighlightColor}"
                   Opacity="0.5">
 
                 <Grid.Style>
