@@ -12,13 +12,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dragablz" Version="0.0.3.234" />
     <PackageReference Include="ModernWpfUI" Version="0.9.5" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Journey\Journey.csproj" />
-    <ProjectReference Include="..\JourneyBrowser.Tabs\JourneyBrowser.Tabs.csproj" />
   </ItemGroup>
 
 </Project>

@@ -72,28 +72,28 @@ namespace WPFSample
         private async void ButtonJourney_Click(object sender, RoutedEventArgs e)
         {
             var view = ((JourneyWebView2)_webView2Tabs[SelectedIndex].Content);
-            //DoubleAnimation fadeAnimation;
-            //if (view.IsJourneyVisible)
-            //{
-            //    fadeAnimation = new DoubleAnimation
-            //    {
-            //        From = 0.55,
-            //        To = 0,
-            //        Duration = TimeSpan.FromSeconds(2)
-            //    };
-            //}
-            //else
-            //{
-            //    fadeAnimation = new DoubleAnimation
-            //    {
-            //        From = 0,
-            //        To = 0.55,
-            //        Duration = TimeSpan.FromSeconds(2)
-            //    };
-            //}
+            DoubleAnimation fadeAnimation;
+            if (view.IsJourneyVisible)
+            {
+                fadeAnimation = new DoubleAnimation
+                {
+                    From = 0.55,
+                    To = 0,
+                    Duration = TimeSpan.FromSeconds(2)
+                };
+            }
+            else
+            {
+                fadeAnimation = new DoubleAnimation
+                {
+                    From = 0,
+                    To = 0.55,
+                    Duration = TimeSpan.FromSeconds(2)
+                };
+            }
 
-            //var c = (_webView2Tabs[SelectedIndex].FindDescendantByName("ButtonBar") as Border);
-            //    c?.BeginAnimation(DropShadowEffect.OpacityProperty, fadeAnimation);
+            var c = (_webView2Tabs[SelectedIndex].FindDescendantByName("ButtonBar") as Border);
+            c?.BeginAnimation(DropShadowEffect.OpacityProperty, fadeAnimation);
 
             await view.ToggleJourney();
         }

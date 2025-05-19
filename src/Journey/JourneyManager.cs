@@ -1,12 +1,8 @@
-﻿using Journey.Tree.Overby.Collections;
-using Microsoft.Web.WebView2.Core;
+﻿using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
+using NetEx.Collections;
 using Newtonsoft.Json;
-using System;
 using System.IO;
-using System.Security.Policy;
-using System.Windows;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace Journey
@@ -16,7 +12,7 @@ namespace Journey
         #region Fields
 
         private JourneyEntry? _activeStep;
-        private readonly TreeNode<JourneyEntry> _steps;
+        private readonly Tree<JourneyEntry> _steps;
         private readonly WebView2 _webView;
 
         #endregion
@@ -63,13 +59,6 @@ namespace Journey
 
         #endregion
 
-        #region Public
-
-        public bool BrowserCanGoBack { get; private set; }
-        public bool BrowserCanGoForward { get; private set; }
-
-        #endregion
-
         #endregion
 
         #region Methods
@@ -78,10 +67,9 @@ namespace Journey
 
         private async void CoreWebView2_HistoryChanged(object? sender, object e)
         {
-            var history = await GetHistory();
-            var root = _steps;
-            
+            TreeNode<JourneyEntry> root = _steps;
 
+            var history = await GetNavigationHistory();
             foreach (var entry in history.Entries)
             {
                 if (root.Children.FirstOrDefault(x => x.Value.Id == entry.Id) is { } childElement)
@@ -90,7 +78,7 @@ namespace Journey
                 }
                 else
                 { 
-                    root.AddChild(entry);
+                    root.Add(entry);
                 }
 
                 if (entry == history.Entries[history.CurrentIndex])
@@ -100,7 +88,6 @@ namespace Journey
 
                 root = root.Children.First(x => x.Value.Id == entry.Id);
             }
-
         }
         private void WebView_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
         {
@@ -125,10 +112,10 @@ namespace Journey
 
         #region Private
 
-        private async Task<HistoryWrapper> GetHistory()
+        private async Task<NavigationHistory> GetNavigationHistory()
         {
             var history = await _webView.CoreWebView2.CallDevToolsProtocolMethodAsync("Page.getNavigationHistory", "{}");
-            return JsonConvert.DeserializeObject<HistoryWrapper>(history)!;
+            return JsonConvert.DeserializeObject<NavigationHistory>(history)!;
         }
         private async Task<BitmapFrame?> TakeSnapshot()
         {
@@ -164,9 +151,9 @@ namespace Journey
         public void Dispose()
         {
             _webView.NavigationStarting -= WebView_NavigationStarting;
-            //_steps.Clear();
+            _steps.Clear();
         }
-        public async Task<TreeNode<JourneyEntry>> GetJourney()
+        public async Task<Tree<JourneyEntry>> GetJourney()
         {
             // Update current webpage snapshot
             await UpdateActiveStepSnapshot();
@@ -176,7 +163,7 @@ namespace Journey
         {
             if (!step.IsActive)
             {
-                var history = await GetHistory();
+                var history = await GetNavigationHistory();
                 if (history.Entries.FirstOrDefault(s => s.Id == step.Id) is { })
                 {
                     await _webView.CoreWebView2.CallDevToolsProtocolMethodAsync("Page.navigateToHistoryEntry", JsonConvert.SerializeObject(new { entryId = step.Id }));

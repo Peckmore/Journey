@@ -1,4 +1,4 @@
-﻿using Journey.Tree.Overby.Collections;
+﻿using NetEx.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
@@ -7,7 +7,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using System.Xml.Linq;
 
 namespace Journey
 {

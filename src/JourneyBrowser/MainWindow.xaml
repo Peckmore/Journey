@@ -14,31 +14,16 @@
         Loaded="Window_Loaded"
         Background="Transparent">
 
-    <WindowChrome.WindowChrome>
+    <!--<WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="35"
                       ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}"
                       GlassFrameThickness="-1" />
-        <!--UseAeroCaptionButtons="True"/>-->
-    </WindowChrome.WindowChrome>
+        --><!--UseAeroCaptionButtons="True"/>--><!--
+    </WindowChrome.WindowChrome>-->
 
     <Window.Resources>
         <converters:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter"/>
     </Window.Resources>
-
-    <!--<dragablz:TabablzControl Margin="0"
-                             WindowChrome.IsHitTestVisibleInChrome="True"
-                             ShowDefaultAddButton="True"
-                             >
-        <dragablz:TabablzControl.InterTabController>
-            <dragablz:InterTabController />
-        </dragablz:TabablzControl.InterTabController>
-        <TabItem Header="Tab No. 1" IsSelected="True">
-            <TextBlock>Hello World</TextBlock>
-        </TabItem>
-        <TabItem Header="Tab No. 2">
-            <TextBlock>We Have Tearable Tabs!</TextBlock>
-        </TabItem>
-    </dragablz:TabablzControl>-->
 
     <DockPanel>
 
