@@ -4,7 +4,7 @@
 
 A UI/UX experiment in visual, branching browser history.
 
-_“Its the not the Destination, It's the journey.”_<br/>
+_“Its the not the destination, It's the journey.”_<br/>
 **Ralph Waldo Emerson**
 
 SCREENSHOT
@@ -31,35 +31,42 @@ A typical use case for a browser is to use a search engine to find the solution 
 
 The situation can be further compounded if several of the results lead to different answers on the same web site, resulting in many of them having similar URLs and titles. In this case, the user may be forced to return to the search results and click on each link again, or use the _history_ feature of the browser to attempt to find the page they were looking for. However, this can be time consuming and frustrating, especially if the user has visited a number of pages in a short period of time.
 
-The problem posited the question of whether it could be possible for the travellog to be more helpful in such scenarios, and what solutions already existed to achieve this. A search for tools to enhance the travellog resulted in a number [of](https://betterhistory.io/)^[1]()^ [browser](https://browserhistory.net/)^[2]()^ [extensions](https://chromewebstore.google.com/detail/history-plus/kloodnjmhgicecceindgbfpjencnhajh)^[3]()^ that could enhance the _history_ of a browser, but nothing that would improve the travellog.
+The problem posited the question of whether it could be possible for the travellog to be more helpful in such scenarios, and what solutions already existed to achieve this. A search for tools to enhance the travellog resulted in a number of browser extensions
+^[1](https://betterhistory.io/)^ ^[2](https://browserhistory.net/)^ ^[3](https://chromewebstore.google.com/detail/history-plus/kloodnjmhgicecceindgbfpjencnhajh)^ that could enhance the _history_ of a browser, but nothing that would improve the travellog.
 
 With no existing solution found, an experiment was undertaken to investigate a way to enhance the _travellog_, and allow for a better solution to the problem. The solution would need to allow the user to see their travellog in a more visual way, provide a beter representation of a users browsing session, allow for easy navigation between previously visited pages and, most crucially, show the organic path the user took when visting the pages in their browser.
 
 ## Research
 
-creating a tool that would enhance the short-term history, and allow for a more visual representation of the users browsing session.
+There are many ways of visualizing branching choices, but the following types of visualization were considered for this experiment:
 
+- **Flowchart**
 
+  _"A flowchart is a type of diagram that represents a workflow or process. A flowchart can also be defined as a diagrammatic representation of an algorithm, a step-by-step approach to solving a task._
 
-as the thought of whether it would be possible to produce a more informative and interactive history for a users browsing session, something that worked with - but also expanded upon - the back and forward buttons which are fixtures in browsers.
+  _"The flowchart shows the steps as boxes of various kinds, and their order by connecting the boxes with arrows. This diagrammatic representation illustrates a solution model to a given problem. Flowcharts are used in analyzing, designing, documenting or managing a process or program in various fields."_ ^[4](https://en.wikipedia.org/wiki/Flowchart)^
 
+  ![Flowchart](res/images/LampFlowchart.png)<br/>
+  ^An example of a flowchart^ ^[4](https://en.wikipedia.org/wiki/Flowchart)^
 
+  Flowcharts are excellent for illustrating the flow of decisions and their outcomes, with each choice leading to a new path.
 
+- **Tree Diagrams**
 
-For visualizing branching choices, a flowchart system is highly effective, providing a clear and intuitive representation of the narrative possibilities. Other options include tree diagrams, network diagrams, and Sankey diagrams, each offering unique ways to represent the connections between choices and outcomes. 
-Elaboration:
-Flowcharts:
-Flowcharts are excellent for illustrating the flow of decisions and their consequences. Each choice leads to a new path, and the flowchart visually shows how these paths diverge and converge. 
-Tree Diagrams:
-Tree diagrams are useful for representing hierarchical relationships between choices. The main "trunk" represents the initial point, and branches represent different choices and their subsequent outcomes. 
-Network Diagrams:
-Network diagrams are suitable for visualizing complex relationships and connections between various elements, including characters, locations, and events. They can represent how choices influence multiple aspects of the narrative. 
-Sankey Diagrams:
+  _"A tree structure, tree diagram, or tree model is a way of representing the hierarchical nature of a structure in a graphical form. It is named a "tree structure" because the classic representation resembles a tree, although the chart is generally upside down compared to a biological tree, with the "stem" at the top and the "leaves" at the bottom."_ ^[5](https://en.wikipedia.org/wiki/Tree_structure)^
+
+  ![Tree Diagram](res/images/Binary_tree_structure.png)<br/>
+  ^An example of a tree diagram^ ^[5](https://en.wikipedia.org/wiki/Tree_structure)^
+
+  Tree diagrams are excellent for representing hierarchical relationships between choices. The root node represents the initial starting point, with each branch representing a different choice and it's subsequent choices and outcomes.
+
+- **Network Diagrams**
+
+  Network diagrams are suitable for visualizing complex relationships and connections between various elements, including characters, locations, and events. They can represent how choices influence multiple aspects of the narrative. 
+
+- **Sankey Diagrams**
+
 Sankey diagrams are particularly helpful for showing the flow of information or resources. They can be used to illustrate how choices lead to different outcomes, with the width of the "ribbons" representing the "flow" or probability of each path. 
-Other Tools:
-In the game development space, tools like GraphViz and Ink in Unity are also used to create branching structures. 
-
-
 
 
 
@@ -216,3 +223,9 @@ Hopefully proves interesting
 [2] Browser History Plus, https://browserhistory.net/
 
 [3] HistoryPlus, https://chromewebstore.google.com/detail/history-plus/kloodnjmhgicecceindgbfpjencnhajh
+
+[4] Flowchart, https://en.wikipedia.org/wiki/Flowchart
+
+[5] Tree structure, https://en.wikipedia.org/wiki/Tree_structure
+
+[6] Graphic drawing, https://en.wikipedia.org/wiki/Graph_drawing
