@@ -17,6 +17,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Remove="Images\**\*" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="Images\**\*">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+	</ItemGroup>
+
+	<ItemGroup>
 		<Compile Update="JourneyWebView2.xaml.cs">
 			<SubType>Code</SubType>
 		</Compile>

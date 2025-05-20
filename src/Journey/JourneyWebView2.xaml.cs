@@ -17,7 +17,6 @@ namespace Journey
         #region Private
 
         private const float AnimationTime = 0.5f;
-        private const int JourneyControlsZIndex = 100;
         private const int SelectedStepZIndex = 1000;
 
         #endregion
@@ -107,6 +106,10 @@ namespace Journey
 
         #region Event Handlers
 
+        private void CenterViewButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
         private void ContainerGrid_MouseDown(object sender, MouseButtonEventArgs e)
         {
             _isMouseDown = true;
@@ -123,7 +126,7 @@ namespace Journey
                 var deltaY = currentMousePosition.Y - _lastMousePosition.Y;
                 PanCanvas(deltaX, deltaY);
                 _lastMousePosition = currentMousePosition;
-                //e.Handled = true;
+                e.Handled = true;
             }
         }
         private void ContainerGrid_PreviewMouseUp(object sender, MouseButtonEventArgs e)
@@ -137,19 +140,7 @@ namespace Journey
                 // Get the current mouse position relative to the canvas
                 var mousePosition = e.GetPosition(JourneyCanvas);
 
-                // Update the ScaleTransform
-                var absoluteX = mousePosition.X * JourneyZoomFactor + JourneyCanvasTranslateTransform.X;
-                var absoluteY = mousePosition.Y * JourneyZoomFactor + JourneyCanvasTranslateTransform.Y;
-
-                // Calculate the zoom factor
-                var zoomIncrement = JourneyZoomFactor / 5;
-                JourneyZoomFactor = e.Delta > 0
-                                    ? Math.Min(JourneyZoomFactor + zoomIncrement, MaximumZoom)
-                                    : Math.Max(JourneyZoomFactor - zoomIncrement, MinimumZoom);
-
-                // Adjust TranslateTransform to keep mouse position stable
-                JourneyCanvasTranslateTransform.X = absoluteX - mousePosition.X * JourneyZoomFactor;
-                JourneyCanvasTranslateTransform.Y = absoluteY - mousePosition.Y * JourneyZoomFactor;
+                ZoomCanvas(mousePosition, e.Delta < 0);
             }
             else
             {
@@ -178,9 +169,27 @@ namespace Journey
                 e.Handled = true;
             }
         }
+        private void ResetZoomButton_Click(object sender, RoutedEventArgs e)
+        {
+            JourneyZoomFactor = 1;
+        }
         private void SystemEvents_DisplaySettingsChanged(object? sender, EventArgs e)
         {
             RefreshJourneyStepSize();
+        }
+        private void ZoomInButton_Click(object sender, RoutedEventArgs e)
+        {
+            JourneyZoomFactor *= 1.1;
+            //ZoomCanvas(new(((JourneyCanvas.ActualWidth / 2) / JourneyZoomFactor) - JourneyCanvasTranslateTransform.X,
+            //           ((JourneyCanvas.ActualHeight / 2) / JourneyZoomFactor) - JourneyCanvasTranslateTransform.Y),
+            //           false);
+        }
+        private void ZoomOutButton_Click(object sender, RoutedEventArgs e)
+        {
+            JourneyZoomFactor /= 1.1;
+            //ZoomCanvas(new(((JourneyCanvas.ActualWidth / 2) / JourneyZoomFactor) - JourneyCanvasTranslateTransform.X,
+            //           ((JourneyCanvas.ActualHeight / 2) / JourneyZoomFactor) - JourneyCanvasTranslateTransform.Y),
+            //           true);
         }
 
         #endregion
@@ -214,6 +223,24 @@ namespace Journey
             var width = SystemParameters.PrimaryScreenWidth / divisor;
             var height = SystemParameters.PrimaryScreenHeight / divisor;
             _journeyStepSize = new(width, height);
+        }
+        private void ZoomCanvas(Point center, bool zoomOut)
+        {
+            Debug.WriteLine($"Point {center.ToString()}");
+
+            // Update the ScaleTransform
+            var absoluteX = center.X * JourneyZoomFactor + JourneyCanvasTranslateTransform.X;
+            var absoluteY = center.Y * JourneyZoomFactor + JourneyCanvasTranslateTransform.Y;
+
+            // Calculate the zoom factor
+            var zoomIncrement = JourneyZoomFactor / 5;
+            JourneyZoomFactor = zoomOut
+                                ? Math.Max(JourneyZoomFactor - zoomIncrement, MinimumZoom)
+                                : Math.Min(JourneyZoomFactor + zoomIncrement, MaximumZoom);
+
+            // Adjust TranslateTransform to keep mouse position stable
+            JourneyCanvasTranslateTransform.X = absoluteX - center.X * JourneyZoomFactor;
+            JourneyCanvasTranslateTransform.Y = absoluteY - center.Y * JourneyZoomFactor;
         }
 
         #endregion
@@ -335,14 +362,14 @@ namespace Journey
                 var titleAnimation = new DoubleAnimation
                 {
                     From = 0.9,
-                    To = -0.5,
+                    To = -0.6,
                     Duration = duration,
                     EasingFunction = easingFunction
                 };
                 var controlsAnimation = new DoubleAnimation
                 {
-                    From = 1,
-                    To = -0.5,
+                    From = 0.9,
+                    To = -0.6,
                     Duration = duration,
                     EasingFunction = easingFunction
                 };
@@ -575,7 +602,7 @@ namespace Journey
                 
                 var controlsAnimation = new DoubleAnimation
                 {
-                    From = -0.5,
+                    From = -0.6,
                     To = 0.9,
                     Duration = duration,
                     EasingFunction = animationEasingFunction
@@ -618,7 +645,7 @@ namespace Journey
                     };
                     var titleAnimation = new DoubleAnimation
                     {
-                        From = -0.5,
+                        From = -0.6,
                         To = 0.9,
                         Duration = duration,
                         EasingFunction = animationEasingFunction

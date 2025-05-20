@@ -1,13 +1,12 @@
 ﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:journey="clr-namespace:Journey"
-             xmlns:wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
-             x:Class="Journey.JourneyWebView2"
-             mc:Ignorable="d"
-             d:DesignHeight="450"
-             d:DesignWidth="800">
+ xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+ x:Class="Journey.JourneyWebView2"
+ mc:Ignorable="d"
+ d:DesignHeight="450"
+ d:DesignWidth="800">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -40,8 +39,8 @@
                                         ScaleY="{Binding JourneyZoomFactor, Mode=OneWay}" />
 
                         <TranslateTransform x:Name="JourneyCanvasTranslateTransform"
-                                        X="{Binding JourneyZoomCenterX, Mode=OneWay}"
-                                        Y="{Binding JourneyZoomCenterY, Mode=OneWay}" />
+                                            X="{Binding JourneyZoomCenterX, Mode=OneWay}"
+                                            Y="{Binding JourneyZoomCenterY, Mode=OneWay}" />
 
                     </TransformGroup>
                 </Canvas.RenderTransform>
@@ -49,32 +48,50 @@
             </Canvas>
 
             <Border x:Name="JourneyControls"
-                    Background="DarkGray"
-                    CornerRadius="20"
+                    Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+                    BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
+                    BorderThickness="0.5"
+                    CornerRadius="10"
                     Height="40"
                     Opacity="0"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Top"
-                    Margin="0,25,0,0">
+                    Margin="0,25,0,0"
+                    Padding="25,5,25,5">
 
                 <Grid>
 
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="125"/>
+                        <ColumnDefinition Width="30"/>
+                        <ColumnDefinition Width="30"/>
+                        <ColumnDefinition Width="30"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="30"/>
                     </Grid.ColumnDefinitions>
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+                    <Button x:Name="ZoomOutButton"
+                            Click="ZoomOutButton_Click"
+                            Grid.Column="0">
+                        <Image Source="Images/zoom_out.png" />
+                    </Button>
 
-                    <Slider x:Name="JourneyZoomSlider"
-                        Grid.Column="0"
-                        Grid.Row="0"
-                        Orientation="Horizontal"
-                        VerticalAlignment="Center"
-                        Maximum="{x:Static journey:JourneyWebView2.MaximumZoom}"
-                        Minimum="{x:Static journey:JourneyWebView2.MinimumZoom}"
-                        Value="{Binding JourneyZoomFactor, Mode=TwoWay}"/>
+                    <Button x:Name="ZoomInButton"
+                            Click="ZoomInButton_Click"
+                            Grid.Column="1">
+                        <Image Source="Images/zoom_in.png" />
+                    </Button>
+
+                    <Button x:Name="ResetZoomButton"
+                            Click="ResetZoomButton_Click"
+                            Grid.Column="2">
+                        <Image Source="Images/reset_zoom.png" />
+                    </Button>
+
+                    <Button x:Name="CenterViewButton"
+                            Click="CenterViewButton_Click"
+                            Grid.Column="4">
+                        <Image Source="Images/center_view.png" />
+                    </Button>
 
                 </Grid>
 
@@ -85,9 +102,9 @@
         <!-- WebView -->
         <!-- This is the browser used for navigation. -->
         <wpf:WebView2 x:Name="WebView"
-                  x:FieldModifier="public"
-                  Margin="0"
-                  DefaultBackgroundColor="White"/>
+                      x:FieldModifier="public"
+                      Margin="0"
+                      DefaultBackgroundColor="White"/>
 
     </Grid>
 
