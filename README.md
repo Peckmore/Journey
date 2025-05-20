@@ -11,6 +11,12 @@ SCREENSHOT
 
 </div>
 
+**Journey** is a **WPF** user control written in **C#** which aims to provide the ability to view your browsing history as an interactive tree diagram.
+
+**Journey** is implemented as `JourneyWebView2`, which implements `IWebView2` and internally wraps a `WebView2` instance. As a result, the control should be a drop-in replacement for `WebView2`.
+
+Included in the repo is a demo application called **JourneyBrowser**, which is a minimal "browser" implementation that uses the `JourneyWebView2` control to demonstrate the **Journey** concept.
+
 ## Abstract
 
 **Journey** is an experiment into whether there could be a better - or at least more visually informative - way of presenting a users short-term browsing history. The end result is a branching, tree-based record of a users per-tab browsing history, which aims to seamlessly integrate into the browser user interface, be intuitive and easy-to-use, and visually delight the user.
