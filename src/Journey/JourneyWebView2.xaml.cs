@@ -14,10 +14,18 @@ namespace Journey
     {
         #region Constants
 
+        #region Private
+
         private const float AnimationTime = 0.5f;
 
-        public static readonly DependencyProperty JourneyHighlightColorProperty = DependencyProperty.Register(nameof(JourneyHighlightColor), typeof(Color), typeof(JourneyWebView2));
-        public static readonly DependencyProperty JourneyZoomFactorProperty = DependencyProperty.Register(nameof(JourneyZoomFactor), typeof(double), typeof(JourneyWebView2));
+        #endregion
+
+        #region Public Static
+
+        public static readonly DependencyProperty JourneyHighlightColorProperty = DependencyProperty.Register(nameof(JourneyHighlightColor), typeof(Color), typeof(JourneyWebView2), new PropertyMetadata(Colors.DodgerBlue));
+        public static readonly DependencyProperty JourneyZoomFactorProperty = DependencyProperty.Register(nameof(JourneyZoomFactor), typeof(double), typeof(JourneyWebView2), new PropertyMetadata(1d));
+
+        #endregion
 
         #endregion
 
@@ -28,7 +36,7 @@ namespace Journey
         private readonly JourneyManager _journeyManager;
         private Size _journeyStepSize;
         private Point _lastMouseDownPosition;
-        private Point _lastMouseMovePosition;
+        private Point _lastMousePosition;
         private JourneyStep? _selectedStep;
 
         #endregion
@@ -41,14 +49,11 @@ namespace Journey
             DataContext = this;
             
             _journeyManager = new(WebView);
-            
+            _lastMouseDownPosition = new(0, 0);
+            _lastMousePosition = new(0, 0);
+
             RefreshJourneyStepSize();
             SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
-            
-            _lastMouseDownPosition = new(0, 0);
-            _lastMouseMovePosition = new(0, 0);
-            
-            JourneyZoomFactor = 1;
         }
 
         #endregion
@@ -68,7 +73,10 @@ namespace Journey
         public Color JourneyHighlightColor
         {
             get => (Color)GetValue(JourneyHighlightColorProperty);
-            set => SetValue(JourneyHighlightColorProperty, value);
+            set
+            {
+                SetValue(JourneyHighlightColorProperty, value);
+            }
         }
         public double JourneyZoomFactor
         {
@@ -87,17 +95,47 @@ namespace Journey
 
         #region Event Handlers
 
-        private void JourneyCanvas_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        private void ContainerGrid_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            _isMouseDown = true;
+            _lastMouseDownPosition = e.GetPosition(ContainerGrid);
+            _lastMousePosition = _lastMouseDownPosition;
+            e.Handled = true;
+        }
+        private void ContainerGrid_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (_isMouseDown)
+            {
+                var currentMousePosition = e.GetPosition(ContainerGrid);
+                var deltaX = currentMousePosition.X - _lastMousePosition.X;
+                var deltaY = currentMousePosition.Y - _lastMousePosition.Y;
+                PanCanvas(deltaX, deltaY);
+                _lastMousePosition = currentMousePosition;
+                e.Handled = true;
+            }
+        }
+        private void ContainerGrid_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
             _isMouseDown = false;
         }
-        private void JourneyCanvas_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        private void ContainerGrid_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (Keyboard.Modifiers == ModifierKeys.Control)
             {
-                var currentZoom = JourneyZoomFactor;
-                var zoomIncrement = currentZoom / 5;
-                JourneyZoomFactor = e.Delta > 0 ? Math.Min(currentZoom + zoomIncrement, 2.1) : Math.Max(currentZoom - zoomIncrement, 0.4);
+                // Get the current mouse position relative to the canvas
+                var mousePosition = e.GetPosition(JourneyCanvas);
+
+                // Update the ScaleTransform
+                var absoluteX = mousePosition.X * JourneyZoomFactor + JourneyCanvasTranslateTransform.X;
+                var absoluteY = mousePosition.Y * JourneyZoomFactor + JourneyCanvasTranslateTransform.Y;
+
+                // Calculate the zoom factor
+                var zoomIncrement = JourneyZoomFactor / 5;
+                JourneyZoomFactor = e.Delta > 0 ? Math.Min(JourneyZoomFactor + zoomIncrement, 2.1) : Math.Max(JourneyZoomFactor - zoomIncrement, 0.4);
+
+                // Adjust TranslateTransform to keep mouse position stable
+                JourneyCanvasTranslateTransform.X = absoluteX - mousePosition.X * JourneyZoomFactor;
+                JourneyCanvasTranslateTransform.Y = absoluteY - mousePosition.Y * JourneyZoomFactor;
             }
             else
             {
@@ -114,6 +152,17 @@ namespace Journey
             }
 
             e.Handled = true;
+        }
+        private void JourneyStep_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is JourneyStep step
+                && e.ClickCount == 1
+                && e.GetPosition(ContainerGrid) == _lastMouseDownPosition)
+            {
+                _selectedStep = step;
+                HideJourney();
+                e.Handled = true;
+            }
         }
         private void SystemEvents_DisplaySettingsChanged(object? sender, EventArgs e)
         {
@@ -142,21 +191,8 @@ namespace Journey
         }
         private void PanCanvas(double x, double y)
         {
-            foreach (var child in JourneyCanvas.Children)
-            {
-                if (child is Line line)
-                {
-                    line.X1 += x;
-                    line.Y1 += y;
-                    line.X2 += x;
-                    line.Y2 += y;
-                }
-                else if (child is UIElement element)
-                {
-                    Canvas.SetLeft(element, Canvas.GetLeft(element) + x);
-                    Canvas.SetTop(element, Canvas.GetTop(element) + y);
-                }
-            }
+            JourneyCanvasTranslateTransform.X += x;
+            JourneyCanvasTranslateTransform.Y += y;
         }
         private void RefreshJourneyStepSize()
         {
@@ -164,6 +200,33 @@ namespace Journey
             var width = SystemParameters.PrimaryScreenWidth / divisor;
             var height = SystemParameters.PrimaryScreenHeight / divisor;
             _journeyStepSize = new(width, height);
+        }
+
+        #endregion
+
+        #region Protected
+
+        protected override void OnLostFocus(RoutedEventArgs e)
+        {
+            _isMouseDown = false;
+
+            base.OnLostFocus(e);
+        }
+
+        #endregion
+
+        #region Public
+
+        public async Task ToggleJourney()
+        {
+            if (IsJourneyVisible)
+            {
+                await HideJourney();
+            }
+            else
+            {
+                await ShowJourney();
+            }
         }
 
         #endregion
@@ -199,71 +262,10 @@ namespace Journey
             _selectedStep.BeginAnimation(Canvas.LeftProperty, null);
             _selectedStep.BeginAnimation(Canvas.TopProperty, null);
 
-            WebViewGrid.Visibility = Visibility.Visible;
+            WebView.Visibility = Visibility.Visible;
             JourneyCanvas.Visibility = Visibility.Collapsed;
 
             JourneyCanvas.Children.Clear();
-        }
-        private void JourneyCanvas_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (_isMouseDown)
-            {
-                var currentMousePosition = e.GetPosition(JourneyCanvas);
-                var deltaX = (currentMousePosition.X - _lastMouseMovePosition.X);
-                var deltaY = (currentMousePosition.Y - _lastMouseMovePosition.Y);
-                PanCanvas(deltaX, deltaY);
-                _lastMouseMovePosition = currentMousePosition;
-                e.Handled = true;
-            }
-        }
-        private void JourneyCanvas_PreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            _isMouseDown = true;
-            _lastMouseDownPosition = e.GetPosition(JourneyCanvas);
-            _lastMouseMovePosition = _lastMouseDownPosition;
-            e.Handled = true;
-        }
-        private void JourneyStep_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ClickCount == 1 && e.GetPosition(JourneyCanvas) == _lastMouseDownPosition)
-            {
-                if (sender is JourneyStep step)
-                {
-                    _selectedStep = step;
-                    HideJourney();
-                    e.Handled = true;
-                }
-            }
-        }
-        private void ShowJourneyAnimation_Completed(object? sender, EventArgs e)
-        {
-            // HACK: On slow performing machines the animation finishes in the incorrect position, so we'll
-            // force them into the correct position to make sure that everything is where it should be
-            // if this happens. However, this is a workaround, as the performance shouldn't be that slow,
-            // and seems to be an issue wuth certain machines?
-            var left = (JourneyCanvas.ActualWidth / 2) - (_journeyStepSize.Width / 2f);
-            var top = ((JourneyCanvas.ActualHeight / 2) - (_journeyStepSize.Height / 2f));
-
-            // Clear animations.
-            _selectedStep.BeginAnimation(Canvas.LeftProperty, null);
-            _selectedStep.BeginAnimation(Canvas.TopProperty, null);
-
-            // Set the properties to the previously stored values.
-            Canvas.SetLeft(_selectedStep, left);
-            Canvas.SetTop(_selectedStep, top);
-
-            _selectedStep.IsAnimating = false;
-        }
-
-        #endregion
-
-        #region Protected
-
-        protected override void OnLostFocus(RoutedEventArgs e)
-        {
-            _isMouseDown = false;
-
-            base.OnLostFocus(e);
         }
 
         #endregion
@@ -294,28 +296,28 @@ namespace Journey
                 var scaleXAnimation = new DoubleAnimation
                 {
                     From = _journeyStepSize.Width,
-                    To = JourneyCanvas.ActualWidth,
+                    To = JourneyCanvas.ActualWidth / JourneyZoomFactor,
                     Duration = duration,
                     EasingFunction = easingFunction
                 };
                 var scaleYAnimation = new DoubleAnimation
                 {
                     From = _journeyStepSize.Height,
-                    To = JourneyCanvas.ActualHeight,
+                    To = JourneyCanvas.ActualHeight / JourneyZoomFactor,
                     Duration = duration,
                     EasingFunction = easingFunction
                 };
                 var translateXAnimation = new DoubleAnimation
                 {
                     From = Canvas.GetLeft(_selectedStep),
-                    To = 0,
+                    To = -JourneyCanvasTranslateTransform.X / JourneyZoomFactor,
                     Duration = duration,
                     EasingFunction = easingFunction
                 };
                 var translateYAnimation = new DoubleAnimation
                 {
                     From = Canvas.GetTop(_selectedStep),
-                    To = 0,
+                    To = -JourneyCanvasTranslateTransform.Y / JourneyZoomFactor,
                     Duration = duration,
                     EasingFunction = easingFunction
                 };
@@ -538,103 +540,80 @@ namespace Journey
 
                 var stopWatch = new Stopwatch();
                 stopWatch.Start();
+                var delay = 400;
 
                 JourneyZoomFactor = 1;
-                JourneyCanvas.RenderTransformOrigin = new Point(0, 0);
+                JourneyCanvasTranslateTransform.X = 0;
+                JourneyCanvasTranslateTransform.Y = 0;
+                JourneyCanvas.Children.Clear();
                 JourneyCanvas.Visibility = Visibility.Visible;
 
-                var centerX = (WebViewGrid.ActualWidth / 2) - (_journeyStepSize.Width / 2f);
-                var centerY = (WebViewGrid.ActualHeight / 2) - (_journeyStepSize.Height / 2f);
-
                 var journeySteps = await _journeyManager.GetJourney();
-
-                JourneyCanvas.Children.Clear();
-                var canvas = JourneyCanvas;
-                var root = journeySteps;
-
-                canvas.Children.Clear();
-
-                var rootLayout = CalculateTreeLayout(root, siblingSpacing: 1.5, levelSpacing: 2.0);
+                var rootLayout = CalculateTreeLayout(journeySteps, siblingSpacing: 1.25, levelSpacing: 1.25);
                 DrawTree(rootLayout, JourneyCanvas, nodeWidth: _journeyStepSize.Width, nodeHeight: _journeyStepSize.Height);
 
                 if (_selectedStep != null)
                 {
-                    PanCanvas(centerX - Canvas.GetLeft(_selectedStep), centerY - Canvas.GetTop(_selectedStep));
+                    PanCanvas((WebView.ActualWidth / 2) - (_journeyStepSize.Width / 2f) - Canvas.GetLeft(_selectedStep),
+                              (WebView.ActualHeight / 2) - (_journeyStepSize.Height / 2f) - Canvas.GetTop(_selectedStep));
 
-                    Canvas.SetLeft(_selectedStep, 0);
-                    Canvas.SetTop(_selectedStep, 0);
-                    _selectedStep.Width = WebViewGrid.ActualWidth;
-                    _selectedStep.Height = WebViewGrid.ActualHeight;
+                    var duration = TimeSpan.FromSeconds(AnimationTime);
+                    var snapshotEasingFunction = new CircleEase { EasingMode = EasingMode.EaseInOut };
+
+                    var scaleXAnimation = new DoubleAnimation
+                    {
+                        From = WebView.ActualWidth,
+                        To = _journeyStepSize.Width,
+                        Duration = duration,
+                        EasingFunction = snapshotEasingFunction
+                    };
+                    var scaleYAnimation = new DoubleAnimation
+                    {
+                        From = WebView.ActualHeight,
+                        To = _journeyStepSize.Height,
+                        Duration = duration,
+                        EasingFunction = snapshotEasingFunction
+                    };
+                    var translateXAnimation = new DoubleAnimation
+                    {
+                        From = 0 - JourneyCanvasTranslateTransform.X,
+                        To = Canvas.GetLeft(_selectedStep),
+                        Duration = duration,
+                        EasingFunction = snapshotEasingFunction
+                    };
+                    var translateYAnimation = new DoubleAnimation
+                    {
+                        From = 0 - JourneyCanvasTranslateTransform.Y,
+                        To = Canvas.GetTop(_selectedStep),
+                        Duration = duration,
+                        EasingFunction = snapshotEasingFunction
+                    };
+                    var titleAnimation = new DoubleAnimation
+                    {
+                        From = -0.5,
+                        To = 0.9,
+                        Duration = duration,
+                        EasingFunction = snapshotEasingFunction
+                    };
+
+                    Canvas.SetLeft(_selectedStep, 0 - JourneyCanvasTranslateTransform.X);
+                    Canvas.SetTop(_selectedStep, 0 - JourneyCanvasTranslateTransform.Y);
+                    _selectedStep.Width = WebView.ActualWidth;
+                    _selectedStep.Height = WebView.ActualHeight;
                     _selectedStep.TextArea.Opacity = 0;
-                }
 
+                    stopWatch.Stop();
+                    if (stopWatch.ElapsedMilliseconds < delay)
+                    {
+                        // HACK: Feels nasty to put a delay in here, but it prevents the flicker when showing the image control, which seems to
+                        // appear, then paint the image in, causing a flicker when switching between the browser and the snapshot. Adding a small
+                        // delay here seems to allow the image time to paint before the browser is hidden, removing the flicker. But is there
+                        // a better way?
+                        await Task.Delay(delay - (int)stopWatch.ElapsedMilliseconds);
+                    }
 
-
-
-
-
-                var width = WebViewGrid.ActualWidth;
-                var height = WebViewGrid.ActualHeight;
-                var duration = TimeSpan.FromSeconds(AnimationTime);
-                var snapshotEasingFunction = new CircleEase()
-                {
-                    EasingMode = EasingMode.EaseInOut
-                };
-
-                var scaleXAnimation = new DoubleAnimation
-                {
-                    From = width,
-                    To = _journeyStepSize.Width,
-                    Duration = duration,
-                    EasingFunction = snapshotEasingFunction
-                };
-                var scaleYAnimation = new DoubleAnimation
-                {
-                    From = height,
-                    To = _journeyStepSize.Height,
-                    Duration = duration,
-                    EasingFunction = snapshotEasingFunction
-                };
-                var translateXAnimation = new DoubleAnimation
-                {
-                    From = 0,
-                    To = centerX,
-                    Duration = duration,
-                    EasingFunction = snapshotEasingFunction
-                };
-                var translateYAnimation = new DoubleAnimation
-                {
-                    From = 0,
-                    To = centerY,
-                    Duration = duration,
-                    EasingFunction = snapshotEasingFunction
-                };
-                var titleAnimation = new DoubleAnimation
-                {
-                    From = -0.5,
-                    To = 0.9,
-                    Duration = duration,
-                    EasingFunction = snapshotEasingFunction
-                };
-
-                scaleXAnimation.Completed += ShowJourneyAnimation_Completed;
-
-                var delay = 400;
-                stopWatch.Stop();
-                if (stopWatch.ElapsedMilliseconds < delay)
-                {
-                    // HACK: Feels nasty to put a delay in here, but it prevents the flicker when showing the image control, which seems to
-                    // appear, then paint the image in, causing a flicker when switching between the browser and the snapshot. Adding a small
-                    // delay here seems to allow the image time to paint before the browser is hidden, removing the flicker. But is there
-                    // a better way?
-                    await Task.Delay(delay - (int)stopWatch.ElapsedMilliseconds);
-                }
-
-                WebViewGrid.Visibility = Visibility.Collapsed;
-
-                if (_selectedStep != null)
-                {
                     _selectedStep.IsAnimating = true;
+                    scaleXAnimation.Completed += (_, _) => { _selectedStep.IsAnimating = false; };
                     _selectedStep.BeginAnimation(Control.WidthProperty, scaleXAnimation, HandoffBehavior.Compose);
                     _selectedStep.BeginAnimation(Control.HeightProperty, scaleYAnimation, HandoffBehavior.Compose);
                     _selectedStep.BeginAnimation(Canvas.LeftProperty, translateXAnimation, HandoffBehavior.Compose);
@@ -642,19 +621,9 @@ namespace Journey
                     _selectedStep.TextArea.BeginAnimation(Control.OpacityProperty, titleAnimation, HandoffBehavior.Compose);
                 }
 
-                Debug.WriteLine($"Delayed for: {delay - (int)stopWatch.ElapsedMilliseconds}ms");
-            }
-        }
+                WebView.Visibility = Visibility.Collapsed;
 
-        public async Task ToggleJourney()
-        {
-            if (IsJourneyVisible)
-            {
-                await HideJourney();
-            }
-            else
-            {
-                await ShowJourney();
+                Debug.WriteLine($"Delayed for: {delay - (int)stopWatch.ElapsedMilliseconds}ms");
             }
         }
 

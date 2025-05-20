@@ -16,36 +16,37 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid>
-
-        <Grid x:Name="WebViewGrid"
-              Background="White">
-
-            <!-- WebView -->
-            <!-- This is the browser used for navigation. -->
-            <wpf:WebView2 x:Name="WebView"
-                          x:FieldModifier="public"
-                          DockPanel.Dock="Bottom"
-                          Margin="0" />
-
-        </Grid>
+    <Grid x:Name="ContainerGrid"
+          Background="Gray"
+          ClipToBounds="True"
+          PreviewMouseDown="ContainerGrid_PreviewMouseDown"
+          PreviewMouseMove="ContainerGrid_PreviewMouseMove"
+          PreviewMouseUp="ContainerGrid_PreviewMouseUp"
+          PreviewMouseWheel="ContainerGrid_PreviewMouseWheel">
 
         <!-- Journey Canvas -->
         <!-- This is where "Journey Steps" are presented -->
         <Canvas x:Name="JourneyCanvas"
-                Background="Transparent"
-                ClipToBounds="True"
-                MouseMove="JourneyCanvas_MouseMove"
-                PreviewMouseDown="JourneyCanvas_PreviewMouseDown"
-                PreviewMouseUp="JourneyCanvas_PreviewMouseUp"
-                PreviewMouseWheel="JourneyCanvas_PreviewMouseWheel">
+                Background="Transparent">
 
-            <Canvas.LayoutTransform>
-                <ScaleTransform ScaleX="{Binding JourneyZoomFactor}"
-                                ScaleY="{Binding JourneyZoomFactor}" />
-            </Canvas.LayoutTransform>
+            <Canvas.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleX="{Binding JourneyZoomFactor}"
+                                    ScaleY="{Binding JourneyZoomFactor}" />
+                    <TranslateTransform x:Name="JourneyCanvasTranslateTransform"
+                                        X="{Binding JourneyZoomCenterX}"
+                                        Y="{Binding JourneyZoomCenterY}" />
+                </TransformGroup>
+            </Canvas.RenderTransform>
 
         </Canvas>
+
+        <!-- WebView -->
+        <!-- This is the browser used for navigation. -->
+        <wpf:WebView2 x:Name="WebView"
+                      x:FieldModifier="public"
+                      Margin="0"
+                      DefaultBackgroundColor="White"/>
 
     </Grid>
 

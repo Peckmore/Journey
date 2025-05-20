@@ -113,6 +113,5 @@ namespace NetEx.Collections
             foreach (var child in _children)
                 child.Traverse(action);
         }
-
     }
 }

@@ -6,6 +6,7 @@
              xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.AeroLite"
              x:Class="Journey.JourneyStep"
              x:ClassModifier="internal"
+             x:Name="ControlRoot"
              mc:Ignorable="d"
              d:DesignHeight="50"
              d:DesignWidth="50">
@@ -115,7 +116,7 @@
                             <MultiDataTrigger>
                                 <MultiDataTrigger.Conditions>
                                     <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}}" Value="True"/>
-                                    <!--<Condition Binding="{Binding IsAnimating, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}}" Value="False"/>-->
+                                    <Condition Binding="{Binding ElementName=ControlRoot,Path=IsAnimating}" Value="False"/>
                                 </MultiDataTrigger.Conditions>
                                 <Setter Property="Visibility" Value="Visible"/>
                                 <Setter Property="Cursor" Value="Hand"/>
