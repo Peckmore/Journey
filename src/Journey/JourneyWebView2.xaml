@@ -2,6 +2,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:journey="clr-namespace:Journey"
              xmlns:wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
              x:Class="Journey.JourneyWebView2"
              mc:Ignorable="d"
@@ -19,34 +20,74 @@
     <Grid x:Name="ContainerGrid"
           Background="Gray"
           ClipToBounds="True"
-          PreviewMouseDown="ContainerGrid_PreviewMouseDown"
+          MouseDown="ContainerGrid_MouseDown"
           PreviewMouseMove="ContainerGrid_PreviewMouseMove"
           PreviewMouseUp="ContainerGrid_PreviewMouseUp"
           PreviewMouseWheel="ContainerGrid_PreviewMouseWheel">
 
-        <!-- Journey Canvas -->
-        <!-- This is where "Journey Steps" are presented -->
-        <Canvas x:Name="JourneyCanvas"
-                Background="Transparent">
+        <Grid x:Name="JourneyContainer"
+              Visibility="Collapsed">
 
-            <Canvas.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform ScaleX="{Binding JourneyZoomFactor}"
-                                    ScaleY="{Binding JourneyZoomFactor}" />
-                    <TranslateTransform x:Name="JourneyCanvasTranslateTransform"
-                                        X="{Binding JourneyZoomCenterX}"
-                                        Y="{Binding JourneyZoomCenterY}" />
-                </TransformGroup>
-            </Canvas.RenderTransform>
+            <!-- Journey Canvas -->
+            <!-- This is where "Journey Steps" are presented -->
+            <Canvas x:Name="JourneyCanvas"
+                    Background="Transparent">
 
-        </Canvas>
+                <Canvas.RenderTransform>
+                    <TransformGroup>
+
+                        <ScaleTransform ScaleX="{Binding JourneyZoomFactor, Mode=OneWay}"
+                                        ScaleY="{Binding JourneyZoomFactor, Mode=OneWay}" />
+
+                        <TranslateTransform x:Name="JourneyCanvasTranslateTransform"
+                                        X="{Binding JourneyZoomCenterX, Mode=OneWay}"
+                                        Y="{Binding JourneyZoomCenterY, Mode=OneWay}" />
+
+                    </TransformGroup>
+                </Canvas.RenderTransform>
+
+            </Canvas>
+
+            <Border x:Name="JourneyControls"
+                    Background="DarkGray"
+                    CornerRadius="20"
+                    Height="40"
+                    Opacity="0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    Margin="0,25,0,0">
+
+                <Grid>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="125"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Slider x:Name="JourneyZoomSlider"
+                        Grid.Column="0"
+                        Grid.Row="0"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        Maximum="{x:Static journey:JourneyWebView2.MaximumZoom}"
+                        Minimum="{x:Static journey:JourneyWebView2.MinimumZoom}"
+                        Value="{Binding JourneyZoomFactor, Mode=TwoWay}"/>
+
+                </Grid>
+
+            </Border>
+
+        </Grid>
 
         <!-- WebView -->
         <!-- This is the browser used for navigation. -->
         <wpf:WebView2 x:Name="WebView"
-                      x:FieldModifier="public"
-                      Margin="0"
-                      DefaultBackgroundColor="White"/>
+                  x:FieldModifier="public"
+                  Margin="0"
+                  DefaultBackgroundColor="White"/>
 
     </Grid>
 

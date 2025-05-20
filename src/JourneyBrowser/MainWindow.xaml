@@ -70,7 +70,7 @@
                         </DockPanel>
 
                         <ContentPresenter Grid.Row="2" x:Name="ContentPanel"
-                                              Margin="1,0,1,1"
+                                              Margin="0"
                                               ContentSource="SelectedContent" />
 
                         <!--Content-->

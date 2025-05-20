@@ -123,7 +123,9 @@ namespace WPFSample
 
             //create new instance setting userDataFolder
             JourneyWebView2 journeyWebView = new JourneyWebView2();
+            journeyWebView.WebView.EnsureCoreWebView2Async();
             journeyWebView.WebView.CoreWebView2InitializationCompleted += WebView2_CoreWebView2InitializationCompleted;
+            journeyWebView.JourneyHighlightColor = Colors.Red;
 
             //create TextBlock
             TextBlock textBlock = new TextBlock();

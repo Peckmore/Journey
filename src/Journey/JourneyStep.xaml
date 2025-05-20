@@ -106,7 +106,7 @@
             <Grid x:Name="HoverGrid"
                   Grid.Row="0"
                   Grid.RowSpan="2"
-                  Background="{StaticResource HighlightColor}"
+                  Background="{StaticResource JourneyHighlightColor}"
                   Opacity="0.5">
 
                 <Grid.Style>

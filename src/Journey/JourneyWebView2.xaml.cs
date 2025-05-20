@@ -17,6 +17,15 @@ namespace Journey
         #region Private
 
         private const float AnimationTime = 0.5f;
+        private const int JourneyControlsZIndex = 100;
+        private const int SelectedStepZIndex = 1000;
+
+        #endregion
+
+        #region Internal
+
+        public const double MaximumZoom = 3;
+        public const double MinimumZoom = 0.25;
 
         #endregion
 
@@ -76,6 +85,9 @@ namespace Journey
             set
             {
                 SetValue(JourneyHighlightColorProperty, value);
+                var rd = new ResourceDictionary();
+                rd.Source = new("pack://application:,,,/Journey;component/Themes/Generic.xaml", UriKind.RelativeOrAbsolute);
+                rd[nameof(JourneyHighlightColor)] = new SolidColorBrush(value);
             }
         }
         public double JourneyZoomFactor
@@ -95,7 +107,7 @@ namespace Journey
 
         #region Event Handlers
 
-        private void ContainerGrid_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        private void ContainerGrid_MouseDown(object sender, MouseButtonEventArgs e)
         {
             _isMouseDown = true;
             _lastMouseDownPosition = e.GetPosition(ContainerGrid);
@@ -111,7 +123,7 @@ namespace Journey
                 var deltaY = currentMousePosition.Y - _lastMousePosition.Y;
                 PanCanvas(deltaX, deltaY);
                 _lastMousePosition = currentMousePosition;
-                e.Handled = true;
+                //e.Handled = true;
             }
         }
         private void ContainerGrid_PreviewMouseUp(object sender, MouseButtonEventArgs e)
@@ -131,7 +143,9 @@ namespace Journey
 
                 // Calculate the zoom factor
                 var zoomIncrement = JourneyZoomFactor / 5;
-                JourneyZoomFactor = e.Delta > 0 ? Math.Min(JourneyZoomFactor + zoomIncrement, 2.1) : Math.Max(JourneyZoomFactor - zoomIncrement, 0.4);
+                JourneyZoomFactor = e.Delta > 0
+                                    ? Math.Min(JourneyZoomFactor + zoomIncrement, MaximumZoom)
+                                    : Math.Max(JourneyZoomFactor - zoomIncrement, MinimumZoom);
 
                 // Adjust TranslateTransform to keep mouse position stable
                 JourneyCanvasTranslateTransform.X = absoluteX - mousePosition.X * JourneyZoomFactor;
@@ -258,12 +272,8 @@ namespace Journey
 
         private void HideJourneyAnimation_Completed(object? sender, EventArgs e)
         {
-            // Clear animations.
-            _selectedStep.BeginAnimation(Canvas.LeftProperty, null);
-            _selectedStep.BeginAnimation(Canvas.TopProperty, null);
-
             WebView.Visibility = Visibility.Visible;
-            JourneyCanvas.Visibility = Visibility.Collapsed;
+            JourneyContainer.Visibility = Visibility.Collapsed;
 
             JourneyCanvas.Children.Clear();
         }
@@ -284,6 +294,7 @@ namespace Journey
                 _journeyManager.GoToStep(_selectedStep.DataContext as JourneyEntry);
 
                 _selectedStep.IsAnimating = true;
+                Panel.SetZIndex(_selectedStep, SelectedStepZIndex + 1);
 
                 IsJourneyVisible = false;
 
@@ -328,15 +339,22 @@ namespace Journey
                     Duration = duration,
                     EasingFunction = easingFunction
                 };
+                var controlsAnimation = new DoubleAnimation
+                {
+                    From = 1,
+                    To = -0.5,
+                    Duration = duration,
+                    EasingFunction = easingFunction
+                };
 
                 scaleXAnimation.Completed += HideJourneyAnimation_Completed;
 
-                Panel.SetZIndex(_selectedStep, 2);
                 _selectedStep.BeginAnimation(Control.WidthProperty, scaleXAnimation, HandoffBehavior.Compose);
                 _selectedStep.BeginAnimation(Control.HeightProperty, scaleYAnimation, HandoffBehavior.Compose);
                 _selectedStep.BeginAnimation(Canvas.LeftProperty, translateXAnimation, HandoffBehavior.Compose);
                 _selectedStep.BeginAnimation(Canvas.TopProperty, translateYAnimation, HandoffBehavior.Compose);
                 _selectedStep.TextArea.BeginAnimation(Control.OpacityProperty, titleAnimation, HandoffBehavior.Compose);
+                JourneyControls.BeginAnimation(Control.OpacityProperty, controlsAnimation, HandoffBehavior.Compose);
             }
 
             return Task.CompletedTask;
@@ -546,54 +564,64 @@ namespace Journey
                 JourneyCanvasTranslateTransform.X = 0;
                 JourneyCanvasTranslateTransform.Y = 0;
                 JourneyCanvas.Children.Clear();
-                JourneyCanvas.Visibility = Visibility.Visible;
+                JourneyContainer.Visibility = Visibility.Visible;
 
                 var journeySteps = await _journeyManager.GetJourney();
                 var rootLayout = CalculateTreeLayout(journeySteps, siblingSpacing: 1.25, levelSpacing: 1.25);
                 DrawTree(rootLayout, JourneyCanvas, nodeWidth: _journeyStepSize.Width, nodeHeight: _journeyStepSize.Height);
+                
+                var duration = TimeSpan.FromSeconds(AnimationTime);
+                var animationEasingFunction = new CircleEase { EasingMode = EasingMode.EaseInOut };
+                
+                var controlsAnimation = new DoubleAnimation
+                {
+                    From = -0.5,
+                    To = 0.9,
+                    Duration = duration,
+                    EasingFunction = animationEasingFunction
+                };
 
                 if (_selectedStep != null)
                 {
                     PanCanvas((WebView.ActualWidth / 2) - (_journeyStepSize.Width / 2f) - Canvas.GetLeft(_selectedStep),
                               (WebView.ActualHeight / 2) - (_journeyStepSize.Height / 2f) - Canvas.GetTop(_selectedStep));
 
-                    var duration = TimeSpan.FromSeconds(AnimationTime);
-                    var snapshotEasingFunction = new CircleEase { EasingMode = EasingMode.EaseInOut };
+                    Panel.SetZIndex(_selectedStep, SelectedStepZIndex);
 
                     var scaleXAnimation = new DoubleAnimation
                     {
                         From = WebView.ActualWidth,
                         To = _journeyStepSize.Width,
                         Duration = duration,
-                        EasingFunction = snapshotEasingFunction
+                        EasingFunction = animationEasingFunction
                     };
                     var scaleYAnimation = new DoubleAnimation
                     {
                         From = WebView.ActualHeight,
                         To = _journeyStepSize.Height,
                         Duration = duration,
-                        EasingFunction = snapshotEasingFunction
+                        EasingFunction = animationEasingFunction
                     };
                     var translateXAnimation = new DoubleAnimation
                     {
                         From = 0 - JourneyCanvasTranslateTransform.X,
                         To = Canvas.GetLeft(_selectedStep),
                         Duration = duration,
-                        EasingFunction = snapshotEasingFunction
+                        EasingFunction = animationEasingFunction
                     };
                     var translateYAnimation = new DoubleAnimation
                     {
                         From = 0 - JourneyCanvasTranslateTransform.Y,
                         To = Canvas.GetTop(_selectedStep),
                         Duration = duration,
-                        EasingFunction = snapshotEasingFunction
+                        EasingFunction = animationEasingFunction
                     };
                     var titleAnimation = new DoubleAnimation
                     {
                         From = -0.5,
                         To = 0.9,
                         Duration = duration,
-                        EasingFunction = snapshotEasingFunction
+                        EasingFunction = animationEasingFunction
                     };
 
                     Canvas.SetLeft(_selectedStep, 0 - JourneyCanvasTranslateTransform.X);
@@ -620,7 +648,12 @@ namespace Journey
                     _selectedStep.BeginAnimation(Canvas.TopProperty, translateYAnimation, HandoffBehavior.Compose);
                     _selectedStep.TextArea.BeginAnimation(Control.OpacityProperty, titleAnimation, HandoffBehavior.Compose);
                 }
+                else
+                {
+                    stopWatch.Stop();
+                }
 
+                JourneyControls.BeginAnimation(Control.OpacityProperty, controlsAnimation, HandoffBehavior.Compose);
                 WebView.Visibility = Visibility.Collapsed;
 
                 Debug.WriteLine($"Delayed for: {delay - (int)stopWatch.ElapsedMilliseconds}ms");

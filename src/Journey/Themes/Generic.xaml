@@ -4,7 +4,7 @@
     xmlns:local="clr-namespace:Journey">
 
 
-    <SolidColorBrush x:Key="HighlightColor" Color="DodgerBlue"/>
+    <SolidColorBrush x:Key="JourneyHighlightColor" Color="DodgerBlue"/>
 
     <!--<Style TargetType="{x:Type local:CustomControl1}">
         <Setter Property="Template">
