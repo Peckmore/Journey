@@ -51,7 +51,8 @@
 
             </Canvas>
 
-            <Border x:Name="JourneyControls"
+            <!-- Button Bar -->
+            <Border x:Name="JourneyButtonBar"
                     Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
                     BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
                     BorderThickness="0.5"
@@ -91,8 +92,8 @@
                         <Image Source="Images/reset_zoom.png" />
                     </Button>
 
-                    <Button x:Name="CenterViewButton"
-                            Click="CenterViewButton_Click"
+                    <Button x:Name="ResetViewButton"
+                            Click="ResetViewButton_Click"
                             Grid.Column="4">
                         <Image Source="Images/center_view.png" />
                     </Button>

@@ -14,12 +14,6 @@ using System.Windows.Shapes;
 
 namespace Journey
 {
-    public enum JourneyState
-    {
-        Hidden,
-        Visible
-    }
-
     public partial class JourneyWebView2 : IDisposable, INotifyPropertyChanged
     {
         #region Constants
@@ -27,6 +21,7 @@ namespace Journey
         #region Private
 
         private const float AnimationTime = 0.5f; // Duration of our transition animation to/from Journey.
+        private const double ButtonBarOpacity = 0.925d;
         private const double MaximumZoom = 5;
         private const double MinimumZoom = 0.1;
         private const int SelectedStepZIndex = 1000;
@@ -44,6 +39,7 @@ namespace Journey
 
         #region Fields
 
+        private Point _canvasHome;
         private bool _isDisposed;
         private bool _isJourneyVisible;
         private bool _isMouseDown;
@@ -74,8 +70,9 @@ namespace Journey
             // Initialize our control, and set the DataContext to itself, to bind to code behind.
             InitializeComponent();
             DataContext = this;
-            
+
             // Initialize our fields.
+            _canvasHome = new(0, 0);
             _journeyManager = new(WebView);
             _journeySemaphore = new(1, 1);
             _lastMouseDownPosition = new(0, 0);
@@ -151,14 +148,6 @@ namespace Journey
 
         #region Event Handlers
 
-        private void CenterViewButton_Click(object sender, RoutedEventArgs e)
-        {
-            // Reset our pan to show our active step.
-            if (_selectedStep != null)
-            {
-
-            }
-        }
         private async void JourneyStep_MouseUp(object sender, MouseButtonEventArgs e)
         {
             // If we've received a single click event for a Journey step, check whether the mouse has moved between mouse down and
@@ -177,6 +166,18 @@ namespace Journey
 
                 // Set this event to handled, there is no need to bubble it up.
                 e.Handled = true;
+            }
+        }
+        private void ResetViewButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_selectedStep != null)
+            {
+                // Reset our zoom factor back to normal.
+                JourneyZoomFactor = 1;
+
+                // Reset our pan to show our active step.
+                JourneyCanvasTranslateTransform.X = _canvasHome.X;
+                JourneyCanvasTranslateTransform.Y = _canvasHome.Y;
             }
         }
         private void ResetZoomButton_Click(object sender, RoutedEventArgs e)
@@ -453,10 +454,10 @@ namespace Journey
                         Duration = duration,
                         EasingFunction = easingFunction
                     };
-                    var controlsAnimation = new DoubleAnimation
+                    var buttonBarAnimation = new DoubleAnimation
                     {
-                        From = 0.9,
-                        To = -0.6,
+                        From = ButtonBarOpacity,
+                        To = ButtonBarOpacity - 1.5,
                         Duration = duration,
                         EasingFunction = easingFunction
                     };
@@ -484,7 +485,174 @@ namespace Journey
                     _selectedStep.BeginAnimation(Canvas.LeftProperty, translateXAnimation, HandoffBehavior.Compose);
                     _selectedStep.BeginAnimation(Canvas.TopProperty, translateYAnimation, HandoffBehavior.Compose);
                     _selectedStep.TextArea.BeginAnimation(Control.OpacityProperty, titleAnimation, HandoffBehavior.Compose);
-                    JourneyControls.BeginAnimation(Control.OpacityProperty, controlsAnimation, HandoffBehavior.Compose);
+                    JourneyButtonBar.BeginAnimation(Control.OpacityProperty, buttonBarAnimation, HandoffBehavior.Compose);
+
+                    // Return so we don't release our semaphore, as this will be released when our animation finishes.
+                    return;
+                }
+                catch
+                {
+                    // If something happens then there probably isn't much we can do about it, but we'll swallow the exception so we
+                    // can still release our semaphore and can try hiding/showing again.
+                }
+            }
+
+            // We haven't carried out an animation (wrong state, no step selected, etc., so release our semaphore.
+            _journeySemaphore.Release();
+        }
+        /// <summary>
+        /// Shows the Journey view, hiding all web content.
+        /// </summary>
+        public async Task ShowJourney()
+        {
+            // Make sure we don't attempt to transition when a transition is already in progress.
+            await _journeySemaphore.WaitAsync();
+
+            // Only show Journey if it is not already visible.
+            if (!IsJourneyVisible)
+            {
+                try
+                {
+                    // Set our journey visibility to visible.
+                    IsJourneyVisible = true;
+
+                    // Start a stopwatch here to monitor how long we take to populate our Journey canvas. We introduce a small delay if
+                    // we did this quickly, to give the image control time to redraw, and make the transition from browser to screenshot
+                    // appear "seamless". Not the neatest approach, perhaps there is something better we can do?
+                    var stopWatch = new Stopwatch();
+                    stopWatch.Start();
+
+                    // Default our zoom and pan values.
+                    JourneyZoomFactor = 1;
+                    JourneyCanvasTranslateTransform.X = 0;
+                    JourneyCanvasTranslateTransform.Y = 0;
+
+                    // Make sure the canvas has no children controls already (though this should have been handled by the `HideJourney`
+                    // method.
+                    JourneyCanvas.Children.Clear();
+
+                    // Set our Journey container to visible. It will appear behind the WebView2 control, so won't be visible, but should
+                    // starting do layout and setup of itself and child controls as they are added.
+                    JourneyContainer.Visibility = Visibility.Visible;
+
+                    // Create and place all of our Journey steps on the canvas.
+                    await DrawJourney();
+
+                    // Pan our canvas to put the selected step in the center.
+                    PanCanvas((WebView.ActualWidth / 2) - (_journeyStepSize.Width / 2f) - Canvas.GetLeft(_selectedStep),
+                              (WebView.ActualHeight / 2) - (_journeyStepSize.Height / 2f) - Canvas.GetTop(_selectedStep));
+
+                    // Store the current canvas position as our "home" position, so we can return to this later if the user presses the
+                    // "home" button.
+                    _canvasHome = new(JourneyCanvasTranslateTransform.X, JourneyCanvasTranslateTransform.Y);
+
+                    // Set the selected step to the highest z-index, so it is on top of all other canvas elements. This is needed because
+                    // when we make the selected step full size (before it animates) it needs to cover all other elements.
+                    Panel.SetZIndex(_selectedStep, SelectedStepZIndex);
+
+                    // Set our common duration and easing function, used for all of our animations.
+                    var duration = TimeSpan.FromSeconds(AnimationTime);
+                    var easingFunction = new CircleEase
+                    {
+                        EasingMode = EasingMode.EaseInOut
+                    };
+
+                    // Create our animations for transitioning from our WebView2 control into our Journey step. We do this before we move
+                    // and scale the selected step to fill the screen so that the animation can grab the current size and position of the
+                    // the step, which is where it needs to animate to.
+                    var scaleXAnimation = new DoubleAnimation
+                    {
+                        From = WebView.ActualWidth,
+                        To = _journeyStepSize.Width,
+                        Duration = duration,
+                        EasingFunction = easingFunction
+                    };
+                    var scaleYAnimation = new DoubleAnimation
+                    {
+                        From = WebView.ActualHeight,
+                        To = _journeyStepSize.Height,
+                        Duration = duration,
+                        EasingFunction = easingFunction
+                    };
+                    var translateXAnimation = new DoubleAnimation
+                    {
+                        From = 0 - JourneyCanvasTranslateTransform.X,
+                        To = Canvas.GetLeft(_selectedStep),
+                        Duration = duration,
+                        EasingFunction = easingFunction
+                    };
+                    var translateYAnimation = new DoubleAnimation
+                    {
+                        From = 0 - JourneyCanvasTranslateTransform.Y,
+                        To = Canvas.GetTop(_selectedStep),
+                        Duration = duration,
+                        EasingFunction = easingFunction
+                    };
+                    var titleAnimation = new DoubleAnimation
+                    {
+                        From = -0.6,
+                        To = 0.9,
+                        Duration = duration,
+                        EasingFunction = easingFunction
+                    };
+                    var buttonBarAnimation = new DoubleAnimation
+                    {
+                        From = ButtonBarOpacity - 1.5,
+                        To = ButtonBarOpacity,
+                        Duration = duration,
+                        EasingFunction = easingFunction
+                    };
+
+                    // When the animation completes, we want to set the `IsAnimating` property of the selected step to false, so that the
+                    // hover effect will enable, and release our semaphore as the transition is complete.
+                    buttonBarAnimation.Completed += (_, _) =>
+                    {
+                        // Set `IsAnimating` to false.
+                        if (_selectedStep != null)
+                        {
+                            _selectedStep.IsAnimating = false;
+                        }
+
+                        // Finally, our show transition is completed, so release our semaphore.
+                        _journeySemaphore.Release();
+                    };
+
+                    // Now that our animations are set, we move the selected step to fill the browser area, so that the image is the same
+                    // size as the WebView2 control. This should result in a seamless transition when we switch visiblity between the
+                    // WebView2 control and the Journey step. We also set `IsAnimating` to true, so that the hover effect is disabled
+                    // whilst the animation is in progress.
+                    Canvas.SetLeft(_selectedStep, 0 - JourneyCanvasTranslateTransform.X);
+                    Canvas.SetTop(_selectedStep, 0 - JourneyCanvasTranslateTransform.Y);
+                    _selectedStep.Width = WebView.ActualWidth;
+                    _selectedStep.Height = WebView.ActualHeight;
+                    _selectedStep.TextArea.Opacity = 0;
+                    _selectedStep.IsAnimating = true;
+
+                    // We stop the stopwatch, and check how long we have taken to set up our Journey canvas. If we have taken less than
+                    // the defined "delay" time, we wait for the remainder of the delay time before starting our animation.
+                    stopWatch.Stop();
+                    var delay = 400;
+                    if (stopWatch.ElapsedMilliseconds < delay)
+                    {
+                        // HACK: Feels nasty to put a delay in here, but it prevents the flicker when showing the image control, which seems to
+                        // appear, then paint the image in, causing a flicker when switching between the browser and the snapshot. Adding a small
+                        // delay here seems to allow the image time to paint before the browser is hidden, removing the flicker. But is there
+                        // a better way?
+                        await Task.Delay(delay - (int)stopWatch.ElapsedMilliseconds);
+                        Debug.WriteLine($"Delayed for: {delay - (int)stopWatch.ElapsedMilliseconds}ms");
+                    }
+
+                    // Hide the WebView2 control, which will reveal the canvas behind. Our selected step should be full size, so this transition
+                    // should appear seamless to the user.
+                    WebView.Visibility = Visibility.Collapsed;
+
+                    // Start all of our animations.
+                    _selectedStep.BeginAnimation(Control.WidthProperty, scaleXAnimation, HandoffBehavior.Compose);
+                    _selectedStep.BeginAnimation(Control.HeightProperty, scaleYAnimation, HandoffBehavior.Compose);
+                    _selectedStep.BeginAnimation(Canvas.LeftProperty, translateXAnimation, HandoffBehavior.Compose);
+                    _selectedStep.BeginAnimation(Canvas.TopProperty, translateYAnimation, HandoffBehavior.Compose);
+                    _selectedStep.TextArea.BeginAnimation(Control.OpacityProperty, titleAnimation, HandoffBehavior.Compose);
+                    JourneyButtonBar.BeginAnimation(Control.OpacityProperty, buttonBarAnimation, HandoffBehavior.Compose);
 
                     // Return so we don't release our semaphore, as this will be released when our animation finishes.
                     return;
@@ -542,168 +710,15 @@ namespace Journey
 
         #region Public
 
-        /// <summary>
-        /// Shows the Journey view, hiding all web content.
-        /// </summary>
-        public async Task ShowJourney()
+
+
+
+        private async Task DrawJourney()
         {
-            // Make sure we don't attempt to transition when a transition is already in progress.
-            await _journeySemaphore.WaitAsync();
-            
-            // Only show Journey if it is not already visible.
-            if (!IsJourneyVisible)
-            {
-                try
-                {
-                    // Set our journey visibility to visible.
-                    IsJourneyVisible = true;
-
-                    // Start a stopwatch here to monitor how long we take to populate our Journey canvas. We introduce a small delay if
-                    // we did this quickly, to give the image control time to redraw, and make the transition from browser to screenshot
-                    // appear "seamless". Not the neatest approach, perhaps there is something better we can do?
-                    var stopWatch = new Stopwatch();
-                    stopWatch.Start();
-                    var delay = 400;
-
-                    // Default our zoom and pan values.
-                    JourneyZoomFactor = 1;
-                    JourneyCanvasTranslateTransform.X = 0;
-                    JourneyCanvasTranslateTransform.Y = 0;
-
-                    // Make sure the canvas has no children controls already (though this should have been handled by the `HideJourney`
-                    // method.
-                    JourneyCanvas.Children.Clear();
-
-                    // Set our Journey container to visible. It will appear behind the WebView2 control, so won't be visible, but should
-                    // starting do layout and setup of itself and child controls as they are added.
-                    JourneyContainer.Visibility = Visibility.Visible;
-
-
-
-
-                    var journeySteps = await _journeyManager.GetJourney();
-                    var rootLayout = CalculateTreeLayout(journeySteps, siblingSpacing: 1.25, levelSpacing: 1.25);
-                    DrawTree(rootLayout, JourneyCanvas, nodeWidth: _journeyStepSize.Width, nodeHeight: _journeyStepSize.Height);
-
-
-
-
-                    // Set our common duration and easing function, used for all of our animations.
-                    var duration = TimeSpan.FromSeconds(AnimationTime);
-                    var easingFunction = new CircleEase
-                    {
-                        EasingMode = EasingMode.EaseInOut
-                    };
-
-                    if (_selectedStep != null)
-                    {
-                        PanCanvas((WebView.ActualWidth / 2) - (_journeyStepSize.Width / 2f) - Canvas.GetLeft(_selectedStep),
-                                  (WebView.ActualHeight / 2) - (_journeyStepSize.Height / 2f) - Canvas.GetTop(_selectedStep));
-
-                        Panel.SetZIndex(_selectedStep, SelectedStepZIndex);
-
-                        // Create our animations for transitioning from our WebView2 control into our Journey step.
-                        var scaleXAnimation = new DoubleAnimation
-                        {
-                            From = WebView.ActualWidth,
-                            To = _journeyStepSize.Width,
-                            Duration = duration,
-                            EasingFunction = easingFunction
-                        };
-                        var scaleYAnimation = new DoubleAnimation
-                        {
-                            From = WebView.ActualHeight,
-                            To = _journeyStepSize.Height,
-                            Duration = duration,
-                            EasingFunction = easingFunction
-                        };
-                        var translateXAnimation = new DoubleAnimation
-                        {
-                            From = 0 - JourneyCanvasTranslateTransform.X,
-                            To = Canvas.GetLeft(_selectedStep),
-                            Duration = duration,
-                            EasingFunction = easingFunction
-                        };
-                        var translateYAnimation = new DoubleAnimation
-                        {
-                            From = 0 - JourneyCanvasTranslateTransform.Y,
-                            To = Canvas.GetTop(_selectedStep),
-                            Duration = duration,
-                            EasingFunction = easingFunction
-                        };
-                        var titleAnimation = new DoubleAnimation
-                        {
-                            From = -0.6,
-                            To = 0.9,
-                            Duration = duration,
-                            EasingFunction = easingFunction
-                        };
-
-                        Canvas.SetLeft(_selectedStep, 0 - JourneyCanvasTranslateTransform.X);
-                        Canvas.SetTop(_selectedStep, 0 - JourneyCanvasTranslateTransform.Y);
-                        _selectedStep.Width = WebView.ActualWidth;
-                        _selectedStep.Height = WebView.ActualHeight;
-                        _selectedStep.TextArea.Opacity = 0;
-
-                        stopWatch.Stop();
-                        if (stopWatch.ElapsedMilliseconds < delay)
-                        {
-                            // HACK: Feels nasty to put a delay in here, but it prevents the flicker when showing the image control, which seems to
-                            // appear, then paint the image in, causing a flicker when switching between the browser and the snapshot. Adding a small
-                            // delay here seems to allow the image time to paint before the browser is hidden, removing the flicker. But is there
-                            // a better way?
-                            await Task.Delay(delay - (int)stopWatch.ElapsedMilliseconds);
-                        }
-
-                        _selectedStep.IsAnimating = true;
-                        _selectedStep.BeginAnimation(Control.WidthProperty, scaleXAnimation, HandoffBehavior.Compose);
-                        _selectedStep.BeginAnimation(Control.HeightProperty, scaleYAnimation, HandoffBehavior.Compose);
-                        _selectedStep.BeginAnimation(Canvas.LeftProperty, translateXAnimation, HandoffBehavior.Compose);
-                        _selectedStep.BeginAnimation(Canvas.TopProperty, translateYAnimation, HandoffBehavior.Compose);
-                        _selectedStep.TextArea.BeginAnimation(Control.OpacityProperty, titleAnimation, HandoffBehavior.Compose);
-                    }
-                    else
-                    {
-                        stopWatch.Stop();
-                    }
-
-                    var controlsAnimation = new DoubleAnimation
-                    {
-                        From = -0.6,
-                        To = 0.9,
-                        Duration = duration,
-                        EasingFunction = easingFunction
-                    };
-                    controlsAnimation.Completed += (_, _) =>
-                    {
-                        if (_selectedStep != null)
-                        {
-                            _selectedStep.IsAnimating = false;
-                        }
-                        _journeySemaphore.Release();
-                    };
-                    JourneyControls.BeginAnimation(Control.OpacityProperty, controlsAnimation, HandoffBehavior.Compose);
-                    WebView.Visibility = Visibility.Collapsed;
-
-                    Debug.WriteLine($"Delayed for: {delay - (int)stopWatch.ElapsedMilliseconds}ms");
-
-                    // Return so we don't release our semaphore, as this will be released when our animation finishes.
-                    return;
-                }
-                catch
-                {
-                    // If something happens then there probably isn't much we can do about it, but we'll swallow the exception so we
-                    // can still release our semaphore and can try hiding/showing again.
-                }
-            }
-
-            // We haven't carried out an animation (wrong state, no step selected, etc., so release our semaphore.
-            _journeySemaphore.Release();
+            var journeySteps = await _journeyManager.GetJourney();
+            var rootLayout = CalculateTreeLayout(journeySteps, siblingSpacing: 1.25, levelSpacing: 1.25);
+            DrawTree(rootLayout, JourneyCanvas, nodeWidth: _journeyStepSize.Width, nodeHeight: _journeyStepSize.Height);
         }
-
-
-
-
 
 
         private double NodeWidth => _journeyStepSize.Width;
