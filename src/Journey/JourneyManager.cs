@@ -2,7 +2,10 @@
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 using Newtonsoft.Json;
+using System;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
 namespace Journey
@@ -153,11 +156,11 @@ namespace Journey
             _webView.NavigationStarting -= WebView_NavigationStarting;
             _steps.Clear();
         }
-        public async Task<Tree<JourneyEntry>> GetJourney()
+        public async Task<TreeNode<JourneyEntry>> GetJourney()
         {
             // Update current webpage snapshot
             await UpdateActiveStepSnapshot();
-            return _steps;
+            return _steps.Children[0];
         }
         public async Task GoToStep(JourneyEntry step)
         {

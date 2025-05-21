@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Journey.Collections
 {
     public class TreeNodeLayout<T>
