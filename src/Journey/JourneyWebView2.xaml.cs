@@ -14,7 +14,7 @@ using System.Windows.Shapes;
 
 namespace Journey
 {
-    public partial class JourneyWebView2 : IDisposable, INotifyPropertyChanged
+    public partial class JourneyWebView2 : IWebView2, INotifyPropertyChanged, IDisposable
     {
         #region Constants
 
@@ -54,7 +54,22 @@ namespace Journey
 
         #region Events
 
+        /// <inheritdoc />
+        public event EventHandler<CoreWebView2ContentLoadingEventArgs>? ContentLoading;
+        /// <inheritdoc />
+        public event EventHandler<CoreWebView2InitializationCompletedEventArgs>? CoreWebView2InitializationCompleted;
+        /// <inheritdoc />
+        public event EventHandler<CoreWebView2NavigationCompletedEventArgs>? NavigationCompleted;
+        /// <inheritdoc />
+        public event EventHandler<CoreWebView2NavigationStartingEventArgs>? NavigationStarting;
+        /// <inheritdoc />
         public event PropertyChangedEventHandler? PropertyChanged;
+        /// <inheritdoc />
+        public event EventHandler<CoreWebView2SourceChangedEventArgs>? SourceChanged;
+        /// <inheritdoc />
+        public event EventHandler<CoreWebView2WebMessageReceivedEventArgs>? WebMessageReceived;
+        /// <inheritdoc />
+        public event EventHandler<EventArgs>? ZoomFactorChanged;
 
         #endregion
 
@@ -77,6 +92,15 @@ namespace Journey
             _journeySemaphore = new(1, 1);
             _lastMouseDownPosition = new(0, 0);
             _lastMousePosition = new(0, 0);
+
+            // Wire up our events to "pass-through"
+            WebView.ContentLoading += (_, args) => { ContentLoading?.Invoke(this, args); };
+            WebView.CoreWebView2InitializationCompleted += (_, args) => { CoreWebView2InitializationCompleted?.Invoke(this, args); };
+            WebView.NavigationCompleted += (_, args) => { NavigationCompleted?.Invoke(this, args); };
+            WebView.NavigationStarting += (_, args) => { NavigationStarting?.Invoke(this, args); };
+            WebView.SourceChanged += (_, args) => { SourceChanged?.Invoke(this, args); };
+            WebView.WebMessageReceived += (_, args) => { WebMessageReceived?.Invoke(this, args); };
+            WebView.ZoomFactorChanged += (_, args) => { ZoomFactorChanged?.Invoke(this, args); };
 
             // The size or Journey "steps" is calculated as a division of the primary monitor resolution. We're keeping this simple
             // for now and just covering the scenarios of either a single monitor, or multiple monitors of the same resolution. Monitors
@@ -101,6 +125,36 @@ namespace Journey
 
         #region Properties
 
+        /// <inheritdoc />
+        public bool AllowExternalDrop
+        {
+            get => WebView.AllowExternalDrop;
+            set => WebView.AllowExternalDrop = value;
+        }
+        /// <inheritdoc />
+        public bool CanGoBack => WebView.CanGoBack;
+        /// <inheritdoc />
+        public bool CanGoForward => WebView.CanGoForward;
+        /// <inheritdoc />
+        public CoreWebView2 CoreWebView2 => WebView.CoreWebView2;
+        /// <inheritdoc />
+        public CoreWebView2CreationProperties CreationProperties
+        {
+            get => WebView.CreationProperties;
+            set => WebView.CreationProperties = value;
+        }
+        /// <inheritdoc />
+        public System.Drawing.Color DefaultBackgroundColor
+        {
+            get => WebView.DefaultBackgroundColor;
+            set => WebView.DefaultBackgroundColor = value;
+        }
+        /// <inheritdoc />
+        public System.Drawing.Color DesignModeForegroundColor
+        {
+            get => WebView.DesignModeForegroundColor;
+            set => WebView.DesignModeForegroundColor = value;
+        }
         /// <summary>
         /// Indicates whether Journey is currently being displayed for the current <see cref="JourneyWebView2"/> instance.
         /// </summary>
@@ -136,10 +190,17 @@ namespace Journey
             get => (double)GetValue(JourneyZoomFactorProperty);
             set => SetValue(JourneyZoomFactorProperty, value);
         }
+        /// <inheritdoc />
         public Uri Source
         {
             get => WebView.Source;
             set => WebView.Source = value;
+        }
+        /// <inheritdoc />
+        public double ZoomFactor
+        {
+            get => WebView.ZoomFactor;
+            set => WebView.ZoomFactor = value;
         }
 
         #endregion
@@ -373,12 +434,36 @@ namespace Journey
 
         #region Public
 
-        public CoreWebView2 CoreWebView2 => WebView.CoreWebView2;
         /// <inheritdoc/>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+        /// <inheritdoc/>
+        public Task EnsureCoreWebView2Async(CoreWebView2Environment environment)
+        {
+            return WebView.EnsureCoreWebView2Async(environment);
+        }
+        /// <inheritdoc/>
+        public Task EnsureCoreWebView2Async(CoreWebView2Environment environment = null, CoreWebView2ControllerOptions controllerOptions = null)
+        {
+            return WebView.EnsureCoreWebView2Async(environment, controllerOptions);
+        }
+        /// <inheritdoc/>
+        public Task<string> ExecuteScriptAsync(string javaScript)
+        {
+            return WebView.ExecuteScriptAsync(javaScript);
+        }
+        /// <inheritdoc/>
+        public void GoBack()
+        {
+            WebView.GoBack();
+        }
+        /// <inheritdoc/>
+        public void GoForward()
+        {
+            WebView.GoForward();
         }
         /// <summary>
         /// Hides the Journey view, and restores the control to displaying web content as a standard <see cref="IWebView2"/> implementation.
@@ -499,6 +584,16 @@ namespace Journey
 
             // We haven't carried out an animation (wrong state, no step selected, etc., so release our semaphore.
             _journeySemaphore.Release();
+        }
+        /// <inheritdoc/>
+        public void NavigateToString(string htmlContent)
+        {
+            WebView.NavigateToString(htmlContent);
+        }
+        /// <inheritdoc/>
+        public void Reload()
+        {
+            WebView.Reload();
         }
         /// <summary>
         /// Shows the Journey view, hiding all web content.
@@ -667,6 +762,11 @@ namespace Journey
             // We haven't carried out an animation (wrong state, no step selected, etc., so release our semaphore.
             _journeySemaphore.Release();
         }
+        /// <inheritdoc/>
+        public void Stop()
+        {
+            WebView.Stop();
+        }
         /// <summary>
         /// Toggles the visibility of Journey.
         /// </summary>
@@ -685,7 +785,6 @@ namespace Journey
         #endregion
 
         #endregion
-
 
 
 
@@ -908,7 +1007,7 @@ namespace Journey
             }
         }
 
-
+        
 
         #endregion
     }
