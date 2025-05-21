@@ -1,16 +1,17 @@
-using NetEx.Collections;
-
-public class TreeNodeLayout<T>
+namespace Journey.Collections
 {
-    public TreeNode<T> Node { get; }
-    public double X { get; set; }
-    public double Y { get; set; }
-    public double Mod { get; set; } // Modifier for subtree alignment
-    public TreeNodeLayout<T>? Parent { get; set; }
-    public List<TreeNodeLayout<T>> Children { get; } = new();
-
-    public TreeNodeLayout(TreeNode<T> node)
+    public class TreeNodeLayout<T>
     {
-        Node = node;
+        public TreeNode<T> Node { get; }
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Mod { get; set; } // Modifier for subtree alignment
+        public TreeNodeLayout<T>? Parent { get; set; }
+        public List<TreeNodeLayout<T>> Children { get; } = new();
+
+        public TreeNodeLayout(TreeNode<T> node)
+        {
+            Node = node;
+        }
     }
 }

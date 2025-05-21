@@ -7,7 +7,7 @@ using System.Windows.Media.Imaging;
 
 namespace Journey
 {
-    internal class JourneyManager : IDisposable
+    internal sealed class JourneyManager : IDisposable
     {
         #region Fields
 

@@ -2,7 +2,7 @@
 
 namespace Journey
 {
-    internal class NavigationHistory
+    internal sealed class NavigationHistory
     {
         #region Properties
 

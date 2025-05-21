@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace NetEx.Collections
+namespace Journey.Collections
 {
     public class TreeNode<T>
     {
@@ -102,16 +102,5 @@ namespace NetEx.Collections
         }
 
         #endregion
-
-
-
-
-
-        public void Traverse(Action<T> action)
-        {
-            action(Value);
-            foreach (var child in _children)
-                child.Traverse(action);
-        }
     }
 }

@@ -4,7 +4,7 @@ using System.Windows.Media;
 
 namespace Journey
 {
-    internal partial class JourneyStep : UserControl, INotifyPropertyChanged
+    internal sealed partial class JourneyStep : UserControl, INotifyPropertyChanged
     {
         #region Fields
         

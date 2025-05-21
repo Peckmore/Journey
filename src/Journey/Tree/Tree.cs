@@ -1,4 +1,4 @@
-﻿namespace NetEx.Collections
+﻿namespace Journey.Collections
 {
     public class Tree<T> : TreeNode<T>
     {
