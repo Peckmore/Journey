@@ -107,7 +107,6 @@
         <!-- WebView -->
         <!-- This is the browser used for navigation. -->
         <wpf:WebView2 x:Name="WebView"
-                      x:FieldModifier="public"
                       Margin="0"/>
 
     </Grid>

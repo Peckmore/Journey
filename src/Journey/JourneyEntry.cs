@@ -15,13 +15,13 @@ namespace Journey
 
         public JourneyEntry()
         { }
-        public JourneyEntry(int id, string title, string transitionType, string url, string userTypeUrl)
+        public JourneyEntry(int id, string title, string transitionType, string url, string userTypedUrl)
         {
             Id = id;
             Title = title;
             TransitionType = transitionType;
             Url = url;
-            UserTypedUrl = userTypeUrl;
+            UserTypedUrl = userTypedUrl;
         }
 
         #endregion

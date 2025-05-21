@@ -100,7 +100,7 @@ namespace WPFSample
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            AddTab("https://www.microsoft.com");
+            AddTab("https://www.bing.com");
         }
 
 
@@ -123,8 +123,8 @@ namespace WPFSample
 
             //create new instance setting userDataFolder
             JourneyWebView2 journeyWebView = new JourneyWebView2();
-            journeyWebView.WebView.EnsureCoreWebView2Async();
-            journeyWebView.WebView.CoreWebView2InitializationCompleted += WebView2_CoreWebView2InitializationCompleted;
+            journeyWebView.CoreWebView2InitializationCompleted += WebView2_CoreWebView2InitializationCompleted;
+            journeyWebView.EnsureCoreWebView2Async();
             journeyWebView.JourneyHighlightColor = Colors.Red;
 
             //create TextBlock
@@ -191,14 +191,14 @@ namespace WPFSample
                 JourneyWebView2 wv = (JourneyWebView2)_webView2Tabs[index].Content;
 
                 //get userDataFolder location
-                string userDataFolder = wv.WebView.CoreWebView2.Environment.UserDataFolder;
+                string userDataFolder = wv.CoreWebView2.Environment.UserDataFolder;
                 //string userDataFolder = wv.WebView2.CreationProperties.UserDataFolder;
 
                 //unsubscribe from event(s)
-                wv.WebView.CoreWebView2.NewWindowRequested -= CoreWebView2_NewWindowRequested;
+                wv.CoreWebView2.NewWindowRequested -= CoreWebView2_NewWindowRequested;
 
                 //get process
-                var wvProcess = Process.GetProcessById((int)wv.WebView.CoreWebView2.BrowserProcessId);
+                var wvProcess = Process.GetProcessById((int)wv.CoreWebView2.BrowserProcessId);
 
                 //dispose
                 wv.Dispose();
@@ -234,14 +234,14 @@ namespace WPFSample
                 JourneyWebView2 wv = (JourneyWebView2)_webView2Tabs[_webView2Tabs.Count - 1].Content;
 
                 //if CoreWebView2 hasn't finished initializing, it will be null
-                if (wv.WebView.CoreWebView2?.BrowserProcessId > 0)
+                if (wv.CoreWebView2?.BrowserProcessId > 0)
                 {
-                    await wv.WebView.CoreWebView2.ExecuteScriptAsync($@"window.open('https://www.google.com/', '_blank');");
+                    await wv.CoreWebView2.ExecuteScriptAsync($@"window.open('https://www.google.com/', '_blank');");
                 }
             }
             else
             {
-                AddTab("https://www.microsoft.com");
+                AddTab("https://www.bing.com");
             }
         }
 

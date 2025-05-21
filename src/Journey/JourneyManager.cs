@@ -24,16 +24,12 @@ namespace Journey
 
         internal JourneyManager(WebView2 webView)
         {
+            _steps = new(new(0, "Root", "Root", string.Empty, string.Empty));
             _webView = webView;
-
-            var root = new JourneyEntry(0, "Root", "Root", string.Empty, string.Empty);
-            _steps = new(root);
 
             _webView.CoreWebView2InitializationCompleted += WebView_CoreWebView2InitializationCompleted;
             _webView.NavigationCompleted += WebView_NavigationCompleted;
             _webView.NavigationStarting += WebView_NavigationStarting;
-
-            _webView.EnsureCoreWebView2Async();
         }
 
         #endregion
