@@ -20,10 +20,13 @@ namespace Journey
 
         #region Construction
 
-        public JourneyStep()
+        public JourneyStep(JourneyEntry model)
         {
             InitializeComponent();
             RenderOptions.SetBitmapScalingMode(SnapshotImage, BitmapScalingMode.LowQuality);
+
+            JourneyEntry = model;
+            DataContext = model;
         }
 
         #endregion
@@ -42,6 +45,7 @@ namespace Journey
                 }
             }
         }
+        public JourneyEntry JourneyEntry { get; }
 
         #endregion
 
