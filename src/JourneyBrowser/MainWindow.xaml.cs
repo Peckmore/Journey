@@ -164,7 +164,7 @@ namespace WPFSample
 
         private void WebView2_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
         {
-            if (sender is WebView2 webView2)
+            if (sender is IWebView2 webView2)
             {
                 webView2.CoreWebView2InitializationCompleted -= WebView2_CoreWebView2InitializationCompleted;
                 webView2.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
