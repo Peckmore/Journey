@@ -95,7 +95,7 @@
                     <Button x:Name="ResetViewButton"
                             Click="ResetViewButton_Click"
                             Grid.Column="4">
-                        <Image Source="Images/center_view.png" />
+                        <Image Source="Images/reset_view.png" />
                     </Button>
 
                 </Grid>
