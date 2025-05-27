@@ -762,6 +762,7 @@ namespace Journey
                     // Hide the WebView2 control, which will reveal the canvas behind. Our selected step should be full size, so this transition
                     // should appear seamless to the user.
                     WebView.Visibility = Visibility.Collapsed;
+                    JourneyCanvas.Focus();
 
                     // Start all of our animations.
                     _selectedStep.BeginAnimation(Control.WidthProperty, scaleXAnimation, HandoffBehavior.Compose);

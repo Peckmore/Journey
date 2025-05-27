@@ -116,7 +116,8 @@
             <!-- Journey Canvas -->
             <!-- This is where "Journey Steps" are presented -->
             <Canvas x:Name="JourneyCanvas"
-                    Background="Transparent">
+                    Background="Transparent"
+                    Focusable="True">
 
                 <Canvas.RenderTransform>
                     <TransformGroup>
