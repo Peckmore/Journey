@@ -155,7 +155,7 @@
                        FontSize="28">
 
                     <Label.Style>
-                        <Style TargetType="Label">
+                        <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
 
                             <Setter Property="Foreground" Value="White"/>
 
@@ -211,6 +211,7 @@
                                 </DataTrigger>
 
                             </Style.Triggers>
+
                         </Style>
                     </Label.Style>
 
