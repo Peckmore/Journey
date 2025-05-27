@@ -38,6 +38,7 @@ namespace Journey
 
         #region Public Static
 
+        public static readonly ICommand HideJourneyCommand = new RoutedCommand();
         public static readonly DependencyProperty JourneyHighlightColorProperty = DependencyProperty.Register(nameof(JourneyHighlightColor), typeof(Color), typeof(JourneyWebView2), new PropertyMetadata(Colors.DodgerBlue));
         public static readonly DependencyProperty JourneyZoomFactorProperty = DependencyProperty.Register(nameof(JourneyZoomFactor), typeof(double), typeof(JourneyWebView2), new PropertyMetadata(1d));
         public static readonly ICommand ResetJourneyViewCommand = new RoutedCommand();
@@ -364,6 +365,10 @@ namespace Journey
                 // Set large fields to null
                 _isDisposed = true;
             }
+        }
+        private void ExecuteHideJourneyCommand(object sender, RoutedEventArgs e)
+        {
+            HideJourney();
         }
         private void ExecuteResetViewCommand(object sender, RoutedEventArgs e)
         {

@@ -62,6 +62,9 @@
 
     <UserControl.CommandBindings>
 
+        <CommandBinding Command="{x:Static local:JourneyWebView2.HideJourneyCommand}"
+                        Executed="ExecuteHideJourneyCommand" />
+
         <CommandBinding Command="{x:Static local:JourneyWebView2.ResetJourneyViewCommand}"
                         Executed="ExecuteResetViewCommand" />
 
@@ -87,6 +90,9 @@
         <KeyBinding Key="D0"
                     Modifiers="Control"
                     Command="{x:Static local:JourneyWebView2.ResetJourneyZoomCommand}" />
+
+        <KeyBinding Key="Esc"
+                    Command="{x:Static local:JourneyWebView2.HideJourneyCommand}" />
 
         <KeyBinding Key="OemPlus"
                     Modifiers="Control"
