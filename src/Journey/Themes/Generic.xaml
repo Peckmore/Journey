@@ -2,11 +2,14 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- Colors -->
-    <Color x:Key="HighlightColor">#FF557FF3</Color>
-    <SolidColorBrush x:Key="HighlightBrush" Color="{DynamicResource HighlightColor}" />
+    <Color x:Key="JourneyBackgroundColor">Transparent</Color>
+    <SolidColorBrush x:Key="JourneyBackgroundBrush" Color="{DynamicResource JourneyBackgroundColor}" />
+    
+    <Color x:Key="JourneyHighlightColor">#FF557FF3</Color>
+    <SolidColorBrush x:Key="JourneyHighlightBrush" Color="{DynamicResource JourneyHighlightColor}" />
 
-    <Color x:Key="HighlightTextColor">#FFFEFEFE</Color>
-    <SolidColorBrush x:Key="HighlightTextBrush" Color="{DynamicResource HighlightTextColor}" />
+    <Color x:Key="JourneyHighlightTextColor">#FFFEFEFE</Color>
+    <SolidColorBrush x:Key="JourneyHighlightTextBrush" Color="{DynamicResource JourneyHighlightTextColor}" />
 
     <!-- Fonts -->
     <FontFamily x:Key="RobotoRegular">

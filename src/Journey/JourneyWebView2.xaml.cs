@@ -196,6 +196,7 @@ namespace Journey
             set
             {
                 SetValue(JourneyBackgroundColorProperty, value);
+                Resources["JourneyBackgroundColor"] = value;
             }
         }
         public Color JourneyHighlightColor
@@ -204,7 +205,7 @@ namespace Journey
             set
             {
                 SetValue(JourneyHighlightColorProperty, value);
-                Resources["HighlightColor"] = value;
+                Resources["JourneyHighlightColor"] = value;
             }
         }
         public Color JourneyHighlightTextColor
@@ -213,7 +214,7 @@ namespace Journey
             set
             {
                 SetValue(JourneyHighlightTextColorProperty, value);
-                Resources["HighlightTextColor"] = value;
+                Resources["JourneyHighlightTextColor"] = value;
             }
         }
         /// <summary>
@@ -914,8 +915,8 @@ namespace Journey
                     Height = _journeyStepSize.Height + (8 * borderThickness),
                     Width = _journeyStepSize.Width + (2 * borderThickness)
                 };
-                border.SetResourceReference(Control.BackgroundProperty, "HighlightBrush");
-                border.SetResourceReference(Control.BorderBrushProperty, "HighlightBrush");
+                border.SetResourceReference(Control.BackgroundProperty, "JourneyHighlightBrush");
+                border.SetResourceReference(Control.BorderBrushProperty, "JourneyHighlightBrush");
 
                 Canvas.SetLeft(border, nodeRectX - borderThickness);
                 Canvas.SetTop(border, nodeRectY - borderThickness);
@@ -929,7 +930,7 @@ namespace Journey
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Bottom
                 };
-                label.SetResourceReference(Control.ForegroundProperty, "HighlightTextBrush");
+                label.SetResourceReference(Control.ForegroundProperty, "JourneyHighlightTextBrush");
                 border.Child = label;
             }
 
@@ -985,7 +986,7 @@ namespace Journey
         }
         private void DrawLine(Point p1, Point p2, bool activePath)
         {
-            var brushName = activePath ? "HighlightBrush" : "LineBrush";
+            var brushName = activePath ? "JourneyHighlightBrush" : "LineBrush";
             var width = activePath ? 8 : 4;
 
             var line = new Line

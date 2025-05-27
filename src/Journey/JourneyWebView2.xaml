@@ -8,10 +8,7 @@
             mc:Ignorable="d"
             d:DesignHeight="480"
             d:DesignWidth="800"
-            MouseDown="RootGrid_MouseDown"
-            PreviewMouseMove="RootGrid_PreviewMouseMove"
-            PreviewMouseUp="RootGrid_PreviewMouseUp"
-            PreviewMouseWheel="RootGrid_PreviewMouseWheel">
+            Background="Transparent">
 
     <UserControl.Resources>
 
@@ -111,12 +108,17 @@
     <!-- Root Grid -->
     <!-- A root grid to container both the Journey controls and the WebView2 instance. -->
     <Grid x:Name="RootGrid"
-         Background="{Binding JourneyBackgroundColor}"
-         ClipToBounds="True">
+          Background="Transparent"
+          ClipToBounds="True"
+          MouseDown="RootGrid_MouseDown"
+          PreviewMouseMove="RootGrid_PreviewMouseMove"
+          PreviewMouseUp="RootGrid_PreviewMouseUp"
+          PreviewMouseWheel="RootGrid_PreviewMouseWheel">
 
         <!-- Journey Container -->
         <!-- Journey controls (canvas and toolbar) are within this grid to make it easy to control their visibility. -->
         <Grid x:Name="JourneyContainer"
+              Background="{DynamicResource JourneyBackgroundBrush}"
               Visibility="Collapsed">
 
             <!-- Journey Canvas -->
