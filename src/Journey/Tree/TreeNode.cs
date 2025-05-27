@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Journey.Collections
 {
-    public class TreeNode<T>
+    internal class TreeNode<T>
     {
         #region Fields
 

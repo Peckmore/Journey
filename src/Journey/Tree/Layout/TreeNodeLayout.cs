@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Journey.Tree.Layout
 {
-    public static class TreeExtensionMethods
+    internal static class TreeExtensionMethods
     {
         #region Methods
 
@@ -35,44 +35,6 @@ namespace Journey.Tree.Layout
 
             return Task.FromResult(root);
         }
-
-        #endregion
-    }
-
-    public class TreeDiagram<T> : TreeDiagramNode<T>
-    {
-        #region Construction
-
-        internal TreeDiagram(TreeNode<T> node)
-            : base(node)
-        { }
-
-        #endregion
-    }
-
-    public class TreeDiagramNode<T> : TreeNode<T>
-    {
-        #region Construction
-
-        internal TreeDiagramNode(TreeNode<T> node)
-            : base(node.Value)
-        {
-            Mod = 0;
-            X = node.Index;
-            Y = node.Depth;
-        }
-
-        #endregion
-
-        #region Properties
-
-        #region Public
-
-        public double Mod { get; internal set; }
-        public double X { get; internal set; }
-        public int Y { get; }
-
-        #endregion
 
         #endregion
     }

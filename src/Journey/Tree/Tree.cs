@@ -1,6 +1,6 @@
 ﻿namespace Journey.Collections
 {
-    public class Tree<T> : TreeNode<T>
+    internal sealed class Tree<T> : TreeNode<T>
     {
         #region Construction
 

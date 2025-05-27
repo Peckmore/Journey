@@ -14,5 +14,5 @@
     <Style TargetType="Label">
         <Setter Property="FontFamily" Value="{StaticResource RobotoRegular}" />
     </Style>
-    
+
 </ResourceDictionary>

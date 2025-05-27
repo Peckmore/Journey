@@ -1,6 +1,6 @@
 ﻿namespace Journey
 {
-    public enum JourneyEntryType
+    internal enum JourneyEntryType
     {
         HistoryBack,
         HistoryForward,

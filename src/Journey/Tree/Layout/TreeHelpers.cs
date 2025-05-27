@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Journey.Tree.Layout
 {
-    public static class TreeHelpers
+    internal static class TreeHelpers
     {
         private static int nodeSize = 1;
         private static double siblingDistance = 0.0F;
