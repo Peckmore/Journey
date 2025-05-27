@@ -989,6 +989,7 @@ namespace Journey
         }
         private void DrawLine(Point p1, Point p2, bool activePath)
         {
+            var brushName = activePath ? "HighlightBrush" : "LineBrush";
             var width = activePath ? 8 : 4;
 
             var line = new Line
@@ -999,7 +1000,7 @@ namespace Journey
                 X2 = p2.X,
                 Y2 = p2.Y
             };
-            line.SetResourceReference(Line.StrokeProperty, activePath ? "HighlightBrush" : "TextLightBrush");
+            line.SetResourceReference(Line.StrokeProperty, brushName);
             JourneyCanvas.Children.Add(line);
 
             var lineStart = new Ellipse
@@ -1007,7 +1008,7 @@ namespace Journey
                 Height = width,
                 Width = width,
             };
-            lineStart.SetResourceReference(Ellipse.FillProperty, activePath ? "HighlightBrush" : "TextLightBrush");
+            lineStart.SetResourceReference(Ellipse.FillProperty, brushName);
             JourneyCanvas.Children.Add(lineStart);
             Canvas.SetLeft(lineStart, p1.X - (width / 2));
             Canvas.SetTop(lineStart, p1.Y - (width / 2));
@@ -1017,7 +1018,7 @@ namespace Journey
                 Height = width,
                 Width = width,
             };
-            lineEnd.SetResourceReference(Ellipse.FillProperty, activePath ? "HighlightBrush" : "TextLightBrush");
+            lineEnd.SetResourceReference(Ellipse.FillProperty, brushName);
             JourneyCanvas.Children.Add(lineEnd);
             Canvas.SetLeft(lineEnd, p2.X - (width / 2));
             Canvas.SetTop(lineEnd, p2.Y - (width / 2));

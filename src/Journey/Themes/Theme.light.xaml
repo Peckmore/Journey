@@ -5,6 +5,9 @@
     <Color x:Key="ActiveBorderColor">#FFCCCCCC</Color>
     <SolidColorBrush x:Key="ActiveBorderBrush" Color="{StaticResource ActiveBorderColor}" />
 
+    <Color x:Key="LineColor">#FF777777</Color>
+    <SolidColorBrush x:Key="LineBrush" Color="{StaticResource LineColor}" />
+
     <Color x:Key="TextColor">#FF010101</Color>
     <SolidColorBrush x:Key="TextBrush" Color="{StaticResource TextColor}" />
 
