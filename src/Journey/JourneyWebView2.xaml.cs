@@ -441,18 +441,14 @@ namespace Journey
         private void ExecuteZoomInCommand(object sender, ExecutedRoutedEventArgs e)
         {
             // Initiate a zoom in of one step.
-            JourneyZoomFactor *= 1.1;
-            ZoomCanvas(new(((JourneyCanvas.ActualWidth * JourneyZoomFactor) / 2) - JourneyCanvasTranslateTransform.X,
-                       ((JourneyCanvas.ActualHeight * JourneyZoomFactor) / 2) - JourneyCanvasTranslateTransform.Y),
-                       false);
+            var canvasCenter = RootGrid.TranslatePoint(new(JourneyCanvas.ActualWidth / 2, JourneyCanvas.ActualHeight / 2), JourneyCanvas);
+            ZoomCanvas(canvasCenter, false);
         }
         private void ExecuteZoomOutCommand(object sender, ExecutedRoutedEventArgs e)
         {
             // Initiate a zoom out of one step.
-            JourneyZoomFactor /= 1.1;
-            //ZoomCanvas(new(((JourneyCanvas.ActualWidth / 2) / JourneyZoomFactor) - JourneyCanvasTranslateTransform.X,
-            //           ((JourneyCanvas.ActualHeight / 2) / JourneyZoomFactor) - JourneyCanvasTranslateTransform.Y),
-            //           true);
+            var canvasCenter = RootGrid.TranslatePoint(new(JourneyCanvas.ActualWidth / 2, JourneyCanvas.ActualHeight / 2), JourneyCanvas);
+            ZoomCanvas(canvasCenter, true);
         }
         private void NotifyPropertyChanged([CallerMemberName] string? propertyName = null)
         {
