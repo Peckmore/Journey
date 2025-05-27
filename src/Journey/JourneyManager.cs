@@ -18,9 +18,8 @@ namespace Journey
         private IList<TreeNode<JourneyEntry>> _activePath;
         private readonly Dictionary<int, TreeNode<JourneyEntry>> _stepsIndex;
         private readonly Tree<JourneyEntry> _steps;
+        private SemaphoreSlim _transitionSemaphore = new(1, 1);
         private readonly WebView2 _webView;
-
-        private SemaphoreSlim _semaphore = new(1, 1);
 
         #endregion
 
@@ -56,7 +55,7 @@ namespace Journey
 
         private async void CoreWebView2_HistoryChanged(object? sender, object e)
         {
-            await _semaphore.WaitAsync();
+            await _transitionSemaphore.WaitAsync();
 
             try
             {
@@ -105,7 +104,7 @@ namespace Journey
             }
             finally
             {
-                _semaphore.Release();
+                _transitionSemaphore.Release();
             }
         }
         private void WebView_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
