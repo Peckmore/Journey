@@ -19,8 +19,19 @@ namespace Journey.Collections
             Value = value;
 
             _children = new();
+            Count = 0;
             Depth = 0;
             Index = 0;
+            IsLeaf = true;
+            IsLeft = true;
+            IsRight = true;
+            PreviousSibling = null;
+            LeftChild = null;
+            LeftSibling = this;
+            Parent = null;
+            NextSibling = null;
+            RightChild = null;
+            RightSibling = this;
             Path = [0];
         }
 
@@ -29,10 +40,14 @@ namespace Journey.Collections
         #region Properties
 
         public ReadOnlyCollection<TreeNode<T>> Children => _children.AsReadOnly();
-        public int Count => _children.Count;
+        public int Count { get; private set; }
         public int Depth { get; private set; }
         public int Index { get; private set; }
-        public TreeNode<T> Left
+        public bool IsLeaf { get; private set; }
+        public bool IsLeft { get; private set; }
+        public bool IsRight { get; private set; }
+        public TreeNode<T>? LeftChild { get; private set; }
+        public TreeNode<T> LeftLeaf
         {
             get
             {
@@ -44,9 +59,13 @@ namespace Journey.Collections
                 return node;
             }
         }
+        public TreeNode<T> LeftSibling { get; private set; }
+        public TreeNode<T>? NextSibling { get; private set; }
         public int[] Path { get; private set; }
         public TreeNode<T>? Parent { get; private set; }
-        public TreeNode<T> Right
+        public TreeNode<T>? PreviousSibling { get; private set; }
+        public TreeNode<T>? RightChild { get; private set; }
+        public TreeNode<T> RightLeaf
         {
             get
             {
@@ -55,9 +74,11 @@ namespace Journey.Collections
                 {
                     node = node._children[^1];
                 }
+
                 return node;
             }
         }
+        public TreeNode<T> RightSibling { get; private set; }
         public TreeNode<T> this[int i] => _children[i];
         public T Value { get; set; }
 
@@ -67,26 +88,36 @@ namespace Journey.Collections
 
         #region Private
 
-        private TreeNode<T> InternalAdd(T value)
+        private TreeNode<T> InternalAdd(T value, bool recalculate)
         {
             var node = new TreeNode<T>(value);
             _children.Add(node);
             node.Parent = this;
-            node.Recalculate(true);
+            if (recalculate)
+            {
+                Recalculate();
+            }
             return node;
         }
-        private void Recalculate(bool recalculateNode)
+        private void Recalculate()
         {
-            if (recalculateNode)
-            {
-                Depth = Parent?.Depth + 1 ?? 0;
-                Index = Parent?._children.IndexOf(this) ?? 0;
-                Path = Parent?.Path.Concat([Index]).ToArray() ?? [Index];
-            }
+            Count = _children.Count;
+            Depth = Parent?.Depth + 1 ?? 0;
+            Index = Parent?._children.IndexOf(this) ?? 0;
+            IsLeaf = _children.Count == 0;
+            IsLeft = Index == 0;
+            IsRight = Index == Parent?._children.Count - 1;
+            LeftChild = _children.Count > 0 ? _children[0] : null;
+            LeftSibling = Parent?._children[0] ?? this;
+            NextSibling = Index < Parent?._children.Count - 1 ? Parent?._children[Index + 1] : null;
+            Path = Parent?.Path.Concat([Index]).ToArray() ?? [Index];
+            PreviousSibling = Index > 0 ? Parent?._children[Index - 1] : null;
+            RightChild = _children.Count > 0 ? _children[^1] : null;
+            RightSibling = Parent?._children[^1] ?? this;
 
             foreach (var child in _children)
             {
-                child.Recalculate(true);
+                child.Recalculate();
             }
         }
 
@@ -94,14 +125,21 @@ namespace Journey.Collections
 
         #region Public
 
+        public void Add(TreeNode<T> node)
+        {
+            _children.Add(node);
+            node.Parent = this;
+            Recalculate();
+        }
         public TreeNode<T> Add(T value)
         {
-            var node = InternalAdd(value);
+            var node = InternalAdd(value, true);
             return node;
         }
         public IEnumerable<TreeNode<T>> AddRange(params T[] values)
         {
-            var nodes = values.Select(InternalAdd);
+            var nodes = values.Select(node => InternalAdd(node, false));
+            Recalculate();
             return nodes;
         }
         public void Clear()
@@ -117,17 +155,20 @@ namespace Journey.Collections
             if (_children.Remove(node))
             {
                 node.Parent = null;
-
-                for (var i = nodeIndex; i < _children.Count; i++)
-                {
-                    var child = _children[i];
-                    child.Recalculate(false);
-                }
-
+                Recalculate();
                 return true;
             }
 
             return false;
+        }
+        public TreeNode<T>? Sibling(int i)
+        {
+            if (Parent != null)
+            {
+                return Parent[i];
+            }
+
+            return null;
         }
         public IEnumerable<TreeNode<T>> Traverse()
         {

@@ -104,26 +104,117 @@
             </Border>
 
             <Grid x:Name="HoverGrid"
+                  Background="Transparent"
                   Grid.Row="0"
-                  Grid.RowSpan="2"
-                  Background="{DynamicResource {x:Static SystemColors.AccentColorBrushKey}}"
-                  Opacity="0.75">
+                  Grid.RowSpan="2">
 
                 <Grid.Style>
                     <Style TargetType="Grid">
+
                         <Setter Property="Visibility" Value="Collapsed"/>
+
                         <Style.Triggers>
+
                             <MultiDataTrigger>
+
                                 <MultiDataTrigger.Conditions>
                                     <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}}" Value="True"/>
                                     <Condition Binding="{Binding ElementName=ControlRoot,Path=IsAnimating}" Value="False"/>
                                 </MultiDataTrigger.Conditions>
+
                                 <Setter Property="Visibility" Value="Visible"/>
                                 <Setter Property="Cursor" Value="Hand"/>
+
                             </MultiDataTrigger>
+
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
+
+                <Grid Opacity="0.75">
+
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+
+                            <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+
+                            <Style.Triggers>
+
+                                <DataTrigger Binding="{Binding Path=Type}" Value="ArchivedStep">
+                                    <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+                                </DataTrigger>
+
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+
+                </Grid>
+
+                <Label HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontSize="28">
+
+                    <Label.Style>
+                        <Style TargetType="Label">
+
+                            <Setter Property="Foreground" Value="White"/>
+
+                            <Style.Triggers>
+
+                                <DataTrigger Binding="{Binding Path=Type}" Value="ArchivedStep">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <TextBlock TextAlignment="Center">
+                                                <Run Text="⧉"/>
+                                                <LineBreak/>
+                                                <Run Text="Open in new tab"/>
+                                            </TextBlock>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+                                </DataTrigger>
+
+                                <DataTrigger Binding="{Binding Path=Type}" Value="HistoryBack">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <TextBlock TextAlignment="Center">
+                                                <Run Text="←"/>
+                                                <LineBreak/>
+                                                <Run Text="Go back"/>
+                                            </TextBlock>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+
+                                <DataTrigger Binding="{Binding Path=Type}" Value="HistoryForward">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <TextBlock TextAlignment="Center">
+                                                <Run Text="→"/>
+                                                <LineBreak/>
+                                                <Run Text="Go forward"/>
+                                            </TextBlock>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+
+                                <DataTrigger Binding="{Binding Path=Type}" Value="ActiveStep">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <TextBlock TextAlignment="Center">
+                                                <Run Text="↩"/>
+                                                <LineBreak/>
+                                                <Run Text="Continue"/>
+                                            </TextBlock>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+
+                            </Style.Triggers>
+                        </Style>
+                    </Label.Style>
+
+                </Label>
 
             </Grid>
 

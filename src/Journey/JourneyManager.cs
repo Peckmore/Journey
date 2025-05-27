@@ -3,8 +3,9 @@ using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
@@ -14,9 +15,12 @@ namespace Journey
     {
         #region Fields
 
-        private JourneyEntry? _activeStep;
+        private IList<TreeNode<JourneyEntry>> _activePath;
+        private readonly Dictionary<int, TreeNode<JourneyEntry>> _stepsIndex;
         private readonly Tree<JourneyEntry> _steps;
         private readonly WebView2 _webView;
+
+        private SemaphoreSlim _semaphore = new(1, 1);
 
         #endregion
 
@@ -24,6 +28,8 @@ namespace Journey
 
         internal JourneyManager(WebView2 webView)
         {
+            _activePath = new List<TreeNode<JourneyEntry>>();
+            _stepsIndex = new();
             _steps = new(new(0, "Root", "Root", string.Empty, string.Empty));
             _webView = webView;
 
@@ -38,23 +44,7 @@ namespace Journey
 
         #region Private
 
-        private JourneyEntry? ActiveStep
-        {
-            get => _activeStep;
-            set
-            {
-                if (value != null && _activeStep != value)
-                {
-                    if (_activeStep != null)
-                    {
-                        _activeStep.IsActive = false;
-                    }
-
-                    _activeStep = value;
-                    _activeStep.IsActive = true;
-                }
-            }
-        }
+        private JourneyEntry? ActiveStep { get; set; }
 
         #endregion
 
@@ -66,26 +56,56 @@ namespace Journey
 
         private async void CoreWebView2_HistoryChanged(object? sender, object e)
         {
-            TreeNode<JourneyEntry> root = _steps;
+            await _semaphore.WaitAsync();
 
-            var history = await GetNavigationHistory();
-            foreach (var entry in history.Entries)
+            try
             {
-                if (root.Children.FirstOrDefault(x => x.Value.Id == entry.Id) is { } childElement)
+                // First, reset the status of all nodes in the active path
+                foreach (var step in _activePath)
                 {
-                    childElement.Value.Update(entry);
+                    step.Value.Type = JourneyEntryType.ArchivedStep;
                 }
-                else
-                { 
-                    root.Add(entry);
-                }
+                _activePath.Clear();
 
-                if (entry == history.Entries[history.CurrentIndex])
+                TreeNode<JourneyEntry> root = _steps;
+                var history = await GetNavigationHistory();
+                for (var i = 0; i < history.Entries.Count; i++)
                 {
-                    ActiveStep = entry;
-                }
+                    var entry = history.Entries[i];
 
-                root = root.Children.First(x => x.Value.Id == entry.Id);
+                    if (_stepsIndex.ContainsKey(entry.Id))
+                    {
+                        _stepsIndex[entry.Id].Value.Update(entry);
+                    }
+                    else
+                    {
+                        var node = root.Add(entry);
+                        _stepsIndex[entry.Id] = node;
+                    }
+
+                    var step = _stepsIndex[entry.Id];
+                    _activePath.Add(step);
+
+                    if (i < history.CurrentIndex)
+                    {
+                        step.Value.Type = JourneyEntryType.HistoryBack;
+                    }
+                    else if (i == history.CurrentIndex)
+                    {
+                        step.Value.Type = JourneyEntryType.ActiveStep;
+                        ActiveStep = step.Value;
+                    }
+                    else if (i > history.CurrentIndex)
+                    {
+                        step.Value.Type = JourneyEntryType.HistoryForward;
+                    }
+
+                    root = step;
+                }
+            }
+            finally
+            {
+                _semaphore.Release();
             }
         }
         private void WebView_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
@@ -133,12 +153,12 @@ namespace Journey
         }
         private async Task UpdateActiveStepSnapshot()
         {
-            if (_activeStep != null)
+            if (ActiveStep != null)
             {
                 var snapshot = await TakeSnapshot();
                 if (snapshot != null)
                 {
-                    _activeStep.Snapshot = snapshot;
+                    ActiveStep.Snapshot = snapshot;
                 }
             }
         }
@@ -160,17 +180,21 @@ namespace Journey
         }
         public async Task GoToStep(JourneyEntry step)
         {
-            if (!step.IsActive)
+            switch (step.Type)
             {
-                var history = await GetNavigationHistory();
-                if (history.Entries.FirstOrDefault(s => s.Id == step.Id) is { })
-                {
-                    await _webView.CoreWebView2.CallDevToolsProtocolMethodAsync("Page.navigateToHistoryEntry", JsonConvert.SerializeObject(new { entryId = step.Id }));
-                }
-                else
-                {
+                case JourneyEntryType.ActiveStep:
+                    // Do nothing, we're already on the active step.
+                    return;
+                case JourneyEntryType.ArchivedStep:
+                    // Navigate to the archived step URL.
                     await _webView.CoreWebView2.ExecuteScriptAsync($"window.open('{step.Url}', '_blank');");
-                }
+                    break;
+                case JourneyEntryType.HistoryBack:
+                case JourneyEntryType.HistoryForward:
+                    await _webView.CoreWebView2.CallDevToolsProtocolMethodAsync("Page.navigateToHistoryEntry", JsonConvert.SerializeObject(new { entryId = step.Id }));
+                    break;
+                default:
+                    throw new NotSupportedException($"Unsupported journey entry type: {step.Type}");
             }
         }
 

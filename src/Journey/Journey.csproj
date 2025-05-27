@@ -41,10 +41,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<None Remove="Fonts\**\*" />
 		<None Remove="Images\**\*" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<Resource Include="Fonts\**\*">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
 		<Resource Include="Images\**\*">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</Resource>
@@ -60,6 +64,10 @@
 			<SubType>Code</SubType>
 		</Compile>
 
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Fonts\" />
 	</ItemGroup>
 
 </Project>

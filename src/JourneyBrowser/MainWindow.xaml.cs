@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -100,13 +99,13 @@ namespace WPFSample
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            AddTab("https://www.bing.com");
+            AddTab("https://www.duckduckgo.com");
         }
 
 
         private void AddTab(string url, string? headerText = null, string? userDataFolder = null)
         {
-            AddTab(new Uri(url), headerText, userDataFolder);
+            AddTab(new Uri(url), userDataFolder);
         }
         private void AddTab(Uri uri, string? headerText = null, string? userDataFolder = null)
         {
@@ -241,7 +240,7 @@ namespace WPFSample
             }
             else
             {
-                AddTab("https://www.bing.com");
+                AddTab("https://www.duckduckgo.com");
             }
         }
 

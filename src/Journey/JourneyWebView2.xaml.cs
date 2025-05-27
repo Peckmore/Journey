@@ -1,4 +1,4 @@
-﻿using Journey.Collections;
+﻿using Journey.Tree.Layout;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 using Microsoft.Win32;
@@ -24,11 +24,15 @@ namespace Journey
 
         #region Private
 
+        private const int ActivePathLineZIndex = 10;
         private const float AnimationTime = 0.5f; // Duration of our transition animation to/from Journey.
         private const double ButtonBarOpacity = 0.925d;
+        private const double InactiveOpacity = 0.7f;
         private const double MaximumZoom = 5;
         private const double MinimumZoom = 0.1;
+        private const int SelectedStepBorderZIndex = 20;
         private const int SelectedStepZIndex = 1000;
+        private const int StepZIndex = 30;
 
         #endregion
 
@@ -36,6 +40,10 @@ namespace Journey
 
         public static readonly DependencyProperty JourneyHighlightColorProperty = DependencyProperty.Register(nameof(JourneyHighlightColor), typeof(Color), typeof(JourneyWebView2), new PropertyMetadata(Colors.DodgerBlue));
         public static readonly DependencyProperty JourneyZoomFactorProperty = DependencyProperty.Register(nameof(JourneyZoomFactor), typeof(double), typeof(JourneyWebView2), new PropertyMetadata(1d));
+        public static readonly ICommand ResetJourneyViewCommand = new RoutedCommand();
+        public static readonly ICommand ResetJourneyZoomCommand = new RoutedCommand();
+        public static readonly ICommand ZoomInJourneyCommand = new RoutedCommand();
+        public static readonly ICommand ZoomOutJourneyCommand = new RoutedCommand();
 
         #endregion
 
@@ -105,6 +113,11 @@ namespace Journey
             WebView.SourceChanged += (_, args) => { SourceChanged?.Invoke(this, args); };
             WebView.WebMessageReceived += (_, args) => { WebMessageReceived?.Invoke(this, args); };
             WebView.ZoomFactorChanged += (_, args) => { ZoomFactorChanged?.Invoke(this, args); };
+
+            CommandBindings.Add(new CommandBinding(ResetJourneyViewCommand, OnResetView));
+            CommandBindings.Add(new CommandBinding(ResetJourneyZoomCommand, OnResetZoom));
+            CommandBindings.Add(new CommandBinding(ZoomInJourneyCommand, OnZoomIn));
+            CommandBindings.Add(new CommandBinding(ZoomOutJourneyCommand, OnZoomOut));
 
             // The size or Journey "steps" is calculated as a division of the primary monitor resolution. We're keeping this simple
             // for now and just covering the scenarios of either a single monitor, or multiple monitors of the same resolution. Monitors
@@ -233,23 +246,6 @@ namespace Journey
                 e.Handled = true;
             }
         }
-        private void ResetViewButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (_selectedStep != null)
-            {
-                // Reset our zoom factor back to normal.
-                JourneyZoomFactor = 1;
-
-                // Reset our pan to show our active step.
-                JourneyCanvasTranslateTransform.X = _canvasHome.X;
-                JourneyCanvasTranslateTransform.Y = _canvasHome.Y;
-            }
-        }
-        private void ResetZoomButton_Click(object sender, RoutedEventArgs e)
-        {
-            // Reset our zoom factor back to normal.
-            JourneyZoomFactor = 1;
-        }
         private void RootGrid_MouseDown(object sender, MouseButtonEventArgs e)
         {
             // We only handle left clicks for now.
@@ -343,22 +339,6 @@ namespace Journey
             // changed.
             RefreshJourneyStepSize();
         }
-        private void ZoomInButton_Click(object sender, RoutedEventArgs e)
-        {
-            // Initiate a zoom in of one step.
-            JourneyZoomFactor *= 1.1;
-            //ZoomCanvas(new(((JourneyCanvas.ActualWidth / 2) / JourneyZoomFactor) - JourneyCanvasTranslateTransform.X,
-            //           ((JourneyCanvas.ActualHeight / 2) / JourneyZoomFactor) - JourneyCanvasTranslateTransform.Y),
-            //           false);
-        }
-        private void ZoomOutButton_Click(object sender, RoutedEventArgs e)
-        {
-            // Initiate a zoom out of one step.
-            JourneyZoomFactor /= 1.1;
-            //ZoomCanvas(new(((JourneyCanvas.ActualWidth / 2) / JourneyZoomFactor) - JourneyCanvasTranslateTransform.X,
-            //           ((JourneyCanvas.ActualHeight / 2) / JourneyZoomFactor) - JourneyCanvasTranslateTransform.Y),
-            //           true);
-        }
 
         #endregion
 
@@ -385,6 +365,39 @@ namespace Journey
         private void NotifyPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        private void OnResetView(object sender, RoutedEventArgs e)
+        {
+            if (_selectedStep != null)
+            {
+                // Reset our zoom factor back to normal.
+                JourneyZoomFactor = 1;
+
+                // Reset our pan to show our active step.
+                JourneyCanvasTranslateTransform.X = _canvasHome.X;
+                JourneyCanvasTranslateTransform.Y = _canvasHome.Y;
+            }
+        }
+        private void OnResetZoom(object sender, RoutedEventArgs e)
+        {
+            // Reset our zoom factor back to normal.
+            JourneyZoomFactor = 1;
+        }
+        private void OnZoomIn(object sender, RoutedEventArgs e)
+        {
+            // Initiate a zoom in of one step.
+            JourneyZoomFactor *= 1.1;
+            //ZoomCanvas(new(((JourneyCanvas.ActualWidth / 2) / JourneyZoomFactor) - JourneyCanvasTranslateTransform.X,
+            //           ((JourneyCanvas.ActualHeight / 2) / JourneyZoomFactor) - JourneyCanvasTranslateTransform.Y),
+            //           false);
+        }
+        private void OnZoomOut(object sender, RoutedEventArgs e)
+        {
+            // Initiate a zoom out of one step.
+            JourneyZoomFactor /= 1.1;
+            //ZoomCanvas(new(((JourneyCanvas.ActualWidth / 2) / JourneyZoomFactor) - JourneyCanvasTranslateTransform.X,
+            //           ((JourneyCanvas.ActualHeight / 2) / JourneyZoomFactor) - JourneyCanvasTranslateTransform.Y),
+            //           true);
         }
         private void PanCanvas(double x, double y)
         {
@@ -427,7 +440,7 @@ namespace Journey
 
         #region Protected
 
-        protected override void OnLostFocus(RoutedEventArgs e)
+        protected sealed override void OnLostFocus(RoutedEventArgs e)
         {
             _isMouseDown = false;
 
@@ -635,7 +648,9 @@ namespace Journey
                     JourneyContainer.Visibility = Visibility.Visible;
 
                     // Create and place all of our Journey steps on the canvas.
-                    await DrawJourney();
+                    var journeySteps = await _journeyManager.GetJourney();
+                    var journeyLayout = await journeySteps.LayoutTree();
+                    DrawNodeAndConnections(journeyLayout, JourneyCanvas, _journeyStepSize.Width, _journeyStepSize.Height);
 
                     // Pan our canvas to put the selected step in the center.
                     PanCanvas((WebView.ActualWidth / 2) - (_journeyStepSize.Width / 2f) - Canvas.GetLeft(_selectedStep),
@@ -814,204 +829,146 @@ namespace Journey
         #region Public
 
 
-
-
-        private async Task DrawJourney()
-        {
-            var journeySteps = await _journeyManager.GetJourney();
-            var rootLayout = CalculateTreeLayout(journeySteps, siblingSpacing: 1.25, levelSpacing: 1.25);
-            DrawTree(rootLayout, JourneyCanvas, nodeWidth: _journeyStepSize.Width, nodeHeight: _journeyStepSize.Height);
-        }
-
-
-        private double NodeWidth => _journeyStepSize.Width;
-        private double NodeHeight => _journeyStepSize.Height;
-        private double HorizontalSpacing = 20;
-        private double VerticalSpacing = 50;
-
-        //private void CalculateNodePositions<T>(TreeNode<T> node, double x, double y, Dictionary<TreeNode<T>, Point> positions)
-        //{
-        //    positions[node] = new Point(x, y);
-
-        //    double childX = x - (node.Children.Count - 1) * (NodeWidth + HorizontalSpacing) / 2;
-        //    foreach (var child in node.Children)
-        //    {
-        //        CalculateNodePositions(child, childX, y + NodeHeight + VerticalSpacing, positions);
-        //        childX += NodeWidth + HorizontalSpacing;
-        //    }
-        //}
-        //private void DrawNodesAndConnections<T>(TreeNode<T> node, Dictionary<TreeNode<T>, Point> positions)
-        //{
-        //    // Draw the current node
-        //    var position = positions[node];
-        //    var entry = node.Value;
-
-
-        //    var rect = new JourneyStep(entry)
-        //    {
-        //        Width = _journeyStepSize.Width,
-        //        Height = _journeyStepSize.Height
-        //    };
-        //    Canvas.SetLeft(rect, position.X);
-        //    Canvas.SetTop(rect, position.Y);
-        //    JourneyCanvas.Children.Add(rect);
-
-
-        //    rect.MouseUp += JourneyStep_MouseUp;
-
-
-
-
-
-        //    // Draw connections to children
-        //    foreach (var child in node.Children)
-        //    {
-        //        var childPosition = positions[child];
-        //        var line = new Line
-        //        {
-        //            X1 = position.X + NodeWidth / 2,
-        //            Y1 = position.Y + NodeHeight,
-        //            X2 = childPosition.X + NodeWidth / 2,
-        //            Y2 = childPosition.Y,
-        //            Stroke = Brushes.Black,
-        //            StrokeThickness = 1
-        //        };
-        //        JourneyCanvas.Children.Add(line);
-
-        //        // Recursively draw the child nodes
-        //        DrawNodesAndConnections(child, positions);
-        //    }
-
-
-
-
-
-
-        //}
-        private TreeNodeLayout<JourneyEntry> CalculateTreeLayout(TreeNode<JourneyEntry> root, double siblingSpacing, double levelSpacing)
-        {
-            var rootLayout = BuildLayoutTree(root, null);
-            FirstPass(rootLayout, siblingSpacing);
-            SecondPass(rootLayout, 0, levelSpacing);
-            return rootLayout;
-        }
-
-        private TreeNodeLayout<T> BuildLayoutTree<T>(TreeNode<T> node, TreeNodeLayout<T>? parent)
-        {
-            var layout = new TreeNodeLayout<T>(node) { Parent = parent };
-            foreach (var child in node.Children)
-            {
-                layout.Children.Add(BuildLayoutTree(child, layout));
-            }
-            return layout;
-        }
-
-        private void FirstPass<T>(TreeNodeLayout<T> node, double siblingSpacing)
-        {
-            if (node.Children.Count == 0)
-            {
-                // Leaf node: No adjustment needed
-                node.X = 0;
-            }
-            else
-            {
-                // Process children recursively
-                foreach (var child in node.Children)
-                {
-                    FirstPass(child, siblingSpacing);
-                }
-
-                // Center the parent node above its children
-                var leftmost = node.Children.First();
-                var rightmost = node.Children.Last();
-                var midpoint = (leftmost.X + rightmost.X) / 2;
-                node.X = midpoint;
-
-                // Resolve overlaps between siblings
-                ResolveSiblingConflicts(node, siblingSpacing);
-            }
-        }
-
-        private void ResolveSiblingConflicts<T>(TreeNodeLayout<T> node, double siblingSpacing)
-        {
-            for (int i = 1; i < node.Children.Count; i++)
-            {
-                var leftChild = node.Children[i - 1];
-                var rightChild = node.Children[i];
-                var gap = (leftChild.X + siblingSpacing) - rightChild.X;
-                if (gap > 0)
-                {
-                    ShiftSubtree(rightChild, gap);
-                }
-            }
-        }
-
-        private void ShiftSubtree<T>(TreeNodeLayout<T> node, double shift)
-        {
-            node.X += shift;
-            foreach (var child in node.Children)
-            {
-                ShiftSubtree(child, shift);
-            }
-        }
-
-        private void SecondPass<T>(TreeNodeLayout<T> node, double modSum, double levelSpacing)
-        {
-            node.X += modSum;
-            node.Y = (node.Parent?.Y ?? 0) + levelSpacing;
-
-            foreach (var child in node.Children)
-            {
-                SecondPass(child, modSum + node.Mod, levelSpacing);
-            }
-        }
-
-        private void DrawTree(TreeNodeLayout<JourneyEntry> rootLayout, Canvas canvas, double nodeWidth, double nodeHeight)
-        {
-            canvas.Children.Clear();
-
-            // Draw nodes and connections recursively
-            DrawNodeAndConnections(rootLayout, canvas, nodeWidth, nodeHeight);
-        }
-
-        private void DrawNodeAndConnections(TreeNodeLayout<JourneyEntry> node, Canvas canvas, double nodeWidth, double nodeHeight)
+        private void DrawNodeAndConnections(TreeDiagramNode<JourneyEntry> node, Canvas canvas, double nodeWidth, double nodeHeight)
         {
             // Draw the node
-            var rect = new JourneyStep(node.Node.Value)
+            var nodeRect = new JourneyStep(node.Value)
             {
                 Width = _journeyStepSize.Width,
-                Height = _journeyStepSize.Height
+                Height = _journeyStepSize.Height,
+                Opacity = node.Value.Type == JourneyEntryType.ArchivedStep ? InactiveOpacity : 1f
             };
-            rect.MouseUp += JourneyStep_MouseUp;
-            Canvas.SetLeft(rect, node.X * nodeWidth);
-            Canvas.SetTop(rect, node.Y * nodeHeight);
-            canvas.Children.Add(rect);
+            nodeRect.MouseUp += JourneyStep_MouseUp;
+            var nodeRectX = node.X * (nodeWidth * 1.5);
+            var nodeRectY = node.Y * (nodeHeight * 1.5);
+            Canvas.SetLeft(nodeRect, nodeRectX);
+            Canvas.SetTop(nodeRect, nodeRectY);
+            Panel.SetZIndex(nodeRect, StepZIndex);
+            canvas.Children.Add(nodeRect);
 
-            if (node.Node.Value.IsActive)
+            if (node.Value.Type == JourneyEntryType.ActiveStep)
             {
-                _selectedStep = rect;
+                _selectedStep = nodeRect;
+
+                var borderThickness = 5;
+                var border = new Border()
+                {
+                    Width = _journeyStepSize.Width + (2 * borderThickness),
+                    Height = _journeyStepSize.Height + (8 * borderThickness),
+                    BorderThickness = new(borderThickness),
+                    BorderBrush = new SolidColorBrush(Colors.DodgerBlue),
+                    CornerRadius = new(8),
+                    Background = new SolidColorBrush(Colors.DodgerBlue)
+                };
+                Canvas.SetLeft(border, nodeRectX - borderThickness);
+                Canvas.SetTop(border, nodeRectY - borderThickness);
+                Panel.SetZIndex(border, SelectedStepBorderZIndex);
+                canvas.Children.Add(border);
+
+                var label = new Label
+                {
+                    Content = "Current page",
+                    Foreground = Brushes.White,
+                    FontSize = 12,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Bottom
+                };
+                border.Child = label;
+            }
+
+            // draw line to parent
+            if (node.Parent != null)
+            {
+                var nodeTopMiddle = new Point(nodeRectX + (nodeRect.Width / 2), nodeRectY);
+                var otherLine = new Point(nodeTopMiddle.X, nodeTopMiddle.Y - ((nodeHeight * 0.5) / 2));
+                DrawLine(nodeTopMiddle, otherLine, node.Value.Type != JourneyEntryType.ArchivedStep);
+            }
+
+            // draw line to children
+            if (node.Children.Count > 0)
+            {
+                var nodeBottomMiddle = new Point(nodeRectX + (nodeRect.Width / 2), nodeRectY + nodeRect.Height);
+                var otherLine = new Point(nodeBottomMiddle.X, nodeBottomMiddle.Y + ((nodeHeight * 0.5) / 2));
+                DrawLine(nodeBottomMiddle, otherLine, node.Value.Type != JourneyEntryType.ArchivedStep);
+
+                // draw line over children
+                if (node.Children.Count > 1)
+                {
+                    var childrenLineStart = new Point(
+                        Convert.ToInt32(((node.RightChild as TreeDiagramNode<JourneyEntry>).X * (nodeWidth + (nodeWidth * 0.5))) + (nodeWidth / 2)),
+                        nodeBottomMiddle.Y + ((nodeHeight * 0.5) / 2));
+                    var childrenLineEnd = new Point(
+                        Convert.ToInt32(((node.LeftChild as TreeDiagramNode<JourneyEntry>).X * (nodeWidth + (nodeWidth * 0.5))) + (nodeWidth / 2)),
+                        nodeBottomMiddle.Y + ((nodeHeight * 0.5) / 2));
+
+                    DrawLine(childrenLineStart, childrenLineEnd, false);
+
+                    if (node.Children.FirstOrDefault(n => n.Value.Type != JourneyEntryType.ArchivedStep) is { } activeNode)
+                    {
+                        childrenLineStart = new Point(
+                            Convert.ToInt32(((activeNode as TreeDiagramNode<JourneyEntry>).X * (nodeWidth + (nodeWidth * 0.5))) + (nodeWidth / 2)),
+                            nodeBottomMiddle.Y + ((nodeHeight * 0.5) / 2));
+                        childrenLineEnd = new Point(
+                            Convert.ToInt32(((node).X * (nodeWidth + (nodeWidth * 0.5))) + (nodeWidth / 2)),
+                            nodeBottomMiddle.Y + ((nodeHeight * 0.5) / 2));
+
+                        DrawLine(childrenLineStart, childrenLineEnd, true);
+                    }
+                }
             }
 
             // Draw connections to children
-            foreach (var child in node.Children)
+            foreach (var baseChild in node.Children)
             {
-                var line = new Line
-                {
-                    X1 = node.X * nodeWidth + nodeWidth / 2,
-                    Y1 = node.Y * nodeHeight + nodeHeight,
-                    X2 = child.X * nodeWidth + nodeWidth / 2,
-                    Y2 = child.Y * nodeHeight,
-                    Stroke = Brushes.Black,
-                    StrokeThickness = 1
-                };
-                canvas.Children.Add(line);
+                var child = baseChild as TreeDiagramNode<JourneyEntry>;
 
                 // Recursively draw the child nodes
                 DrawNodeAndConnections(child, canvas, nodeWidth, nodeHeight);
             }
         }
+        private void DrawLine(Point p1, Point p2, bool activePath)
+        {
+            var brush = activePath ? Brushes.DodgerBlue : Brushes.DarkGray;
+            var width = activePath ? 8 : 4;
 
-        
+            var line = new Line
+            {
+                Stroke = brush,
+                StrokeThickness = width,
+                X1 = p1.X,
+                Y1 = p1.Y,
+                X2 = p2.X,
+                Y2 = p2.Y
+            };
+            JourneyCanvas.Children.Add(line);
+
+            var lineStart = new Ellipse
+            {
+                Fill = brush,
+                Height = width,
+                Width = width,
+            };
+            JourneyCanvas.Children.Add(lineStart);
+            Canvas.SetLeft(lineStart, p1.X - (width / 2));
+            Canvas.SetTop(lineStart, p1.Y - (width / 2));
+
+            var lineEnd = new Ellipse
+            {
+                Fill = brush,
+                Height = width,
+                Width = width,
+            };
+            JourneyCanvas.Children.Add(lineEnd);
+            Canvas.SetLeft(lineEnd, p2.X - (width / 2));
+            Canvas.SetTop(lineEnd, p2.Y - (width / 2));
+
+            if (activePath)
+            {
+                Panel.SetZIndex(line, ActivePathLineZIndex);
+                Panel.SetZIndex(lineStart, ActivePathLineZIndex);
+                Panel.SetZIndex(lineEnd, ActivePathLineZIndex);
+            }
+        }
 
         #endregion
     }

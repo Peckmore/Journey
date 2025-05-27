@@ -2,13 +2,6 @@
 
 namespace Journey
 {
-    internal enum JourneyEntryType
-    {
-        HistoryBack,
-        HistoryFoward,
-        ActiveStep,
-        ArchivedStep,
-    }
     internal sealed class JourneyEntry
     {
         #region Construction
@@ -20,6 +13,7 @@ namespace Journey
             Id = id;
             Title = title;
             TransitionType = transitionType;
+            Type = JourneyEntryType.ArchivedStep;
             Url = url;
             UserTypedUrl = userTypedUrl;
         }
@@ -29,10 +23,10 @@ namespace Journey
         #region Properties
 
         public int Id { get; set; }
-        public bool IsActive { get; set; }
         public BitmapFrame? Snapshot { get; set; }
         public string Title { get; set; }
         public string TransitionType { get; set; }
+        public JourneyEntryType Type { get; set; }
         public string Url { get; set; }
         public string UserTypedUrl { get; set; }
 
@@ -43,7 +37,6 @@ namespace Journey
         public void Update(JourneyEntry entry)
         {
             Id = entry.Id;
-            IsActive = entry.IsActive;
             Title = entry.Title;
             TransitionType = entry.TransitionType;
             Url = entry.Url;
