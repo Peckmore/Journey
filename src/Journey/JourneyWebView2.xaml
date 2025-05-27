@@ -133,9 +133,7 @@
                         <ScaleTransform ScaleX="{Binding JourneyZoomFactor, Mode=OneWay}"
                                         ScaleY="{Binding JourneyZoomFactor, Mode=OneWay}" />
 
-                        <TranslateTransform x:Name="JourneyCanvasTranslateTransform"
-                                            X="{Binding JourneyZoomCenterX, Mode=OneWay}"
-                                            Y="{Binding JourneyZoomCenterY, Mode=OneWay}" />
+                        <TranslateTransform x:Name="JourneyCanvasTranslateTransform" />
 
                     </TransformGroup>
                 </Canvas.RenderTransform>
