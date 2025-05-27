@@ -1,16 +1,19 @@
-<ResourceDictionary
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:Journey">
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <SolidColorBrush x:Key="JourneyHighlightColor" Color="DodgerBlue"/>
+    <!-- Colors -->
+    <Color x:Key="HighlightColor">#FF557FF3</Color>
+    <SolidColorBrush x:Key="HighlightBrush" Color="{DynamicResource HighlightColor}" />
 
-    <!-- Roboto FontFamily Resource -->
+    <Color x:Key="HighlightTextColor">#FFFEFEFE</Color>
+    <SolidColorBrush x:Key="HighlightTextBrush" Color="{DynamicResource HighlightTextColor}" />
+
+    <!-- Fonts -->
     <FontFamily x:Key="RobotoRegular">
         pack://application:,,,/Journey;component/Fonts/Roboto-Regular.ttf#Roboto
     </FontFamily>
 
-    <!-- Set font for all Labels -->
+    <!-- Styles -->
     <Style TargetType="Label">
         <Setter Property="FontFamily" Value="{StaticResource RobotoRegular}" />
     </Style>

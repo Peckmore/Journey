@@ -1,0 +1,23 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Colors -->
+    <Color x:Key="ActiveBorderColor">#FF444444</Color>
+    <SolidColorBrush x:Key="ActiveBorderBrush" Color="{StaticResource ActiveBorderColor}" />
+    
+    <Color x:Key="TextColor">#FFFEFEFE</Color>
+    <SolidColorBrush x:Key="TextBrush" Color="{StaticResource TextColor}" />
+    
+    <Color x:Key="TextLightColor">#FFBBBBBB</Color>
+    <SolidColorBrush x:Key="TextLightBrush" Color="{StaticResource TextLightColor}" />
+    
+    <Color x:Key="WindowColor">#FF232323</Color>
+    <SolidColorBrush x:Key="WindowBrush" Color="{StaticResource WindowColor}" />
+
+    <!-- Images -->
+    <BitmapImage x:Key="ResetViewImage" UriSource="pack://application:,,,/Journey;component/Images/reset_view.dark.png" />
+    <BitmapImage x:Key="ResetZoomImage" UriSource="pack://application:,,,/Journey;component/Images/reset_zoom.dark.png"/>
+    <BitmapImage x:Key="ZoomInImage" UriSource="pack://application:,,,/Journey;component/Images/zoom_in.dark.png"/>
+    <BitmapImage x:Key="ZoomOutImage" UriSource="pack://application:,,,/Journey;component/Images/zoom_out.dark.png"/>
+
+</ResourceDictionary>

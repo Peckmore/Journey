@@ -39,7 +39,9 @@ namespace Journey
         #region Public Static
 
         public static readonly ICommand HideJourneyCommand = new RoutedCommand();
-        public static readonly DependencyProperty JourneyHighlightColorProperty = DependencyProperty.Register(nameof(JourneyHighlightColor), typeof(Color), typeof(JourneyWebView2), new PropertyMetadata(Colors.DodgerBlue));
+        public static readonly DependencyProperty JourneyBackgroundColorProperty = DependencyProperty.Register(nameof(JourneyBackgroundColor), typeof(Color), typeof(JourneyWebView2));
+        public static readonly DependencyProperty JourneyHighlightColorProperty = DependencyProperty.Register(nameof(JourneyHighlightColor), typeof(Color), typeof(JourneyWebView2));
+        public static readonly DependencyProperty JourneyHighlightTextColorProperty = DependencyProperty.Register(nameof(JourneyHighlightTextColor), typeof(Color), typeof(JourneyWebView2));
         public static readonly DependencyProperty JourneyZoomFactorProperty = DependencyProperty.Register(nameof(JourneyZoomFactor), typeof(double), typeof(JourneyWebView2), new PropertyMetadata(1d));
         public static readonly ICommand ResetJourneyViewCommand = new RoutedCommand();
         public static readonly ICommand ResetJourneyZoomCommand = new RoutedCommand();
@@ -97,7 +99,10 @@ namespace Journey
         {
             // Initialize our control, and set the DataContext to itself, to bind to code behind.
             InitializeComponent();
+
             DataContext = this;
+
+            ApplyTheme();
 
             // Initialize our fields.
             _canvasHome = new(0, 0);
@@ -123,6 +128,7 @@ namespace Journey
             // We'll also hook into the event for resolution changes so that we can recalculate our step size should the primary monitor
             // resolution change.
             SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
+            SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
         }
 
         #endregion
@@ -184,15 +190,30 @@ namespace Journey
                 }
             }
         }
+        public Color JourneyBackgroundColor
+        {
+            get => (Color)GetValue(JourneyBackgroundColorProperty);
+            set
+            {
+                SetValue(JourneyBackgroundColorProperty, value);
+            }
+        }
         public Color JourneyHighlightColor
         {
             get => (Color)GetValue(JourneyHighlightColorProperty);
             set
             {
                 SetValue(JourneyHighlightColorProperty, value);
-                var rd = new ResourceDictionary();
-                rd.Source = new("pack://application:,,,/Journey;component/Themes/Generic.xaml", UriKind.RelativeOrAbsolute);
-                rd[nameof(JourneyHighlightColor)] = new SolidColorBrush(value);
+                Resources["HighlightColor"] = value;
+            }
+        }
+        public Color JourneyHighlightTextColor
+        {
+            get => (Color)GetValue(JourneyHighlightTextColorProperty);
+            set
+            {
+                SetValue(JourneyHighlightTextColorProperty, value);
+                Resources["HighlightTextColor"] = value;
             }
         }
         /// <summary>
@@ -335,11 +356,41 @@ namespace Journey
             // changed.
             RefreshJourneyStepSize();
         }
+        private void SystemEvents_UserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
+        {
+            if (e.Category == UserPreferenceCategory.General)
+            {
+                ApplyTheme();
+            }
+        }
 
         #endregion
 
         #region Private
 
+        private void ApplyTheme()
+        {
+            using var themeRegistryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+            var isDark = (themeRegistryKey?.GetValue("AppsUseLightTheme") as int? ?? 1) == 0;
+            var themeDictionary = new ResourceDictionary
+            {
+                Source = new Uri(isDark
+                                 ? "pack://application:,,,/Journey;component/Themes/Theme.Dark.xaml"
+                                 : "pack://application:,,,/Journey;component/Themes/Theme.Light.xaml", UriKind.Absolute)
+            };
+
+            var dictionariesToRemove = Resources.MergedDictionaries
+                                       .Where(d => d.Source != null && (d.Source.OriginalString.Contains("Theme.Dark.xaml")
+                                              || d.Source.OriginalString.Contains("Theme.Light.xaml")))
+                                       .ToList();
+
+            foreach (var dict in dictionariesToRemove)
+            {
+                Resources.MergedDictionaries.Remove(dict);
+            }
+
+            Resources.MergedDictionaries.Add(themeDictionary);
+        }
         private void CanExecuteZoomInCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = JourneyZoomFactor < MaximumZoom;
@@ -391,9 +442,9 @@ namespace Journey
         {
             // Initiate a zoom in of one step.
             JourneyZoomFactor *= 1.1;
-            //ZoomCanvas(new(((JourneyCanvas.ActualWidth / 2) / JourneyZoomFactor) - JourneyCanvasTranslateTransform.X,
-            //           ((JourneyCanvas.ActualHeight / 2) / JourneyZoomFactor) - JourneyCanvasTranslateTransform.Y),
-            //           false);
+            ZoomCanvas(new(((JourneyCanvas.ActualWidth * JourneyZoomFactor) / 2) - JourneyCanvasTranslateTransform.X,
+                       ((JourneyCanvas.ActualHeight * JourneyZoomFactor) / 2) - JourneyCanvasTranslateTransform.Y),
+                       false);
         }
         private void ExecuteZoomOutCommand(object sender, ExecutedRoutedEventArgs e)
         {
@@ -862,13 +913,14 @@ namespace Journey
                 var borderThickness = 5;
                 var border = new Border()
                 {
-                    Width = _journeyStepSize.Width + (2 * borderThickness),
-                    Height = _journeyStepSize.Height + (8 * borderThickness),
                     BorderThickness = new(borderThickness),
-                    BorderBrush = new SolidColorBrush(Colors.DodgerBlue),
                     CornerRadius = new(8),
-                    Background = new SolidColorBrush(Colors.DodgerBlue)
+                    Height = _journeyStepSize.Height + (8 * borderThickness),
+                    Width = _journeyStepSize.Width + (2 * borderThickness)
                 };
+                border.SetResourceReference(Control.BackgroundProperty, "HighlightBrush");
+                border.SetResourceReference(Control.BorderBrushProperty, "HighlightBrush");
+
                 Canvas.SetLeft(border, nodeRectX - borderThickness);
                 Canvas.SetTop(border, nodeRectY - borderThickness);
                 Panel.SetZIndex(border, SelectedStepBorderZIndex);
@@ -877,11 +929,11 @@ namespace Journey
                 var label = new Label
                 {
                     Content = "Current page",
-                    Foreground = Brushes.White,
                     FontSize = 12,
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Bottom
                 };
+                label.SetResourceReference(Control.ForegroundProperty, "HighlightTextBrush");
                 border.Child = label;
             }
 
@@ -937,36 +989,35 @@ namespace Journey
         }
         private void DrawLine(Point p1, Point p2, bool activePath)
         {
-            var brush = activePath ? Brushes.DodgerBlue : Brushes.DarkGray;
             var width = activePath ? 8 : 4;
 
             var line = new Line
             {
-                Stroke = brush,
                 StrokeThickness = width,
                 X1 = p1.X,
                 Y1 = p1.Y,
                 X2 = p2.X,
                 Y2 = p2.Y
             };
+            line.SetResourceReference(Line.StrokeProperty, activePath ? "HighlightBrush" : "TextLightBrush");
             JourneyCanvas.Children.Add(line);
 
             var lineStart = new Ellipse
             {
-                Fill = brush,
                 Height = width,
                 Width = width,
             };
+            lineStart.SetResourceReference(Ellipse.FillProperty, activePath ? "HighlightBrush" : "TextLightBrush");
             JourneyCanvas.Children.Add(lineStart);
             Canvas.SetLeft(lineStart, p1.X - (width / 2));
             Canvas.SetTop(lineStart, p1.Y - (width / 2));
 
             var lineEnd = new Ellipse
             {
-                Fill = brush,
                 Height = width,
                 Width = width,
             };
+            lineEnd.SetResourceReference(Ellipse.FillProperty, activePath ? "HighlightBrush" : "TextLightBrush");
             JourneyCanvas.Children.Add(lineEnd);
             Canvas.SetLeft(lineEnd, p2.X - (width / 2));
             Canvas.SetTop(lineEnd, p2.Y - (width / 2));

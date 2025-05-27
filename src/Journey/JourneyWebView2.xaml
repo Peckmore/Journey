@@ -7,7 +7,11 @@
             x:Class="Journey.JourneyWebView2"
             mc:Ignorable="d"
             d:DesignHeight="480"
-            d:DesignWidth="800">
+            d:DesignWidth="800"
+            MouseDown="RootGrid_MouseDown"
+            PreviewMouseMove="RootGrid_PreviewMouseMove"
+            PreviewMouseUp="RootGrid_PreviewMouseUp"
+            PreviewMouseWheel="RootGrid_PreviewMouseWheel">
 
     <UserControl.Resources>
 
@@ -107,12 +111,8 @@
     <!-- Root Grid -->
     <!-- A root grid to container both the Journey controls and the WebView2 instance. -->
     <Grid x:Name="RootGrid"
-         Background="Gray"
-         ClipToBounds="True"
-         MouseDown="RootGrid_MouseDown"
-         PreviewMouseMove="RootGrid_PreviewMouseMove"
-         PreviewMouseUp="RootGrid_PreviewMouseUp"
-         PreviewMouseWheel="RootGrid_PreviewMouseWheel">
+         Background="{Binding JourneyBackgroundColor}"
+         ClipToBounds="True">
 
         <!-- Journey Container -->
         <!-- Journey controls (canvas and toolbar) are within this grid to make it easy to control their visibility. -->
@@ -142,9 +142,9 @@
 
             <!-- Button Bar -->
             <Border x:Name="JourneyButtonBar"
-                    Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
-                    BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
-                    BorderThickness="0.5"
+                    Background="{DynamicResource WindowBrush}"
+                    BorderBrush="{DynamicResource ActiveBorderBrush}"
+                    BorderThickness="1.25"
                     CornerRadius="10"
                     HorizontalAlignment="Center"
                     Margin="0,25,0,0"
@@ -171,7 +171,7 @@
                             ToolTip="Zoom out (Ctrl+Minus Key)"
                             Grid.Column="0">
 
-                        <Image Source="Images/zoom_out.png"
+                        <Image Source="{DynamicResource ZoomOutImage}"
                                Style="{StaticResource ButtonBar}" />
 
                     </Button>
@@ -181,7 +181,7 @@
                             ToolTip="Zoom in (Ctrl+Plus Key)"
                             Grid.Column="2">
 
-                        <Image Source="Images/zoom_in.png"
+                        <Image Source="{DynamicResource ZoomInImage}"
                                Style="{StaticResource ButtonBar}" />
 
                     </Button>
@@ -191,7 +191,7 @@
                             ToolTip="Reset zoom level (Ctrl+0 Key)"
                             Grid.Column="4">
 
-                        <Image Source="Images/reset_zoom.png"
+                        <Image Source="{DynamicResource ResetZoomImage}"
                                Style="{StaticResource ButtonBar}" />
 
                     </Button>
@@ -201,7 +201,7 @@
                             ToolTip="Reset view (Ctrl+Backspace Key)"
                             Grid.Column="8">
 
-                        <Image Source="Images/reset_view.png"
+                        <Image Source="{DynamicResource ResetViewImage}"
                                Style="{StaticResource ButtonBar}" />
 
                     </Button>
