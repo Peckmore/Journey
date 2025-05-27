@@ -6,7 +6,7 @@
             xmlns:wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
             x:Class="Journey.JourneyWebView2"
             mc:Ignorable="d"
-            d:DesignHeight="450"
+            d:DesignHeight="480"
             d:DesignWidth="800">
 
     <UserControl.Resources>
@@ -17,29 +17,85 @@
                 <ResourceDictionary Source="pack://application:,,,/Journey;component/Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <FontFamily x:Key="CustomFont">/Fonts/#MyCustomFont</FontFamily>
-
             <Style TargetType="Button">
-                <Setter Property="Background" Value="Transparent" />
-                <Setter Property="BorderThickness" Value="0" />
-                <Setter Property="Height" Value="30" />
-                <Setter Property="Width" Value="30" />
+
+                <Setter Property="Background"
+                        Value="Transparent" />
+
+                <Setter Property="BorderThickness"
+                        Value="0" />
+
+                <Setter Property="Height"
+                        Value="30" />
+
+                <Setter Property="Width"
+                        Value="30" />
+
             </Style>
 
             <Style TargetType="Image" x:Key="ButtonBar">
-                <Setter Property="Height" Value="20" />
-                <Setter Property="Width" Value="20" />
+
+                <Setter Property="Height"
+                        Value="20" />
+
+                <Setter Property="Opacity"
+                        Value="1"/>
+
+                <Setter Property="Width"
+                        Value="20" />
+
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource AncestorType=Button}}"
+                                 Value="False">
+
+                        <Setter Property="Opacity"
+                                Value="0.4"/>
+
+                    </DataTrigger>
+                </Style.Triggers>
+
             </Style>
 
         </ResourceDictionary>
 
     </UserControl.Resources>
 
+    <UserControl.CommandBindings>
+
+        <CommandBinding Command="{x:Static local:JourneyWebView2.ResetJourneyViewCommand}"
+                        Executed="ExecuteResetViewCommand" />
+
+        <CommandBinding Command="{x:Static local:JourneyWebView2.ResetJourneyZoomCommand}"
+                        Executed="ExecuteResetZoomCommand" />
+
+        <CommandBinding Command="{x:Static local:JourneyWebView2.ZoomInJourneyCommand}"
+                        Executed="ExecuteZoomInCommand"
+                        CanExecute="CanExecuteZoomInCommand" />
+
+        <CommandBinding Command="{x:Static local:JourneyWebView2.ZoomOutJourneyCommand}"
+                        Executed="ExecuteZoomOutCommand"
+                        CanExecute="CanExecuteZoomOutCommand" />
+
+    </UserControl.CommandBindings>
+
     <UserControl.InputBindings>
-        <KeyBinding Key="Backspace" Modifiers="Control" Command="{Binding ResetJourneyViewCommand}" />
-        <KeyBinding Key="D0" Modifiers="Control" Command="{Binding ResetJourneyZoomCommand}" />
-        <KeyBinding Key="Add" Modifiers="Control" Command="{Binding ZoomInJourneyCommand}" />
-        <KeyBinding Key="Subtract" Modifiers="Control" Command="{Binding ZoomOutJourneyCommand}" />
+
+        <KeyBinding Key="Backspace"
+                    Modifiers="Control"
+                    Command="{x:Static local:JourneyWebView2.ResetJourneyViewCommand}" />
+
+        <KeyBinding Key="D0"
+                    Modifiers="Control"
+                    Command="{x:Static local:JourneyWebView2.ResetJourneyZoomCommand}" />
+
+        <KeyBinding Key="OemPlus"
+                    Modifiers="Control"
+                    Command="{x:Static local:JourneyWebView2.ZoomInJourneyCommand}" />
+
+        <KeyBinding Key="OemMinus"
+                    Modifiers="Control"
+                    Command="{x:Static local:JourneyWebView2.ZoomOutJourneyCommand}" />
+
     </UserControl.InputBindings>
 
     <!-- Root Grid -->
@@ -55,22 +111,22 @@
         <!-- Journey Container -->
         <!-- Journey controls (canvas and toolbar) are within this grid to make it easy to control their visibility. -->
         <Grid x:Name="JourneyContainer"
-             Visibility="Collapsed">
+              Visibility="Collapsed">
 
             <!-- Journey Canvas -->
             <!-- This is where "Journey Steps" are presented -->
             <Canvas x:Name="JourneyCanvas"
-                   Background="Transparent">
+                    Background="Transparent">
 
                 <Canvas.RenderTransform>
                     <TransformGroup>
 
                         <ScaleTransform ScaleX="{Binding JourneyZoomFactor, Mode=OneWay}"
-                                       ScaleY="{Binding JourneyZoomFactor, Mode=OneWay}" />
+                                        ScaleY="{Binding JourneyZoomFactor, Mode=OneWay}" />
 
                         <TranslateTransform x:Name="JourneyCanvasTranslateTransform"
-                                           X="{Binding JourneyZoomCenterX, Mode=OneWay}"
-                                           Y="{Binding JourneyZoomCenterY, Mode=OneWay}" />
+                                            X="{Binding JourneyZoomCenterX, Mode=OneWay}"
+                                            Y="{Binding JourneyZoomCenterY, Mode=OneWay}" />
 
                     </TransformGroup>
                 </Canvas.RenderTransform>
@@ -79,15 +135,15 @@
 
             <!-- Button Bar -->
             <Border x:Name="JourneyButtonBar"
-                   Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
-                   BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
-                   BorderThickness="0.5"
-                   CornerRadius="10"
-                   Opacity="0"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Top"
-                   Margin="0,25,0,0"
-                   Padding="10,5">
+                    Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+                    BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}"
+                    BorderThickness="0.5"
+                    CornerRadius="10"
+                    HorizontalAlignment="Center"
+                    Margin="0,25,0,0"
+                    Opacity="0"
+                    Padding="10,5"
+                    VerticalAlignment="Top">
 
                 <Grid>
 
@@ -104,35 +160,43 @@
                     </Grid.ColumnDefinitions>
 
                     <Button x:Name="ZoomOutButton"
-                            Click="OnZoomOut"
+                            Command="{x:Static local:JourneyWebView2.ZoomOutJourneyCommand}"
                             ToolTip="Zoom out (Ctrl+Minus Key)"
                             Grid.Column="0">
+
                         <Image Source="Images/zoom_out.png"
                                Style="{StaticResource ButtonBar}" />
+
                     </Button>
 
                     <Button x:Name="ZoomInButton"
-                            Click="OnZoomIn"
-                           ToolTip="Zoom in (Ctrl+Plus Key)"
-                           Grid.Column="2">
+                            Command="{x:Static local:JourneyWebView2.ZoomInJourneyCommand}"
+                            ToolTip="Zoom in (Ctrl+Plus Key)"
+                            Grid.Column="2">
+
                         <Image Source="Images/zoom_in.png"
-                              Style="{StaticResource ButtonBar}" />
+                               Style="{StaticResource ButtonBar}" />
+
                     </Button>
 
                     <Button x:Name="ResetZoomButton"
-                            Click="OnResetZoom"
-                           ToolTip="Reset zoom level (Ctrl+0 Key)"
-                           Grid.Column="4">
+                            Command="{x:Static local:JourneyWebView2.ResetJourneyZoomCommand}"
+                            ToolTip="Reset zoom level (Ctrl+0 Key)"
+                            Grid.Column="4">
+
                         <Image Source="Images/reset_zoom.png"
-                              Style="{StaticResource ButtonBar}" />
+                               Style="{StaticResource ButtonBar}" />
+
                     </Button>
 
                     <Button x:Name="ResetViewButton"
-                            Click="OnResetView"
-                           ToolTip="Reset view (Ctrl+Backspace Key)"
-                           Grid.Column="8">
+                            Command="{x:Static local:JourneyWebView2.ResetJourneyViewCommand}"
+                            ToolTip="Reset view (Ctrl+Backspace Key)"
+                            Grid.Column="8">
+
                         <Image Source="Images/reset_view.png"
-                              Style="{StaticResource ButtonBar}" />
+                               Style="{StaticResource ButtonBar}" />
+
                     </Button>
 
                 </Grid>
@@ -144,7 +208,7 @@
         <!-- WebView -->
         <!-- This is the browser used for navigation. -->
         <wpf:WebView2 x:Name="WebView"
-                     Margin="0"/>
+                      Margin="0"/>
 
     </Grid>
 

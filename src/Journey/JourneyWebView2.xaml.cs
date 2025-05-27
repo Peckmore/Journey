@@ -114,11 +114,6 @@ namespace Journey
             WebView.WebMessageReceived += (_, args) => { WebMessageReceived?.Invoke(this, args); };
             WebView.ZoomFactorChanged += (_, args) => { ZoomFactorChanged?.Invoke(this, args); };
 
-            CommandBindings.Add(new CommandBinding(ResetJourneyViewCommand, OnResetView));
-            CommandBindings.Add(new CommandBinding(ResetJourneyZoomCommand, OnResetZoom));
-            CommandBindings.Add(new CommandBinding(ZoomInJourneyCommand, OnZoomIn));
-            CommandBindings.Add(new CommandBinding(ZoomOutJourneyCommand, OnZoomOut));
-
             // The size or Journey "steps" is calculated as a division of the primary monitor resolution. We're keeping this simple
             // for now and just covering the scenarios of either a single monitor, or multiple monitors of the same resolution. Monitors
             // with different resolutions are a different case that would need to be accounted for in future development.
@@ -344,6 +339,14 @@ namespace Journey
 
         #region Private
 
+        private void CanExecuteZoomInCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = JourneyZoomFactor < MaximumZoom;
+        }
+        private void CanExecuteZoomOutCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = JourneyZoomFactor > MinimumZoom;
+        }
         private void Dispose(bool disposing)
         {
             // Check we're not already disposed.
@@ -362,11 +365,7 @@ namespace Journey
                 _isDisposed = true;
             }
         }
-        private void NotifyPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-        private void OnResetView(object sender, RoutedEventArgs e)
+        private void ExecuteResetViewCommand(object sender, RoutedEventArgs e)
         {
             if (_selectedStep != null)
             {
@@ -378,12 +377,12 @@ namespace Journey
                 JourneyCanvasTranslateTransform.Y = _canvasHome.Y;
             }
         }
-        private void OnResetZoom(object sender, RoutedEventArgs e)
+        private void ExecuteResetZoomCommand(object sender, RoutedEventArgs e)
         {
             // Reset our zoom factor back to normal.
             JourneyZoomFactor = 1;
         }
-        private void OnZoomIn(object sender, RoutedEventArgs e)
+        private void ExecuteZoomInCommand(object sender, ExecutedRoutedEventArgs e)
         {
             // Initiate a zoom in of one step.
             JourneyZoomFactor *= 1.1;
@@ -391,13 +390,17 @@ namespace Journey
             //           ((JourneyCanvas.ActualHeight / 2) / JourneyZoomFactor) - JourneyCanvasTranslateTransform.Y),
             //           false);
         }
-        private void OnZoomOut(object sender, RoutedEventArgs e)
+        private void ExecuteZoomOutCommand(object sender, ExecutedRoutedEventArgs e)
         {
             // Initiate a zoom out of one step.
             JourneyZoomFactor /= 1.1;
             //ZoomCanvas(new(((JourneyCanvas.ActualWidth / 2) / JourneyZoomFactor) - JourneyCanvasTranslateTransform.X,
             //           ((JourneyCanvas.ActualHeight / 2) / JourneyZoomFactor) - JourneyCanvasTranslateTransform.Y),
             //           true);
+        }
+        private void NotifyPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         private void PanCanvas(double x, double y)
         {
