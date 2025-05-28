@@ -16,8 +16,8 @@ namespace Journey
         #region Fields
 
         private IList<TreeNode<JourneyEntry>> _activePath;
-        private readonly Dictionary<int, TreeNode<JourneyEntry>> _stepsIndex;
         private readonly Tree<JourneyEntry> _steps;
+        private readonly Dictionary<int, TreeNode<JourneyEntry>> _stepsIndex;
         private SemaphoreSlim _transitionSemaphore = new(1, 1);
         private readonly WebView2 _webView;
 
@@ -28,8 +28,8 @@ namespace Journey
         internal JourneyManager(WebView2 webView)
         {
             _activePath = new List<TreeNode<JourneyEntry>>();
-            _stepsIndex = new();
             _steps = new(new(0, "Root", "Root", string.Empty, string.Empty));
+            _stepsIndex = new();
             _webView = webView;
 
             _webView.CoreWebView2InitializationCompleted += WebView_CoreWebView2InitializationCompleted;

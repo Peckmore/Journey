@@ -496,6 +496,7 @@ namespace Journey
 
         #region Protected
 
+        /// <inheritdoc />
         protected sealed override void OnLostFocus(RoutedEventArgs e)
         {
             _isMouseDown = false;

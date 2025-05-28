@@ -7,13 +7,13 @@
 
     <Color x:Key="LineColor">#FFCCCCCC</Color>
     <SolidColorBrush x:Key="LineBrush" Color="{StaticResource LineColor}" />
-    
+
     <Color x:Key="TextColor">#FFFEFEFE</Color>
     <SolidColorBrush x:Key="TextBrush" Color="{StaticResource TextColor}" />
-    
+
     <Color x:Key="TextLightColor">#FFBBBBBB</Color>
     <SolidColorBrush x:Key="TextLightBrush" Color="{StaticResource TextLightColor}" />
-    
+
     <Color x:Key="WindowColor">#FF232323</Color>
     <SolidColorBrush x:Key="WindowBrush" Color="{StaticResource WindowColor}" />
 
