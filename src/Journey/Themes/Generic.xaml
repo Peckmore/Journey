@@ -1,7 +1,7 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!-- Colors -->
+    <!-- Brushes -->
     <SolidColorBrush x:Key="JourneyWebView2.ActiveStepBackground" Color="#FF557FF3" />
     <SolidColorBrush x:Key="JourneyWebView2.ActiveStepForeground" Color="#FFFEFEFE" />
     <SolidColorBrush x:Key="JourneyWebView2.Background" Color="Transparent" />

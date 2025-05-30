@@ -23,15 +23,56 @@
                 <Setter Property="Background"
                         Value="Transparent" />
 
-                <Setter Property="BorderThickness"
-                        Value="0" />
-
                 <Setter Property="Height"
                         Value="30" />
 
                 <Setter Property="Width"
                         Value="30" />
 
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+
+                            <Border x:Name="border"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="Transparent"
+                                    BorderThickness="0"
+                                    CornerRadius="3"
+                                    SnapsToDevicePixels="true">
+
+                                <ContentPresenter x:Name="contentPresenter"
+                                                  Focusable="False"
+                                                  HorizontalAlignment="Center"
+                                                  Margin="0"
+                                                  RecognizesAccessKey="True"
+                                                  SnapsToDevicePixels="True"
+                                                  VerticalAlignment="Center"/>
+                            </Border>
+
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver"
+                                         Value="true">
+
+                                    <Setter Property="Background"
+                                            TargetName="border"
+                                            Value="{DynamicResource ActiveBorderBrush}"/>
+
+                                </Trigger>
+
+                                <Trigger Property="IsPressed"
+                                         Value="true">
+
+                                    <Setter Property="Background"
+                                            TargetName="border"
+                                            Value="{DynamicResource PressedBrush}"/>
+
+                                </Trigger>
+
+                            </ControlTemplate.Triggers>
+
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
 
             <Style TargetType="Image" x:Key="ButtonBar">
@@ -167,9 +208,9 @@
                     </Grid.ColumnDefinitions>
 
                     <Button x:Name="ZoomOutButton"
+                            Grid.Column="0"
                             Command="{x:Static local:JourneyWebView2.ZoomOutJourneyCommand}"
-                            ToolTip="Zoom out (Ctrl+Minus Key)"
-                            Grid.Column="0">
+                            ToolTip="Zoom out (Ctrl+Minus Key)">
 
                         <Image Source="{DynamicResource ZoomOutImage}"
                                Style="{StaticResource ButtonBar}" />
@@ -177,9 +218,9 @@
                     </Button>
 
                     <Button x:Name="ZoomInButton"
+                            Grid.Column="2"
                             Command="{x:Static local:JourneyWebView2.ZoomInJourneyCommand}"
-                            ToolTip="Zoom in (Ctrl+Plus Key)"
-                            Grid.Column="2">
+                            ToolTip="Zoom in (Ctrl+Plus Key)">
 
                         <Image Source="{DynamicResource ZoomInImage}"
                                Style="{StaticResource ButtonBar}" />
@@ -187,9 +228,9 @@
                     </Button>
 
                     <Button x:Name="ResetZoomButton"
+                            Grid.Column="4"
                             Command="{x:Static local:JourneyWebView2.ResetJourneyZoomCommand}"
-                            ToolTip="Reset zoom level (Ctrl+0 Key)"
-                            Grid.Column="4">
+                            ToolTip="Reset zoom level (Ctrl+0 Key)">
 
                         <Image Source="{DynamicResource ResetZoomImage}"
                                Style="{StaticResource ButtonBar}" />
@@ -197,9 +238,9 @@
                     </Button>
 
                     <Button x:Name="ResetViewButton"
+                            Grid.Column="8"
                             Command="{x:Static local:JourneyWebView2.ResetJourneyViewCommand}"
-                            ToolTip="Reset view (Ctrl+Backspace Key)"
-                            Grid.Column="8">
+                            ToolTip="Reset view (Ctrl+Backspace Key)">
 
                         <Image Source="{DynamicResource ResetViewImage}"
                                Style="{StaticResource ButtonBar}" />

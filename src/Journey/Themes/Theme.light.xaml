@@ -2,20 +2,12 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- Colors -->
-    <Color x:Key="ActiveBorderColor">#FFCCCCCC</Color>
-    <SolidColorBrush x:Key="ActiveBorderBrush" Color="{StaticResource ActiveBorderColor}" />
-
-    <Color x:Key="LineColor">#FF777777</Color>
-    <SolidColorBrush x:Key="LineBrush" Color="{StaticResource LineColor}" />
-
-    <Color x:Key="TextColor">#FF010101</Color>
-    <SolidColorBrush x:Key="TextBrush" Color="{StaticResource TextColor}" />
-
-    <Color x:Key="TextLightColor">#FF444444</Color>
-    <SolidColorBrush x:Key="TextLightBrush" Color="{StaticResource TextLightColor}" />
-
-    <Color x:Key="WindowColor">#FFF0F0F0</Color>
-    <SolidColorBrush x:Key="WindowBrush" Color="{StaticResource WindowColor}" />
+    <SolidColorBrush x:Key="ActiveBorderBrush" Color="#FFCCCCCC" />
+    <SolidColorBrush x:Key="LineBrush" Color="#FF777777" />
+    <SolidColorBrush x:Key="PressedBrush" Color="#FFE0E0E0" />
+    <SolidColorBrush x:Key="TextBrush" Color="#FF010101" />
+    <SolidColorBrush x:Key="TextLightBrush" Color="#FF444444" />
+    <SolidColorBrush x:Key="WindowBrush" Color="#FFF0F0F0" />
 
     <!-- Images -->
     <BitmapImage x:Key="ResetViewImage" UriSource="pack://application:,,,/Journey;component/Images/reset_view.light.png" />
