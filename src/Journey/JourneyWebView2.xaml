@@ -118,7 +118,7 @@
         <!-- Journey Container -->
         <!-- Journey controls (canvas and toolbar) are within this grid to make it easy to control their visibility. -->
         <Grid x:Name="JourneyContainer"
-              Background="{DynamicResource JourneyBackgroundBrush}"
+              Background="{DynamicResource JourneyWebView2.Background}"
               Visibility="Collapsed">
 
             <!-- Journey Canvas -->

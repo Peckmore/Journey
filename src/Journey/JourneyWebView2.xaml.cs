@@ -39,9 +39,6 @@ namespace Journey
         #region Public Static
 
         public static readonly ICommand HideJourneyCommand = new RoutedCommand();
-        public static readonly DependencyProperty JourneyBackgroundColorProperty = DependencyProperty.Register(nameof(JourneyBackgroundColor), typeof(Color), typeof(JourneyWebView2));
-        public static readonly DependencyProperty JourneyHighlightColorProperty = DependencyProperty.Register(nameof(JourneyHighlightColor), typeof(Color), typeof(JourneyWebView2));
-        public static readonly DependencyProperty JourneyHighlightTextColorProperty = DependencyProperty.Register(nameof(JourneyHighlightTextColor), typeof(Color), typeof(JourneyWebView2));
         public static readonly DependencyProperty JourneyZoomFactorProperty = DependencyProperty.Register(nameof(JourneyZoomFactor), typeof(double), typeof(JourneyWebView2), new PropertyMetadata(1d));
         public static readonly ICommand ResetJourneyViewCommand = new RoutedCommand();
         public static readonly ICommand ResetJourneyZoomCommand = new RoutedCommand();
@@ -190,32 +187,30 @@ namespace Journey
                 }
             }
         }
-        public Color JourneyBackgroundColor
+        public Brush JourneyActiveStepBackground
         {
-            get => (Color)GetValue(JourneyBackgroundColorProperty);
-            set
-            {
-                SetValue(JourneyBackgroundColorProperty, value);
-                Resources["JourneyBackgroundColor"] = value;
-            }
+            get => (Brush)Resources["JourneyWebView2.ActiveStepBackground"];
+            set => Resources["JourneyWebView2.ActiveStepBackground"] = value;
         }
-        public Color JourneyHighlightColor
+        public Brush JourneyActiveStepForeground
         {
-            get => (Color)GetValue(JourneyHighlightColorProperty);
-            set
-            {
-                SetValue(JourneyHighlightColorProperty, value);
-                Resources["JourneyHighlightColor"] = value;
-            }
+            get => (Brush)Resources["JourneyWebView2.ActiveStepForeground"];
+            set => Resources["JourneyWebView2.ActiveStepForeground"] = value;
         }
-        public Color JourneyHighlightTextColor
+        public Brush JourneyBackground
         {
-            get => (Color)GetValue(JourneyHighlightTextColorProperty);
-            set
-            {
-                SetValue(JourneyHighlightTextColorProperty, value);
-                Resources["JourneyHighlightTextColor"] = value;
-            }
+            get => (Brush)Resources["JourneyWebView2.Background"];
+            set => Resources["JourneyWebView2.Background"] = value;
+        }
+        public Brush JourneyHighlightBackground
+        {
+            get => (Brush)Resources["JourneyWebView2.HighlightBackground"];
+            set => Resources["JourneyWebView2.HighlightBackground"] = value;
+        }
+        public Brush JourneyHighlightForeground
+        {
+            get => (Brush)Resources["JourneyWebView2.HighlightForeground"];
+            set => Resources["JourneyWebView2.HighlightForeground"] = value;
         }
         /// <summary>
         /// The zoom factor for Journey.
@@ -916,8 +911,8 @@ namespace Journey
                     Height = _journeyStepSize.Height + (8 * borderThickness),
                     Width = _journeyStepSize.Width + (2 * borderThickness)
                 };
-                border.SetResourceReference(Control.BackgroundProperty, "JourneyHighlightBrush");
-                border.SetResourceReference(Control.BorderBrushProperty, "JourneyHighlightBrush");
+                border.SetResourceReference(Control.BackgroundProperty, "JourneyWebView2.ActiveStepBackground");
+                border.SetResourceReference(Control.BorderBrushProperty, "JourneyWebView2.ActiveStepBackground");
 
                 Canvas.SetLeft(border, nodeRectX - borderThickness);
                 Canvas.SetTop(border, nodeRectY - borderThickness);
@@ -931,7 +926,7 @@ namespace Journey
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Bottom
                 };
-                label.SetResourceReference(Control.ForegroundProperty, "JourneyHighlightTextBrush");
+                label.SetResourceReference(Control.ForegroundProperty, "JourneyWebView2.ActiveStepForeground");
                 border.Child = label;
             }
 
@@ -987,7 +982,7 @@ namespace Journey
         }
         private void DrawLine(Point p1, Point p2, bool activePath)
         {
-            var brushName = activePath ? "JourneyHighlightBrush" : "LineBrush";
+            var brushName = activePath ? "JourneyWebView2.HighlightBackground" : "LineBrush";
             var width = activePath ? 8 : 4;
 
             var line = new Line

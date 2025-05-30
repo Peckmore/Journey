@@ -126,7 +126,7 @@
                         <Style TargetType="Grid">
 
                             <Setter Property="Background"
-                                    Value="{DynamicResource JourneyHighlightBrush}"/>
+                                    Value="{DynamicResource JourneyWebView2.HighlightBackground}"/>
 
                             <Style.Triggers>
 
@@ -154,7 +154,7 @@
                                BasedOn="{StaticResource {x:Type Label}}">
 
                             <Setter Property="Foreground"
-                                    Value="{DynamicResource JourneyHighlightTextBrush}"/>
+                                    Value="{DynamicResource JourneyWebView2.HighlightForeground}"/>
 
                             <Style.Triggers>
 
