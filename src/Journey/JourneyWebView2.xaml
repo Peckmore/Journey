@@ -202,8 +202,8 @@
                         <ColumnDefinition Width="5"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="5"/>
-                        <ColumnDefinition Width="5"/>
-                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="1"/>
+                        <ColumnDefinition Width="3"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
@@ -236,6 +236,14 @@
                                Style="{StaticResource ButtonBar}" />
 
                     </Button>
+
+                    <Line Grid.Column="6"
+                          Stroke="{DynamicResource LineBrush}"
+                          StrokeThickness="1"
+                          X1="0"
+                          X2="0"
+                          Y1="5"
+                          Y2="25" />
 
                     <Button x:Name="ResetViewButton"
                             Grid.Column="8"
