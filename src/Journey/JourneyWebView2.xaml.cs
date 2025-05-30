@@ -432,19 +432,24 @@ namespace Journey
         private void ExecuteResetZoomCommand(object sender, RoutedEventArgs e)
         {
             // Reset our zoom factor back to normal.
-            JourneyZoomFactor = 1;
+            var canvasCenter = GetCanvasCenter();
+            ZoomCanvas(canvasCenter, false, 1);
         }
         private void ExecuteZoomInCommand(object sender, ExecutedRoutedEventArgs e)
         {
             // Initiate a zoom in of one step.
-            var canvasCenter = RootGrid.TranslatePoint(new(JourneyCanvas.ActualWidth / 2, JourneyCanvas.ActualHeight / 2), JourneyCanvas);
+            var canvasCenter = GetCanvasCenter();
             ZoomCanvas(canvasCenter, false);
         }
         private void ExecuteZoomOutCommand(object sender, ExecutedRoutedEventArgs e)
         {
             // Initiate a zoom out of one step.
-            var canvasCenter = RootGrid.TranslatePoint(new(JourneyCanvas.ActualWidth / 2, JourneyCanvas.ActualHeight / 2), JourneyCanvas);
+            var canvasCenter = GetCanvasCenter();
             ZoomCanvas(canvasCenter, true);
+        }
+        private Point GetCanvasCenter()
+        {
+            return RootGrid.TranslatePoint(new(JourneyCanvas.ActualWidth / 2, JourneyCanvas.ActualHeight / 2), JourneyCanvas);
         }
         private void NotifyPropertyChanged([CallerMemberName] string? propertyName = null)
         {
@@ -465,7 +470,7 @@ namespace Journey
             var height = SystemParameters.PrimaryScreenHeight / divisor;
             _journeyStepSize = new(width, height);
         }
-        private void ZoomCanvas(Point center, bool zoomOut)
+        private void ZoomCanvas(Point center, bool zoomOut, double? zoomFactor = null)
         {
             // We're going to zoom in/out of our tree diagram by adjust both the scale and translate transforms of our Journey canvas.
 
@@ -477,9 +482,15 @@ namespace Journey
             // maximum values. The scale transform binds to the `JourneyZoomFactor` property, so updating this property will update
             // the scale amount.
             var zoomIncrement = JourneyZoomFactor / 5;
-            JourneyZoomFactor = zoomOut
-                                ? Math.Max(JourneyZoomFactor - zoomIncrement, MinimumZoom)
-                                : Math.Min(JourneyZoomFactor + zoomIncrement, MaximumZoom);
+            if (zoomFactor == null)
+            {
+                JourneyZoomFactor = zoomOut ? Math.Max(JourneyZoomFactor - zoomIncrement, MinimumZoom)
+                                            : Math.Min(JourneyZoomFactor + zoomIncrement, MaximumZoom);
+            }
+            else
+            {
+                JourneyZoomFactor = zoomFactor.Value;
+            }
 
             // Now we'll adjust the TranslateTransform to keep the zoom centered around the mouse cursor position. We take our previously
             // calculated value, then adjust it for the new zoom factor.
