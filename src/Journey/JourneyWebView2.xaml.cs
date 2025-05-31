@@ -497,7 +497,7 @@ namespace Journey
 
                 var label = new Label
                 {
-                    Content = "Current page",
+                    Content = Journey.Resources.Strings.JourneyStep_CurrentPage,
                     FontSize = 12,
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Bottom

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:journey="clr-namespace:Journey"
+             xmlns:resources="clr-namespace:Journey.Resources"
              xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.AeroLite"
              x:Class="Journey.JourneyStep"
              x:ClassModifier="internal"
@@ -172,7 +173,7 @@
                                             <TextBlock TextAlignment="Center">
                                                 <Run Text="⧉"/>
                                                 <LineBreak/>
-                                                <Run Text="Open in new tab"/>
+                                                <Run Text="{x:Static resources:Strings.JourneyStep_OpenInNewTab}"/>
                                             </TextBlock>
                                         </Setter.Value>
                                     </Setter>
@@ -190,7 +191,7 @@
                                             <TextBlock TextAlignment="Center">
                                                 <Run Text="←"/>
                                                 <LineBreak/>
-                                                <Run Text="Go back"/>
+                                                <Run Text="{x:Static resources:Strings.JourneyStep_GoBack}"/>
                                             </TextBlock>
                                         </Setter.Value>
                                     </Setter>
@@ -205,7 +206,7 @@
                                             <TextBlock TextAlignment="Center">
                                                 <Run Text="→"/>
                                                 <LineBreak/>
-                                                <Run Text="Go forward"/>
+                                                <Run Text="{x:Static resources:Strings.JourneyStep_GoForward}"/>
                                             </TextBlock>
                                         </Setter.Value>
                                     </Setter>
@@ -220,7 +221,7 @@
                                             <TextBlock TextAlignment="Center">
                                                 <Run Text="↩"/>
                                                 <LineBreak/>
-                                                <Run Text="Continue"/>
+                                                <Run Text="{x:Static resources:Strings.JourneyStep_Continue}"/>
                                             </TextBlock>
                                         </Setter.Value>
                                     </Setter>
