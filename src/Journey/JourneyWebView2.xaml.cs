@@ -698,13 +698,21 @@ namespace Journey
         #region Protected
 
         /// <inheritdoc />
-        protected sealed override void OnLostFocus(RoutedEventArgs e)
+        protected override void OnLostFocus(RoutedEventArgs e)
         {
             // If we lose focus we'll set our mouse down flag to false, as if the mouse button is released when we don't have focus we
             // won't detect the event.
             _isMouseDown = false;
 
             base.OnLostFocus(e);
+        }
+        /// <inheritdoc />
+        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
+        {
+            base.OnRenderSizeChanged(sizeInfo);
+
+            _canvasHome.X += (sizeInfo.NewSize.Width - sizeInfo.PreviousSize.Width) / 2;
+            _canvasHome.Y += (sizeInfo.NewSize.Height - sizeInfo.PreviousSize.Height) / 2;
         }
 
         #endregion
