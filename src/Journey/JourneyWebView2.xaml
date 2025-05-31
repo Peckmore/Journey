@@ -147,7 +147,7 @@
     </UserControl.InputBindings>
 
     <!-- Root Grid -->
-    <!-- A root grid to container both the Journey controls and the WebView2 instance. -->
+    <!-- A root grid to contain both the Journey controls and the WebView2 instance. -->
     <Grid x:Name="RootGrid"
           Background="Transparent"
           ClipToBounds="True"
@@ -159,7 +159,7 @@
         <!-- Journey Container -->
         <!-- Journey controls (canvas and toolbar) are within this grid to make it easy to control their visibility. -->
         <Grid x:Name="JourneyContainer"
-              Background="{DynamicResource JourneyWebView2.Background}"
+              Background="{DynamicResource JourneyBackground}"
               Visibility="Collapsed">
 
             <!-- Journey Canvas -->
@@ -207,6 +207,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
+                    <!-- Zoom Out Button -->
                     <Button x:Name="ZoomOutButton"
                             Grid.Column="0"
                             Command="{x:Static local:JourneyWebView2.ZoomOutJourneyCommand}"
@@ -217,6 +218,7 @@
 
                     </Button>
 
+                    <!-- Zoom In Button -->
                     <Button x:Name="ZoomInButton"
                             Grid.Column="2"
                             Command="{x:Static local:JourneyWebView2.ZoomInJourneyCommand}"
@@ -227,6 +229,7 @@
 
                     </Button>
 
+                    <!-- Reset Zoom Button -->
                     <Button x:Name="ResetZoomButton"
                             Grid.Column="4"
                             Command="{x:Static local:JourneyWebView2.ResetJourneyZoomCommand}"
@@ -237,6 +240,7 @@
 
                     </Button>
 
+                    <!-- Separator -->
                     <Line Grid.Column="6"
                           Stroke="{DynamicResource LineBrush}"
                           StrokeThickness="1"
@@ -245,6 +249,7 @@
                           Y1="5"
                           Y2="25" />
 
+                    <!-- Reset View Button -->
                     <Button x:Name="ResetViewButton"
                             Grid.Column="8"
                             Command="{x:Static local:JourneyWebView2.ResetJourneyViewCommand}"

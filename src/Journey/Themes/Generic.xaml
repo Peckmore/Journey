@@ -2,11 +2,11 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- Brushes -->
-    <SolidColorBrush x:Key="JourneyWebView2.ActiveStepBackground" Color="#FF557FF3" />
-    <SolidColorBrush x:Key="JourneyWebView2.ActiveStepForeground" Color="#FFFEFEFE" />
-    <SolidColorBrush x:Key="JourneyWebView2.Background" Color="Transparent" />
-    <SolidColorBrush x:Key="JourneyWebView2.HighlightBackground" Color="#FF557FF3" />
-    <SolidColorBrush x:Key="JourneyWebView2.HighlightForeground" Color="#FFFEFEFE" />
+    <SolidColorBrush x:Key="JourneyActiveStepBackground" Color="#FF557FF3" />
+    <SolidColorBrush x:Key="JourneyActiveStepForeground" Color="#FFFEFEFE" />
+    <SolidColorBrush x:Key="JourneyBackground" Color="Transparent" />
+    <SolidColorBrush x:Key="JourneyHighlightBackground" Color="#FF557FF3" />
+    <SolidColorBrush x:Key="JourneyHighlightForeground" Color="#FFFEFEFE" />
 
     <!-- Fonts -->
     <FontFamily x:Key="RobotoRegular">

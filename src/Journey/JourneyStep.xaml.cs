@@ -20,9 +20,11 @@ namespace Journey
 
         #region Construction
 
-        public JourneyStep(JourneyEntry model)
+        public JourneyStep(NavigationEntry model)
         {
             InitializeComponent();
+
+            // Set bitmpa scaling to low quality to try and keep performance high.
             RenderOptions.SetBitmapScalingMode(SnapshotImage, BitmapScalingMode.LowQuality);
 
             JourneyEntry = model;
@@ -45,7 +47,7 @@ namespace Journey
                 }
             }
         }
-        public JourneyEntry JourneyEntry { get; }
+        public NavigationEntry JourneyEntry { get; }
 
         #endregion
 

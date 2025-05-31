@@ -59,15 +59,4 @@
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Compile Update="JourneyWebView2.xaml.cs">
-			<SubType>Code</SubType>
-		</Compile>
-
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Fonts\" />
-	</ItemGroup>
-
 </Project>

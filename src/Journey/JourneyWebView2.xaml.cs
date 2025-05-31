@@ -1,4 +1,4 @@
-﻿using Journey.Tree.Layout;
+﻿using Journey.Tree;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 using Microsoft.Win32;
@@ -18,14 +18,17 @@ using System.Windows.Shapes;
 
 namespace Journey
 {
-    public partial class JourneyWebView2 : IWebView2, INotifyPropertyChanged, IDisposable
+    /// <summary>
+    /// An implementation of a WebView2 control that provides a Journey view, allowing users to visualize their navigation history as a tree diagram.
+    /// </summary>
+    public sealed partial class JourneyWebView2 : IWebView2, INotifyPropertyChanged, IDisposable
     {
         #region Constants
 
         #region Private
 
         private const int ActivePathLineZIndex = 10;
-        private const float AnimationTime = 0.5f; // Duration of our transition animation to/from Journey.
+        private const float AnimationTime = 0.5f;
         private const double ButtonBarOpacity = 0.925d;
         private const double InactiveOpacity = 0.7f;
         private const double MaximumZoom = 5;
@@ -38,11 +41,29 @@ namespace Journey
 
         #region Public Static
 
+        /// <summary>
+        /// /// Command to hide the Journey view.
+        /// </summary>
         public static readonly ICommand HideJourneyCommand = new RoutedCommand();
+        /// <summary>
+        /// Property to control the zoom factor of the Journey view.
+        /// </summary>
         public static readonly DependencyProperty JourneyZoomFactorProperty = DependencyProperty.Register(nameof(JourneyZoomFactor), typeof(double), typeof(JourneyWebView2), new PropertyMetadata(1d));
+        /// <summary>
+        /// Command to reset the Journey view to the currently selected step, with the zoom factor set to 1 and the canvas panned to the home position.
+        /// </summary>
         public static readonly ICommand ResetJourneyViewCommand = new RoutedCommand();
+        /// <summary>
+        /// Command to reset the zoom factor of the Journey view to 1.
+        /// </summary>
         public static readonly ICommand ResetJourneyZoomCommand = new RoutedCommand();
+        /// <summary>
+        /// Command to zoom in on the Journey view.
+        /// </summary>
         public static readonly ICommand ZoomInJourneyCommand = new RoutedCommand();
+        /// <summary>
+        /// Command to zoom out on the Journey view.
+        /// </summary>
         public static readonly ICommand ZoomOutJourneyCommand = new RoutedCommand();
 
         #endregion
@@ -58,6 +79,7 @@ namespace Journey
         private readonly JourneyManager _journeyManager;
         private readonly SemaphoreSlim _journeySemaphore;
         private Size _journeyStepSize;
+        private Size _journeyStepSpacing;
         private Point _lastMouseDownPosition;
         private Point _lastMousePosition;
         private JourneyStep? _selectedStep;
@@ -88,17 +110,17 @@ namespace Journey
         #region Construction
 
         /// <summary>
-        /// Creates a new instance of a JourneyWebView2 control.
+        /// Creates a new instance of a <see cref="JourneyWebView2" /> control.
         /// Note that the control's <see cref="CoreWebView2" /> will be null until initialized.
-        /// See the <see cref="Microsoft.Web.WebView2.Wpf.WebView2" /> class documentation for an initialization overview.
+        /// See the <see cref="WebView2" /> class documentation for an initialization overview.
         /// </summary>
         public JourneyWebView2()
         {
             // Initialize our control, and set the DataContext to itself, to bind to code behind.
             InitializeComponent();
-
             DataContext = this;
 
+            // Merge in the appropriate resource dictionary dependent upon whether the OS is in light or dark mode.
             ApplyTheme();
 
             // Initialize our fields.
@@ -108,7 +130,7 @@ namespace Journey
             _lastMouseDownPosition = new(0, 0);
             _lastMousePosition = new(0, 0);
 
-            // Wire up our events to "pass-through"
+            // Wire up our WebView2 events to "pass-through".
             WebView.ContentLoading += (_, args) => { ContentLoading?.Invoke(this, args); };
             WebView.CoreWebView2InitializationCompleted += (_, args) => { CoreWebView2InitializationCompleted?.Invoke(this, args); };
             WebView.NavigationCompleted += (_, args) => { NavigationCompleted?.Invoke(this, args); };
@@ -117,13 +139,13 @@ namespace Journey
             WebView.WebMessageReceived += (_, args) => { WebMessageReceived?.Invoke(this, args); };
             WebView.ZoomFactorChanged += (_, args) => { ZoomFactorChanged?.Invoke(this, args); };
 
-            // The size or Journey "steps" is calculated as a division of the primary monitor resolution. We're keeping this simple
-            // for now and just covering the scenarios of either a single monitor, or multiple monitors of the same resolution. Monitors
-            // with different resolutions are a different case that would need to be accounted for in future development.
+            // The size of Journey "steps" is calculated as a division of the primary monitor resolution. We're keeping this simple for
+            // now and just covering the scenarios of either a single monitor, or multiple monitors of the same resolution. Monitors with
+            // different resolutions are a different case that would need to be accounted for in future development.
             RefreshJourneyStepSize();
 
-            // We'll also hook into the event for resolution changes so that we can recalculate our step size should the primary monitor
-            // resolution change.
+            // We'll also hook into the event for resolution changes, so that we can recalculate our step size should the primary monitor
+            // resolution change, and user preference changes, to update the current theme (light/dark mode) if the user changes the mode.
             SystemEvents.DisplaySettingsChanged += SystemEvents_DisplaySettingsChanged;
             SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
         }
@@ -132,6 +154,9 @@ namespace Journey
 
         #region Finalize
 
+        /// <summary>
+        /// Finalizes an instance of the <see cref="JourneyWebView2"/> class.
+        /// </summary>
         ~JourneyWebView2()
         {
             Dispose(false);
@@ -187,30 +212,45 @@ namespace Journey
                 }
             }
         }
+        /// <summary>
+        /// The "highlight" color for the active step (the users current page) in the Journey view.
+        /// </summary>
         public Brush JourneyActiveStepBackground
         {
-            get => (Brush)Resources["JourneyWebView2.ActiveStepBackground"];
-            set => Resources["JourneyWebView2.ActiveStepBackground"] = value;
+            get => (Brush)Resources["JourneyActiveStepBackground"];
+            set => Resources["JourneyActiveStepBackground"] = value;
         }
+        /// <summary>
+        /// The foreground color for the active step (the users current page) in the Journey view.
+        /// </summary>
         public Brush JourneyActiveStepForeground
         {
-            get => (Brush)Resources["JourneyWebView2.ActiveStepForeground"];
-            set => Resources["JourneyWebView2.ActiveStepForeground"] = value;
+            get => (Brush)Resources["JourneyActiveStepForeground"];
+            set => Resources["JourneyActiveStepForeground"] = value;
         }
+        /// <summary>
+        /// The default background color for the Journey view.
+        /// </summary>
         public Brush JourneyBackground
         {
-            get => (Brush)Resources["JourneyWebView2.Background"];
-            set => Resources["JourneyWebView2.Background"] = value;
+            get => (Brush)Resources["JourneyBackground"];
+            set => Resources["JourneyBackground"] = value;
         }
+        /// <summary>
+        /// The "highlight" color, used for mouseover effects in the Journey view.
+        /// </summary>
         public Brush JourneyHighlightBackground
         {
-            get => (Brush)Resources["JourneyWebView2.HighlightBackground"];
-            set => Resources["JourneyWebView2.HighlightBackground"] = value;
+            get => (Brush)Resources["JourneyHighlightBackground"];
+            set => Resources["JourneyHighlightBackground"] = value;
         }
+        /// <summary>
+        /// The "highlight" foreground color, used for text displayed on top of highlighted elements in the Journey view.
+        /// </summary>
         public Brush JourneyHighlightForeground
         {
-            get => (Brush)Resources["JourneyWebView2.HighlightForeground"];
-            set => Resources["JourneyWebView2.HighlightForeground"] = value;
+            get => (Brush)Resources["JourneyHighlightForeground"];
+            set => Resources["JourneyHighlightForeground"] = value;
         }
         /// <summary>
         /// The zoom factor for Journey.
@@ -328,7 +368,7 @@ namespace Journey
             {
                 // `CTRL` was not held down, so we're going to pan the canvas.
 
-                // Regardless of direction, and pan amount will be the same, so check the value of e.Delta to determine which way the
+                // Regardless of direction, our pan amount will be the same, so check the value of e.Delta to determine which way the
                 // user scrolled the mouse wheel, and set our pan amount accordingly.
                 var scrollOffset = e.Delta < 0 ? -50 : 50;
 
@@ -344,6 +384,7 @@ namespace Journey
                 }
             }
 
+            // Set this event to handled, there is no need to tunnel it down/bubble it up.
             e.Handled = true;
         }
         private void SystemEvents_DisplaySettingsChanged(object? sender, EventArgs e)
@@ -356,6 +397,7 @@ namespace Journey
         {
             if (e.Category == UserPreferenceCategory.General)
             {
+                // The user may have changed their theme preferences, so re-apply the theme (light/dark mode).
                 ApplyTheme();
             }
         }
@@ -366,19 +408,20 @@ namespace Journey
 
         private void ApplyTheme()
         {
+            // We'll check the registry to see whether the app should be in light or dark mode, then remove our previously merged
+            // dictionary and merge in the appropriate theme dictionary based on the current mode.
+
             using var themeRegistryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
             var isDark = (themeRegistryKey?.GetValue("AppsUseLightTheme") as int? ?? 1) == 0;
             var themeDictionary = new ResourceDictionary
             {
-                Source = new Uri(isDark
-                                 ? "pack://application:,,,/Journey;component/Themes/Theme.Dark.xaml"
-                                 : "pack://application:,,,/Journey;component/Themes/Theme.Light.xaml", UriKind.Absolute)
+                Source = new Uri(isDark ? "pack://application:,,,/Journey;component/Themes/Theme.Dark.xaml"
+                                        : "pack://application:,,,/Journey;component/Themes/Theme.Light.xaml", UriKind.Absolute)
             };
 
             var dictionariesToRemove = Resources.MergedDictionaries
                                        .Where(d => d.Source != null && (d.Source.OriginalString.Contains("Theme.Dark.xaml")
-                                              || d.Source.OriginalString.Contains("Theme.Light.xaml")))
-                                       .ToList();
+                                                                        || d.Source.OriginalString.Contains("Theme.Light.xaml"))).ToList();
 
             foreach (var dict in dictionariesToRemove)
             {
@@ -389,10 +432,12 @@ namespace Journey
         }
         private void CanExecuteZoomInCommand(object sender, CanExecuteRoutedEventArgs e)
         {
+            // Check whether we can zoom in, based on whether the current zoom factor is less than the maximum allowed zoom.
             e.CanExecute = JourneyZoomFactor < MaximumZoom;
         }
         private void CanExecuteZoomOutCommand(object sender, CanExecuteRoutedEventArgs e)
         {
+            // Check whether we can zoom out, based on whether the current zoom factor is greater than the minimum allowed zoom.
             e.CanExecute = JourneyZoomFactor > MinimumZoom;
         }
         private void Dispose(bool disposing)
@@ -408,14 +453,162 @@ namespace Journey
                     WebView.Dispose();
                 }
 
-                // Free unmanaged resources (unmanaged objects) and override finalizer
-                // Set large fields to null
                 _isDisposed = true;
             }
         }
-        private void ExecuteHideJourneyCommand(object sender, RoutedEventArgs e)
+        private void DrawJourneySteps(TreeNode<NavigationEntry> node, Canvas canvas)
         {
-            HideJourney();
+            // Create a new JourneyStep for the current node, set its size and opacity based on the type of step, then add it to the canvas.
+            var nodeRect = new JourneyStep(node.Value)
+            {
+                Width = _journeyStepSize.Width,
+                Height = _journeyStepSize.Height,
+                Opacity = node.Value.Type == NavigationEntryType.ArchivedStep ? InactiveOpacity : 1f
+            };
+            nodeRect.MouseUp += JourneyStep_MouseUp;
+            var nodeRectX = node.X * (_journeyStepSize.Width + _journeyStepSpacing.Width);
+            var nodeRectY = node.Y * (_journeyStepSize.Height + _journeyStepSpacing.Height);
+            Canvas.SetLeft(nodeRect, nodeRectX);
+            Canvas.SetTop(nodeRect, nodeRectY);
+            Panel.SetZIndex(nodeRect, StepZIndex);
+            canvas.Children.Add(nodeRect);
+
+            // If the step is the active step, create a border control with label to place behind the active step to "highlight" it
+            // visually.
+            if (node.Value.Type == NavigationEntryType.ActiveStep)
+            {
+                _selectedStep = nodeRect;
+
+                var borderThickness = 5;
+                var border = new Border()
+                {
+                    BorderThickness = new(borderThickness),
+                    CornerRadius = new(8),
+                    Height = _journeyStepSize.Height + (8 * borderThickness),
+                    Width = _journeyStepSize.Width + (2 * borderThickness)
+                };
+                border.SetResourceReference(Control.BackgroundProperty, "JourneyActiveStepBackground");
+                border.SetResourceReference(Control.BorderBrushProperty, "JourneyActiveStepBackground");
+
+                Canvas.SetLeft(border, nodeRectX - borderThickness);
+                Canvas.SetTop(border, nodeRectY - borderThickness);
+                Panel.SetZIndex(border, SelectedStepBorderZIndex);
+                canvas.Children.Add(border);
+
+                var label = new Label
+                {
+                    Content = "Current page",
+                    FontSize = 12,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Bottom
+                };
+                label.SetResourceReference(Control.ForegroundProperty, "JourneyActiveStepForeground");
+                border.Child = label;
+            }
+
+            // Draw the vertical component of the line from the node to it's parent (if it has one).
+            if (node.Parent != null)
+            {
+                var nodeTopMiddle = new Point(nodeRectX + (nodeRect.Width / 2), nodeRectY);
+                var otherLine = new Point(nodeTopMiddle.X, nodeTopMiddle.Y - (_journeyStepSpacing.Height / 2));
+                DrawLine(nodeTopMiddle, otherLine, node.Value.Type != NavigationEntryType.ArchivedStep);
+            }
+
+            // Draw lines to the nodes children, if it has any.
+            if (node.Children.Count > 0)
+            {
+                // Draw the vertical component of the line from the node to it's children.
+                var nodeBottomMiddle = new Point(nodeRectX + (nodeRect.Width / 2), nodeRectY + nodeRect.Height);
+                var otherLine = new Point(nodeBottomMiddle.X, nodeBottomMiddle.Y + (_journeyStepSpacing.Height / 2));
+                DrawLine(nodeBottomMiddle, otherLine, node.Value.Type != NavigationEntryType.ArchivedStep);
+
+                // Draw the horizontal line that connects the vertical line from each child, to the vertical line from this node.
+                if (node.Children.Count > 1)
+                {
+                    var childrenLineStart = new Point((node.RightChild!.X * (_journeyStepSize.Width + _journeyStepSpacing.Width)) + (_journeyStepSize.Width / 2),
+                                                      nodeBottomMiddle.Y + (_journeyStepSpacing.Height / 2));
+                    var childrenLineEnd = new Point((node.LeftChild!.X * (_journeyStepSize.Width + _journeyStepSpacing.Width)) + (_journeyStepSize.Width / 2),
+                                                    nodeBottomMiddle.Y + (_journeyStepSpacing.Height / 2));
+
+                    DrawLine(childrenLineStart, childrenLineEnd, false);
+
+                    if (node.Children.FirstOrDefault(n => n.Value.Type != NavigationEntryType.ArchivedStep) is { } activeNode)
+                    {
+                        childrenLineStart = new Point((activeNode.X * (_journeyStepSize.Width + _journeyStepSpacing.Width)) + (_journeyStepSize.Width / 2),
+                                                      nodeBottomMiddle.Y + (_journeyStepSpacing.Height / 2));
+                        childrenLineEnd = new Point((node.X * (_journeyStepSize.Width + _journeyStepSpacing.Width)) + (_journeyStepSize.Width / 2),
+                                                    nodeBottomMiddle.Y + (_journeyStepSpacing.Height / 2));
+
+                        DrawLine(childrenLineStart, childrenLineEnd, true);
+                    }
+                }
+            }
+
+            // Recursively draw child nodes.
+            foreach (var baseChild in node.Children)
+            {
+                var child = baseChild;
+
+                DrawJourneySteps(child, canvas);
+            }
+        }
+        private void DrawLine(Point p1, Point p2, bool activePath)
+        {
+            // Draw a line on the Journey canvas between two points, with an optional "active path" style, and rounded ends.
+
+            // Determine the brush name and width based on whether this is an active path line or not.
+            var brushName = activePath ? "JourneyHighlightBackground" : "LineBrush";
+            var width = activePath ? 8 : 4;
+
+            // Create our line and add it to the Journey canvas.
+            var line = new Line
+            {
+                StrokeThickness = width,
+                X1 = p1.X,
+                Y1 = p1.Y,
+                X2 = p2.X,
+                Y2 = p2.Y
+            };
+            line.SetResourceReference(Line.StrokeProperty, brushName);
+            JourneyCanvas.Children.Add(line);
+
+            // Create our start and end circles to give the line rounded ends, and add them to the Journey canvas.
+
+            // Create and add our start circle.
+            var lineStart = new Ellipse
+            {
+                Height = width,
+                Width = width,
+            };
+            lineStart.SetResourceReference(Ellipse.FillProperty, brushName);
+            JourneyCanvas.Children.Add(lineStart);
+            Canvas.SetLeft(lineStart, p1.X - (width / 2));
+            Canvas.SetTop(lineStart, p1.Y - (width / 2));
+
+            // Create and add our end circle.
+            var lineEnd = new Ellipse
+            {
+                Height = width,
+                Width = width,
+            };
+            lineEnd.SetResourceReference(Ellipse.FillProperty, brushName);
+            JourneyCanvas.Children.Add(lineEnd);
+            Canvas.SetLeft(lineEnd, p2.X - (width / 2));
+            Canvas.SetTop(lineEnd, p2.Y - (width / 2));
+
+            // Lines will overlap, which doesn't matter for lines of the same color as they all blend in together. But for the active path
+            // we want to ensure the lines appear on top of other lines, so we'll bump their Z-Index.
+            if (activePath)
+            {
+                Panel.SetZIndex(line, ActivePathLineZIndex);
+                Panel.SetZIndex(lineStart, ActivePathLineZIndex);
+                Panel.SetZIndex(lineEnd, ActivePathLineZIndex);
+            }
+        }
+        private async void ExecuteHideJourneyCommand(object sender, RoutedEventArgs e)
+        {
+            // Hide journey.
+            await HideJourney();
         }
         private void ExecuteResetViewCommand(object sender, RoutedEventArgs e)
         {
@@ -431,7 +624,7 @@ namespace Journey
         }
         private void ExecuteResetZoomCommand(object sender, RoutedEventArgs e)
         {
-            // Reset our zoom factor back to normal.
+            // Reset our zoom factor back to 1, zooming based around the center of the visible canvas.
             var canvasCenter = GetCanvasCenter();
             ZoomCanvas(canvasCenter, false, 1);
         }
@@ -449,6 +642,7 @@ namespace Journey
         }
         private Point GetCanvasCenter()
         {
+            // Get the visible center of the journey canvas, based around the containing root grid.
             return RootGrid.TranslatePoint(new(JourneyCanvas.ActualWidth / 2, JourneyCanvas.ActualHeight / 2), JourneyCanvas);
         }
         private void NotifyPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -469,6 +663,7 @@ namespace Journey
             var width = SystemParameters.PrimaryScreenWidth / divisor;
             var height = SystemParameters.PrimaryScreenHeight / divisor;
             _journeyStepSize = new(width, height);
+            _journeyStepSpacing = new(width / 2, height / 2);
         }
         private void ZoomCanvas(Point center, bool zoomOut, double? zoomFactor = null)
         {
@@ -505,6 +700,8 @@ namespace Journey
         /// <inheritdoc />
         protected sealed override void OnLostFocus(RoutedEventArgs e)
         {
+            // If we lose focus we'll set our mouse down flag to false, as if the mouse button is released when we don't have focus we
+            // won't detect the event.
             _isMouseDown = false;
 
             base.OnLostFocus(e);
@@ -559,10 +756,10 @@ namespace Journey
             {
                 try
                 {
-                    // Set our journey visibility to hidden.
+                    // Set our journey visibility flag to hidden.
                     IsJourneyVisible = false;
 
-                    // Start our WebView2 instance navigating to the step. We want this to happen as soon as possible to provided for a
+                    // Start our WebView2 instance navigating to the step. We want this to happen as soon as possible to provide for a
                     // smoother transition from the thumbnail image to the actual web page. If we're lucky, the page will have loaded
                     // before the animation completes, resulting in a seamless transition. In the real world this is unlikely, but by
                     // starting this early we give ourselves the best chance.
@@ -662,7 +859,7 @@ namespace Journey
                 }
             }
 
-            // We haven't carried out an animation (wrong state, no step selected, etc., so release our semaphore.
+            // We haven't carried out an animation (wrong state, no step selected, etc.), so release our semaphore.
             _journeySemaphore.Release();
         }
         /// <inheritdoc/>
@@ -684,11 +881,11 @@ namespace Journey
             await _journeySemaphore.WaitAsync();
 
             // Only show Journey if it is not already visible.
-            if (!IsJourneyVisible)
+            if (!_isJourneyVisible)
             {
                 try
                 {
-                    // Set our journey visibility to visible.
+                    // Set our journey visibility flag to visible.
                     IsJourneyVisible = true;
 
                     // Start a stopwatch here to monitor how long we take to populate our Journey canvas. We introduce a small delay if
@@ -702,25 +899,25 @@ namespace Journey
                     JourneyCanvasTranslateTransform.X = 0;
                     JourneyCanvasTranslateTransform.Y = 0;
 
-                    // Make sure the canvas has no children controls already (though this should have been handled by the `HideJourney`
-                    // method.
+                    // Make sure the canvas has no child controls already (though this should have been handled by the `HideJourney`
+                    // method).
                     JourneyCanvas.Children.Clear();
 
                     // Set our Journey container to visible. It will appear behind the WebView2 control, so won't be visible, but should
-                    // starting do layout and setup of itself and child controls as they are added.
+                    // start doing layout and setup of itself and child controls as they are added.
                     JourneyContainer.Visibility = Visibility.Visible;
 
                     // Create and place all of our Journey steps on the canvas.
                     var journeySteps = await _journeyManager.GetJourney();
-                    var journeyLayout = await journeySteps.LayoutTree();
-                    DrawNodeAndConnections(journeyLayout, JourneyCanvas, _journeyStepSize.Width, _journeyStepSize.Height);
+                    journeySteps.PerformLayout();
+                    DrawJourneySteps(journeySteps, JourneyCanvas);
 
-                    // Pan our canvas to put the selected step in the center.
+                    // Pan our canvas to put the selected step in the center (once it's animation has completed).
                     PanCanvas((WebView.ActualWidth / 2) - (_journeyStepSize.Width / 2f) - Canvas.GetLeft(_selectedStep),
                               (WebView.ActualHeight / 2) - (_journeyStepSize.Height / 2f) - Canvas.GetTop(_selectedStep));
 
                     // Store the current canvas position as our "home" position, so we can return to this later if the user presses the
-                    // "home" button.
+                    // "Reset View" button.
                     _canvasHome = new(JourneyCanvasTranslateTransform.X, JourneyCanvasTranslateTransform.Y);
 
                     // Set the selected step to the highest z-index, so it is on top of all other canvas elements. This is needed because
@@ -800,10 +997,13 @@ namespace Journey
                     // whilst the animation is in progress.
                     Canvas.SetLeft(_selectedStep, 0 - JourneyCanvasTranslateTransform.X);
                     Canvas.SetTop(_selectedStep, 0 - JourneyCanvasTranslateTransform.Y);
-                    _selectedStep.Width = WebView.ActualWidth;
-                    _selectedStep.Height = WebView.ActualHeight;
-                    _selectedStep.TextArea.Opacity = 0;
-                    _selectedStep.IsAnimating = true;
+                    if (_selectedStep != null)
+                    {
+                        _selectedStep.Width = WebView.ActualWidth;
+                        _selectedStep.Height = WebView.ActualHeight;
+                        _selectedStep.TextArea.Opacity = 0;
+                        _selectedStep.IsAnimating = true;
+                    }
 
                     // We stop the stopwatch, and check how long we have taken to set up our Journey canvas. If we have taken less than
                     // the defined "delay" time, we wait for the remainder of the delay time before starting our animation.
@@ -811,10 +1011,10 @@ namespace Journey
                     var delay = 400;
                     if (stopWatch.ElapsedMilliseconds < delay)
                     {
-                        // HACK: Feels nasty to put a delay in here, but it prevents the flicker when showing the image control, which seems to
-                        // appear, then paint the image in, causing a flicker when switching between the browser and the snapshot. Adding a small
-                        // delay here seems to allow the image time to paint before the browser is hidden, removing the flicker. But is there
-                        // a better way?
+                        // HACK: Feels nasty to put a delay in here, but it helps to prevent the flicker when showing the image control,
+                        // which seems to appear, then paint the image in, causing a flicker when switching between the browser and the
+                        // snapshot. Adding a small delay here seems to allow the image time to paint before the browser is hidden,
+                        // removing the flicker. But is there a better way?
                         await Task.Delay(delay - (int)stopWatch.ElapsedMilliseconds);
                         Debug.WriteLine($"Delayed for: {delay - (int)stopWatch.ElapsedMilliseconds}ms");
                     }
@@ -825,11 +1025,14 @@ namespace Journey
                     JourneyCanvas.Focus();
 
                     // Start all of our animations.
-                    _selectedStep.BeginAnimation(Control.WidthProperty, scaleXAnimation, HandoffBehavior.Compose);
-                    _selectedStep.BeginAnimation(Control.HeightProperty, scaleYAnimation, HandoffBehavior.Compose);
-                    _selectedStep.BeginAnimation(Canvas.LeftProperty, translateXAnimation, HandoffBehavior.Compose);
-                    _selectedStep.BeginAnimation(Canvas.TopProperty, translateYAnimation, HandoffBehavior.Compose);
-                    _selectedStep.TextArea.BeginAnimation(Control.OpacityProperty, titleAnimation, HandoffBehavior.Compose);
+                    if (_selectedStep != null)
+                    {
+                        _selectedStep.BeginAnimation(Control.WidthProperty, scaleXAnimation, HandoffBehavior.Compose);
+                        _selectedStep.BeginAnimation(Control.HeightProperty, scaleYAnimation, HandoffBehavior.Compose);
+                        _selectedStep.BeginAnimation(Canvas.LeftProperty, translateXAnimation, HandoffBehavior.Compose);
+                        _selectedStep.BeginAnimation(Canvas.TopProperty, translateYAnimation, HandoffBehavior.Compose);
+                        _selectedStep.TextArea.BeginAnimation(Control.OpacityProperty, titleAnimation, HandoffBehavior.Compose);
+                    }
                     JourneyButtonBar.BeginAnimation(Control.OpacityProperty, buttonBarAnimation, HandoffBehavior.Compose);
 
                     // Return so we don't release our semaphore, as this will be released when our animation finishes.
@@ -866,174 +1069,6 @@ namespace Journey
         }
 
         #endregion
-
-        #endregion
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        #region Public
-
-
-        private void DrawNodeAndConnections(TreeDiagramNode<JourneyEntry> node, Canvas canvas, double nodeWidth, double nodeHeight)
-        {
-            // Draw the node
-            var nodeRect = new JourneyStep(node.Value)
-            {
-                Width = _journeyStepSize.Width,
-                Height = _journeyStepSize.Height,
-                Opacity = node.Value.Type == JourneyEntryType.ArchivedStep ? InactiveOpacity : 1f
-            };
-            nodeRect.MouseUp += JourneyStep_MouseUp;
-            var nodeRectX = node.X * (nodeWidth * 1.5);
-            var nodeRectY = node.Y * (nodeHeight * 1.5);
-            Canvas.SetLeft(nodeRect, nodeRectX);
-            Canvas.SetTop(nodeRect, nodeRectY);
-            Panel.SetZIndex(nodeRect, StepZIndex);
-            canvas.Children.Add(nodeRect);
-
-            if (node.Value.Type == JourneyEntryType.ActiveStep)
-            {
-                _selectedStep = nodeRect;
-
-                var borderThickness = 5;
-                var border = new Border()
-                {
-                    BorderThickness = new(borderThickness),
-                    CornerRadius = new(8),
-                    Height = _journeyStepSize.Height + (8 * borderThickness),
-                    Width = _journeyStepSize.Width + (2 * borderThickness)
-                };
-                border.SetResourceReference(Control.BackgroundProperty, "JourneyWebView2.ActiveStepBackground");
-                border.SetResourceReference(Control.BorderBrushProperty, "JourneyWebView2.ActiveStepBackground");
-
-                Canvas.SetLeft(border, nodeRectX - borderThickness);
-                Canvas.SetTop(border, nodeRectY - borderThickness);
-                Panel.SetZIndex(border, SelectedStepBorderZIndex);
-                canvas.Children.Add(border);
-
-                var label = new Label
-                {
-                    Content = "Current page",
-                    FontSize = 12,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Bottom
-                };
-                label.SetResourceReference(Control.ForegroundProperty, "JourneyWebView2.ActiveStepForeground");
-                border.Child = label;
-            }
-
-            // draw line to parent
-            if (node.Parent != null)
-            {
-                var nodeTopMiddle = new Point(nodeRectX + (nodeRect.Width / 2), nodeRectY);
-                var otherLine = new Point(nodeTopMiddle.X, nodeTopMiddle.Y - ((nodeHeight * 0.5) / 2));
-                DrawLine(nodeTopMiddle, otherLine, node.Value.Type != JourneyEntryType.ArchivedStep);
-            }
-
-            // draw line to children
-            if (node.Children.Count > 0)
-            {
-                var nodeBottomMiddle = new Point(nodeRectX + (nodeRect.Width / 2), nodeRectY + nodeRect.Height);
-                var otherLine = new Point(nodeBottomMiddle.X, nodeBottomMiddle.Y + ((nodeHeight * 0.5) / 2));
-                DrawLine(nodeBottomMiddle, otherLine, node.Value.Type != JourneyEntryType.ArchivedStep);
-
-                // draw line over children
-                if (node.Children.Count > 1)
-                {
-                    var childrenLineStart = new Point(
-                        Convert.ToInt32(((node.RightChild as TreeDiagramNode<JourneyEntry>).X * (nodeWidth + (nodeWidth * 0.5))) + (nodeWidth / 2)),
-                        nodeBottomMiddle.Y + ((nodeHeight * 0.5) / 2));
-                    var childrenLineEnd = new Point(
-                        Convert.ToInt32(((node.LeftChild as TreeDiagramNode<JourneyEntry>).X * (nodeWidth + (nodeWidth * 0.5))) + (nodeWidth / 2)),
-                        nodeBottomMiddle.Y + ((nodeHeight * 0.5) / 2));
-
-                    DrawLine(childrenLineStart, childrenLineEnd, false);
-
-                    if (node.Children.FirstOrDefault(n => n.Value.Type != JourneyEntryType.ArchivedStep) is { } activeNode)
-                    {
-                        childrenLineStart = new Point(
-                            Convert.ToInt32(((activeNode as TreeDiagramNode<JourneyEntry>).X * (nodeWidth + (nodeWidth * 0.5))) + (nodeWidth / 2)),
-                            nodeBottomMiddle.Y + ((nodeHeight * 0.5) / 2));
-                        childrenLineEnd = new Point(
-                            Convert.ToInt32(((node).X * (nodeWidth + (nodeWidth * 0.5))) + (nodeWidth / 2)),
-                            nodeBottomMiddle.Y + ((nodeHeight * 0.5) / 2));
-
-                        DrawLine(childrenLineStart, childrenLineEnd, true);
-                    }
-                }
-            }
-
-            // Draw connections to children
-            foreach (var baseChild in node.Children)
-            {
-                var child = baseChild as TreeDiagramNode<JourneyEntry>;
-
-                // Recursively draw the child nodes
-                DrawNodeAndConnections(child, canvas, nodeWidth, nodeHeight);
-            }
-        }
-        private void DrawLine(Point p1, Point p2, bool activePath)
-        {
-            var brushName = activePath ? "JourneyWebView2.HighlightBackground" : "LineBrush";
-            var width = activePath ? 8 : 4;
-
-            var line = new Line
-            {
-                StrokeThickness = width,
-                X1 = p1.X,
-                Y1 = p1.Y,
-                X2 = p2.X,
-                Y2 = p2.Y
-            };
-            line.SetResourceReference(Line.StrokeProperty, brushName);
-            JourneyCanvas.Children.Add(line);
-
-            var lineStart = new Ellipse
-            {
-                Height = width,
-                Width = width,
-            };
-            lineStart.SetResourceReference(Ellipse.FillProperty, brushName);
-            JourneyCanvas.Children.Add(lineStart);
-            Canvas.SetLeft(lineStart, p1.X - (width / 2));
-            Canvas.SetTop(lineStart, p1.Y - (width / 2));
-
-            var lineEnd = new Ellipse
-            {
-                Height = width,
-                Width = width,
-            };
-            lineEnd.SetResourceReference(Ellipse.FillProperty, brushName);
-            JourneyCanvas.Children.Add(lineEnd);
-            Canvas.SetLeft(lineEnd, p2.X - (width / 2));
-            Canvas.SetTop(lineEnd, p2.Y - (width / 2));
-
-            if (activePath)
-            {
-                Panel.SetZIndex(line, ActivePathLineZIndex);
-                Panel.SetZIndex(lineStart, ActivePathLineZIndex);
-                Panel.SetZIndex(lineEnd, ActivePathLineZIndex);
-            }
-        }
 
         #endregion
     }

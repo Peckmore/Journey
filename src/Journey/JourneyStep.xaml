@@ -11,10 +11,7 @@
              d:DesignHeight="90"
              d:DesignWidth="160">
 
-    <UserControl.DataContext>
-        <journey:JourneyEntry/>
-    </UserControl.DataContext>
-
+    <!-- Drop Shadow -->
     <themes:SystemDropShadowChrome CornerRadius="8">
         <Grid Background="White">
 
@@ -43,6 +40,7 @@
                    Stretch="UniformToFill"/>
 
             <!-- Text Area -->
+            <!-- This overlaps the snapshot. -->
             <Border x:Name="TextArea"
                     x:FieldModifier="public"
                     Grid.Row="1"
@@ -60,7 +58,7 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <!-- Entry Page Title -->
+                        <!-- Step Page Title -->
                         <TextBlock Grid.Row="0"
                                    Foreground="{DynamicResource TextBrush}"
                                    FontSize="14"
@@ -72,7 +70,7 @@
                                    VerticalAlignment="Center"
                                    Width="384"/>
 
-                        <!-- Entry Page URL -->
+                        <!-- Step Page URL -->
                         <TextBlock Grid.Row="2"
                                    FontSize="12"
                                    Foreground="{DynamicResource TextLightBrush}"
@@ -88,6 +86,8 @@
 
             </Border>
 
+            <!-- Hover Effect -->
+            <!-- Appears whenever the user hovers over the step. -->
             <Grid x:Name="HoverGrid"
                   Background="Transparent"
                   Grid.Row="0"
@@ -103,6 +103,7 @@
 
                             <MultiDataTrigger>
 
+                                <!-- We only show the hover effect when the user hovers over the step and the control is not animating. -->
                                 <MultiDataTrigger.Conditions>
                                     <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}}" Value="True"/>
                                     <Condition Binding="{Binding ElementName=ControlRoot,Path=IsAnimating}" Value="False"/>
@@ -120,13 +121,15 @@
                     </Style>
                 </Grid.Style>
 
+                <!-- Hover Background -->
+                <!-- This is the "highlight" that appears when the user hovers over the step. -->
                 <Grid Opacity="0.75">
 
                     <Grid.Style>
                         <Style TargetType="Grid">
 
                             <Setter Property="Background"
-                                    Value="{DynamicResource JourneyWebView2.HighlightBackground}"/>
+                                    Value="{DynamicResource JourneyHighlightBackground}"/>
 
                             <Style.Triggers>
 
@@ -145,6 +148,9 @@
 
                 </Grid>
 
+                <!-- Hover Text -->
+                <!-- This is the text that appears when the user hovers over the step. This is not within the background element above so
+                     that it can have an opacity of 1. -->
                 <Label FontSize="28"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center">
@@ -154,7 +160,7 @@
                                BasedOn="{StaticResource {x:Type Label}}">
 
                             <Setter Property="Foreground"
-                                    Value="{DynamicResource JourneyWebView2.HighlightForeground}"/>
+                                    Value="{DynamicResource JourneyHighlightForeground}"/>
 
                             <Style.Triggers>
 
