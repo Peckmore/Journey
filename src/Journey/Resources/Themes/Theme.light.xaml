@@ -10,9 +10,9 @@
     <SolidColorBrush x:Key="WindowBrush" Color="#FFF0F0F0" />
 
     <!-- Images -->
-    <BitmapImage x:Key="ResetViewImage" UriSource="pack://application:,,,/Journey;component/Images/reset_view.light.png" />
-    <BitmapImage x:Key="ResetZoomImage" UriSource="pack://application:,,,/Journey;component/Images/reset_zoom.light.png"/>
-    <BitmapImage x:Key="ZoomInImage" UriSource="pack://application:,,,/Journey;component/Images/zoom_in.light.png"/>
-    <BitmapImage x:Key="ZoomOutImage" UriSource="pack://application:,,,/Journey;component/Images/zoom_out.light.png"/>
+    <BitmapImage x:Key="ResetViewImage" UriSource="pack://application:,,,/Journey;component/Resources/Images/reset_view.light.png" />
+    <BitmapImage x:Key="ResetZoomImage" UriSource="pack://application:,,,/Journey;component/Resources/Images/reset_zoom.light.png"/>
+    <BitmapImage x:Key="ZoomInImage" UriSource="pack://application:,,,/Journey;component/Resources/Images/zoom_in.light.png"/>
+    <BitmapImage x:Key="ZoomOutImage" UriSource="pack://application:,,,/Journey;component/Resources/Images/zoom_out.light.png"/>
 
 </ResourceDictionary>

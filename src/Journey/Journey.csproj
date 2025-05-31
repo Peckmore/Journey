@@ -41,15 +41,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Remove="Fonts\**\*" />
-		<None Remove="Images\**\*" />
+		<None Remove="Resources\Fonts\**\*" />
+		<None Remove="Resources\Images\**\*" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<Resource Include="Fonts\**\*">
+		<Resource Include="Resources\Fonts\**\*">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</Resource>
-		<Resource Include="Images\**\*">
+		<Resource Include="Resources\Images\**\*">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</Resource>
 	</ItemGroup>

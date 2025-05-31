@@ -10,7 +10,7 @@
 
     <!-- Fonts -->
     <FontFamily x:Key="RobotoRegular">
-        pack://application:,,,/Journey;component/Fonts/Roboto-Regular.ttf#Roboto
+        pack://application:,,,/Journey;component/Resources/Fonts/Roboto-Regular.ttf#Roboto
     </FontFamily>
 
     <!-- Styles -->

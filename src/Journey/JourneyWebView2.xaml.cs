@@ -415,8 +415,8 @@ namespace Journey
             var isDark = (themeRegistryKey?.GetValue("AppsUseLightTheme") as int? ?? 1) == 0;
             var themeDictionary = new ResourceDictionary
             {
-                Source = new Uri(isDark ? "pack://application:,,,/Journey;component/Themes/Theme.Dark.xaml"
-                                        : "pack://application:,,,/Journey;component/Themes/Theme.Light.xaml", UriKind.Absolute)
+                Source = new Uri(isDark ? "pack://application:,,,/Journey;component/Resources/Themes/Theme.Dark.xaml"
+                                        : "pack://application:,,,/Journey;component/Resources/Themes/Theme.Light.xaml", UriKind.Absolute)
             };
 
             var dictionariesToRemove = Resources.MergedDictionaries
