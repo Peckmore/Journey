@@ -260,6 +260,21 @@ namespace Journey
             get => (double)GetValue(JourneyZoomFactorProperty);
             set => SetValue(JourneyZoomFactorProperty, value);
         }
+        /// <summary>
+        /// Sets the overall color scheme of the WebView2 and Journey controls.
+        /// </summary>
+        public CoreWebView2PreferredColorScheme PreferredColorScheme
+        {
+            get => CoreWebView2?.Profile.PreferredColorScheme ?? CoreWebView2PreferredColorScheme.Light;
+            set
+            {
+                if (CoreWebView2 != null)
+                {
+                    CoreWebView2.Profile.PreferredColorScheme = value;
+                }
+                ApplyTheme();
+            }
+        }
         /// <inheritdoc />
         public Uri Source
         {
@@ -408,11 +423,23 @@ namespace Journey
 
         private void ApplyTheme()
         {
-            // We'll check the registry to see whether the app should be in light or dark mode, then remove our previously merged
-            // dictionary and merge in the appropriate theme dictionary based on the current mode.
+            // Set a flag to indicate whether we should use dark mode.
+            var isDark = false;
+            if (CoreWebView2?.Profile.PreferredColorScheme == CoreWebView2PreferredColorScheme.Dark)
+            {
+                // If the WebView2 profile is set to dark mode, we'll use that.
+                isDark = true;
+            }
+            else if (CoreWebView2?.Profile.PreferredColorScheme == CoreWebView2PreferredColorScheme.Auto)
+            {
+                // If the WebView2 profile is set to auto, we'll check the registry to see whether the app should be in light or dark mode.
+                using (var themeRegistryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
+                {
+                    isDark = (themeRegistryKey?.GetValue("AppsUseLightTheme") as int? ?? 1) == 0;
+                }
+            }
 
-            using var themeRegistryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
-            var isDark = (themeRegistryKey?.GetValue("AppsUseLightTheme") as int? ?? 1) == 0;
+            // Remove any previously merged dictionary and merge in the appropriate dictionary based on the current light/dark mode.
             var themeDictionary = new ResourceDictionary
             {
                 Source = new Uri(isDark ? "pack://application:,,,/Journey;component/Resources/Themes/Theme.Dark.xaml"
