@@ -6,6 +6,7 @@
              xmlns:resources="clr-namespace:Journey.Resources"
              xmlns:wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
              x:Class="Journey.JourneyWebView2"
+             x:Name="JourneyWebView2Root"
              mc:Ignorable="d"
              d:DesignHeight="480"
              d:DesignWidth="800"
@@ -172,8 +173,8 @@
                 <Canvas.RenderTransform>
                     <TransformGroup>
 
-                        <ScaleTransform ScaleX="{Binding JourneyZoomFactor, RelativeSource={RelativeSource AncestorType=local:JourneyWebView2}, Mode=OneWay}"
-                                        ScaleY="{Binding JourneyZoomFactor, RelativeSource={RelativeSource AncestorType=local:JourneyWebView2}, Mode=OneWay}" />
+                        <ScaleTransform ScaleX="{Binding ElementName=JourneyWebView2Root, Path=JourneyZoomFactor, Mode=OneWay}"
+                                        ScaleY="{Binding ElementName=JourneyWebView2Root, Path=JourneyZoomFactor, Mode=OneWay}" />
 
                         <TranslateTransform x:Name="JourneyCanvasTranslateTransform" />
 

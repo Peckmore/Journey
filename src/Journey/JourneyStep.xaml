@@ -7,7 +7,7 @@
              xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.AeroLite"
              x:Class="Journey.JourneyStep"
              x:ClassModifier="internal"
-             x:Name="ControlRoot"
+             x:Name="JourneyStepRoot"
              mc:Ignorable="d"
              d:DesignHeight="90"
              d:DesignWidth="160">
@@ -106,8 +106,13 @@
 
                                 <!-- We only show the hover effect when the user hovers over the step and the control is not animating. -->
                                 <MultiDataTrigger.Conditions>
-                                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}}" Value="True"/>
-                                    <Condition Binding="{Binding ElementName=ControlRoot,Path=IsAnimating}" Value="False"/>
+
+                                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}}"
+                                               Value="True"/>
+
+                                    <Condition Binding="{Binding ElementName=JourneyStepRoot, Path=IsAnimating}"
+                                               Value="False"/>
+
                                 </MultiDataTrigger.Conditions>
 
                                 <Setter Property="Visibility"
