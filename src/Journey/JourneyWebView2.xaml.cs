@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -39,38 +40,11 @@ namespace Journey
 
         #endregion
 
-        #region Public Static
-
-        /// <summary>
-        /// /// Command to hide the Journey view.
-        /// </summary>
-        public static readonly ICommand HideJourneyCommand = new RoutedCommand();
-        /// <summary>
-        /// Property to control the zoom factor of the Journey view.
-        /// </summary>
-        public static readonly DependencyProperty JourneyZoomFactorProperty = DependencyProperty.Register(nameof(JourneyZoomFactor), typeof(double), typeof(JourneyWebView2), new PropertyMetadata(1d));
-        /// <summary>
-        /// Command to reset the Journey view to the currently selected step, with the zoom factor set to 1 and the canvas panned to the home position.
-        /// </summary>
-        public static readonly ICommand ResetJourneyViewCommand = new RoutedCommand();
-        /// <summary>
-        /// Command to reset the zoom factor of the Journey view to 1.
-        /// </summary>
-        public static readonly ICommand ResetJourneyZoomCommand = new RoutedCommand();
-        /// <summary>
-        /// Command to zoom in on the Journey view.
-        /// </summary>
-        public static readonly ICommand ZoomInJourneyCommand = new RoutedCommand();
-        /// <summary>
-        /// Command to zoom out on the Journey view.
-        /// </summary>
-        public static readonly ICommand ZoomOutJourneyCommand = new RoutedCommand();
-
-        #endregion
-
         #endregion
 
         #region Fields
+
+        #region Private
 
         private Point _canvasHome;
         private bool _isDisposed;
@@ -83,6 +57,76 @@ namespace Journey
         private Point _lastMouseDownPosition;
         private Point _lastMousePosition;
         private JourneyStep? _selectedStep;
+
+        #endregion
+
+        #region Private Static
+
+        private static readonly DependencyPropertyKey CanGoBackPropertyKey = DependencyProperty.RegisterReadOnly(nameof(CanGoBack), typeof(bool), typeof(JourneyWebView2), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.None));
+        private static readonly DependencyPropertyKey CanGoForwardPropertyKey = DependencyProperty.RegisterReadOnly(nameof(CanGoForward), typeof(bool), typeof(JourneyWebView2), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.None));
+
+        #endregion
+
+        #region Public Static
+
+        /// <summary>
+        /// The WPF <see cref="DependencyProperty" /> which backs the <see cref="AllowExternalDrop" /> property.
+        /// </summary>
+        public static readonly DependencyProperty AllowExternalDropProperty = DependencyProperty.Register(nameof(AllowExternalDrop), typeof(bool), typeof(JourneyWebView2));
+        /// <summary>
+        /// The WPF <see cref="DependencyProperty" /> which backs the <see cref="CanGoBack" /> property.
+        /// </summary>
+        public static readonly DependencyProperty CanGoBackProperty = CanGoBackPropertyKey.DependencyProperty;
+        /// <summary>
+        /// The WPF <see cref="DependencyProperty" /> which backs the <see cref="CanGoForward" /> property.
+        /// </summary>
+        public static readonly DependencyProperty CanGoForwardProperty = CanGoForwardPropertyKey.DependencyProperty;
+        /// <summary>
+        /// The WPF <see cref="DependencyProperty" /> which backs the <see cref="CreationProperties" /> property.
+        /// </summary>
+        public static readonly DependencyProperty CreationPropertiesProperty = DependencyProperty.Register(nameof(CreationProperties), typeof(CoreWebView2CreationProperties), typeof(JourneyWebView2));
+        /// <summary>
+        /// The WPF <see cref="DependencyProperty" /> which backs the <see cref="DefaultBackgroundColor" /> property.
+        /// </summary>
+        public static readonly DependencyProperty DefaultBackgroundColorProperty = DependencyProperty.Register(nameof(DefaultBackgroundColor), typeof(System.Drawing.Color), typeof(JourneyWebView2));
+        /// <summary>
+        /// The WPF <see cref="DependencyProperty" /> which backs the <see cref="DesignModeForegroundColor" /> property.
+        /// </summary>
+        public static readonly DependencyProperty DesignModeForegroundColorProperty = DependencyProperty.Register(nameof(DesignModeForegroundColor), typeof(System.Drawing.Color), typeof(JourneyWebView2));
+        /// <summary>
+        /// /// Command to hide the Journey view.
+        /// </summary>
+        public static readonly ICommand HideJourneyCommand = new RoutedCommand();
+        /// <summary>
+        /// The WPF <see cref="DependencyProperty" /> which backs the <see cref="JourneyZoomFactor" /> property.
+        /// </summary>
+        public static readonly DependencyProperty JourneyZoomFactorProperty = DependencyProperty.Register(nameof(JourneyZoomFactor), typeof(double), typeof(JourneyWebView2), new PropertyMetadata(1d));
+        /// <summary>
+        /// Command to reset the Journey view to the currently selected step, with the zoom factor set to 1 and the canvas panned to the home position.
+        /// </summary>
+        public static readonly ICommand ResetJourneyViewCommand = new RoutedCommand();
+        /// <summary>
+        /// Command to reset the zoom factor of the Journey view to 1.
+        /// </summary>
+        public static readonly ICommand ResetJourneyZoomCommand = new RoutedCommand();
+        /// <summary>
+        /// The WPF <see cref="DependencyProperty" /> which backs the <see cref="Source" /> property.
+        /// </summary>
+        public static readonly DependencyProperty SourceProperty = DependencyProperty.Register(nameof(Source), typeof(Uri), typeof(JourneyWebView2));
+        /// <summary>
+        /// The WPF <see cref="DependencyProperty" /> which backs the <see cref="ZoomFactor" /> property.
+        /// </summary>
+        public static readonly DependencyProperty ZoomFactorProperty = DependencyProperty.Register(nameof(ZoomFactor), typeof(double), typeof(JourneyWebView2));
+        /// <summary>
+        /// Command to zoom in on the Journey view.
+        /// </summary>
+        public static readonly ICommand ZoomInJourneyCommand = new RoutedCommand();
+        /// <summary>
+        /// Command to zoom out on the Journey view.
+        /// </summary>
+        public static readonly ICommand ZoomOutJourneyCommand = new RoutedCommand();
+
+        #endregion
 
         #endregion
 
@@ -166,34 +210,49 @@ namespace Journey
         #region Properties
 
         /// <inheritdoc />
+        [Category("Common")]
         public bool AllowExternalDrop
         {
-            get => WebView.AllowExternalDrop;
-            set => WebView.AllowExternalDrop = value;
+            get => (bool)GetValue(AllowExternalDropProperty);
+            set => SetValue(AllowExternalDropProperty, value);
         }
         /// <inheritdoc />
-        public bool CanGoBack => WebView.CanGoBack;
+        [Browsable(false)]
+        public bool CanGoBack
+        {
+            get => (bool)GetValue(CanGoBackProperty);
+            private set => SetValue(CanGoBackPropertyKey, value);
+        }
         /// <inheritdoc />
-        public bool CanGoForward => WebView.CanGoForward;
+        [Browsable(false)]
+        public bool CanGoForward
+        {
+            get => (bool)GetValue(CanGoForwardProperty);
+            private set => SetValue(CanGoForwardPropertyKey, value);
+        }
         /// <inheritdoc />
+        [Browsable(false)]
         public CoreWebView2 CoreWebView2 => WebView.CoreWebView2;
         /// <inheritdoc />
+        [Category("Common")]
         public CoreWebView2CreationProperties CreationProperties
         {
-            get => WebView.CreationProperties;
-            set => WebView.CreationProperties = value;
+            get => (CoreWebView2CreationProperties)GetValue(CreationPropertiesProperty);
+            set => SetValue(CreationPropertiesProperty, value);
         }
         /// <inheritdoc />
+        [Category("Common")]
         public System.Drawing.Color DefaultBackgroundColor
         {
-            get => WebView.DefaultBackgroundColor;
-            set => WebView.DefaultBackgroundColor = value;
+            get => (System.Drawing.Color)GetValue(DefaultBackgroundColorProperty);
+            set => SetValue(DefaultBackgroundColorProperty, value);
         }
         /// <inheritdoc />
+        [Category("Common")]
         public System.Drawing.Color DesignModeForegroundColor
         {
-            get => WebView.DesignModeForegroundColor;
-            set => WebView.DesignModeForegroundColor = value;
+            get => (System.Drawing.Color)GetValue(DesignModeForegroundColorProperty);
+            set => SetValue(DesignModeForegroundColorProperty, value);
         }
         /// <summary>
         /// Indicates whether Journey is currently being displayed for the current <see cref="JourneyWebView2"/> instance.
@@ -214,6 +273,7 @@ namespace Journey
         /// <summary>
         /// The "highlight" color for the active step (the users current page) in the Journey view.
         /// </summary>
+        [Category("Common")]
         public Brush JourneyActiveStepBackground
         {
             get => (Brush)Resources["JourneyActiveStepBackground"];
@@ -222,6 +282,7 @@ namespace Journey
         /// <summary>
         /// The foreground color for the active step (the users current page) in the Journey view.
         /// </summary>
+        [Category("Common")]
         public Brush JourneyActiveStepForeground
         {
             get => (Brush)Resources["JourneyActiveStepForeground"];
@@ -230,6 +291,7 @@ namespace Journey
         /// <summary>
         /// The default background color for the Journey view.
         /// </summary>
+        [Category("Common")]
         public Brush JourneyBackground
         {
             get => (Brush)Resources["JourneyBackground"];
@@ -238,6 +300,7 @@ namespace Journey
         /// <summary>
         /// The "highlight" color, used for mouseover effects in the Journey view.
         /// </summary>
+        [Category("Common")]
         public Brush JourneyHighlightBackground
         {
             get => (Brush)Resources["JourneyHighlightBackground"];
@@ -246,6 +309,7 @@ namespace Journey
         /// <summary>
         /// The "highlight" foreground color, used for text displayed on top of highlighted elements in the Journey view.
         /// </summary>
+        [Category("Common")]
         public Brush JourneyHighlightForeground
         {
             get => (Brush)Resources["JourneyHighlightForeground"];
@@ -254,6 +318,7 @@ namespace Journey
         /// <summary>
         /// The zoom factor for Journey.
         /// </summary>
+        [Category("Common")]
         public double JourneyZoomFactor
         {
             get => (double)GetValue(JourneyZoomFactorProperty);
@@ -262,6 +327,7 @@ namespace Journey
         /// <summary>
         /// Sets the overall color scheme of the WebView2 and Journey controls.
         /// </summary>
+        [Category("Common")]
         public CoreWebView2PreferredColorScheme PreferredColorScheme
         {
             get => CoreWebView2?.Profile.PreferredColorScheme ?? CoreWebView2PreferredColorScheme.Light;
@@ -275,16 +341,18 @@ namespace Journey
             }
         }
         /// <inheritdoc />
+        [Category("Common")]
         public Uri Source
         {
-            get => WebView.Source;
-            set => WebView.Source = value;
+            get => (Uri)GetValue(SourceProperty);
+            set => SetValue(SourceProperty, value);
         }
         /// <inheritdoc />
+        [Category("Common")]
         public double ZoomFactor
         {
-            get => WebView.ZoomFactor;
-            set => WebView.ZoomFactor = value;
+            get => (double)GetValue(ZoomFactorProperty);
+            set => SetValue(ZoomFactorProperty, value);
         }
 
         #endregion
