@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace Journey
+namespace JourneyBrowser
 {
     /// <summary>
     /// Interaction logic for App.xaml

@@ -1,165 +1,140 @@
-﻿using Journey;
+﻿using JourneyBrowser.Interop;
+using JourneyBrowser.Models;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
+using Microsoft.Win32;
 using ModernWpf;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Interop;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Effects;
-using SystemBackdropTypes;
-using static SystemBackdropTypes.PInvoke.Methods;
-using static SystemBackdropTypes.PInvoke.ParameterTypes;
 
 
-namespace WPFSample
+namespace JourneyBrowser
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-            Loaded += OnLoaded;
-        }
-        public ObservableCollection<TabItem> WebView2Tabs
-        {
-            get => _webView2Tabs;
-            set
-            {
-                if (_webView2Tabs == value)
-                    return;
+        #region Constants
 
-                //set value
-                _webView2Tabs = value;
+        private const string HomePage = @"https://start.duckduckgo.com";
 
-                OnPropertyChanged();
-            }
-        }
+        #endregion
+
+        #region Fields
+
+        private int _selectedIndex;
+
+        #endregion
+
+        #region Events
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private int _tabCount = 0;
-        private int _selectedIndex = 0;
+        #endregion
 
-        private ObservableCollection<TabItem> _webView2Tabs = new ObservableCollection<TabItem>();
+        #region Construction
+
+        public MainWindow()
+        {
+            // Initialize window.
+            InitializeComponent();
+            DataContext = this;
+
+            // Initialize Properties
+            Tabs = new();
+
+            //SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
+        }
+
+        #endregion
+
+        #region Properties
+
         public int SelectedIndex
         {
-            get { return _selectedIndex; }
+            get => _selectedIndex;
             set
             {
-                if (_selectedIndex == value)
-                    return;
-
-                //set value
                 _selectedIndex = value;
-
-                OnPropertyChanged(nameof(SelectedIndex));
+                OnPropertyChanged();
             }
         }
+        public ObservableCollection<BrowserTab> Tabs { get; }
+
+        #endregion
+
+        #region Methods
+
+        #region Event Handlers
+
+        private void NewTabButton_Click(object sender, RoutedEventArgs e)
+        {
+            var newTab = CreateTab(HomePage);
+            BrowserTabControl.SelectedItem = newTab;
+        }
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            RefreshFrame();
+            CreateTab(HomePage);
+        }
+
+        #endregion
+
+        #region Private
+
+        private BrowserTab CreateTab(string address)
+        {
+            var tab = new BrowserTab(address);
+            Tabs.Add(tab);
+            return tab;
+        }
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #endregion
+
+        #endregion
+
+
+
+
 
 
 
         private async void ButtonJourney_Click(object sender, RoutedEventArgs e)
         {
-            var view = ((JourneyWebView2)_webView2Tabs[SelectedIndex].Content);
-            DoubleAnimation fadeAnimation;
-            if (view.IsJourneyVisible)
-            {
-                fadeAnimation = new DoubleAnimation
-                {
-                    From = 0.55,
-                    To = 0,
-                    Duration = TimeSpan.FromSeconds(2)
-                };
-            }
-            else
-            {
-                fadeAnimation = new DoubleAnimation
-                {
-                    From = 0,
-                    To = 0.55,
-                    Duration = TimeSpan.FromSeconds(2)
-                };
-            }
+            //var view = ((JourneyWebView2)_webView2Tabs[SelectedIndex].Content);
+            //DoubleAnimation fadeAnimation;
+            //if (view.IsJourneyVisible)
+            //{
+            //    fadeAnimation = new DoubleAnimation
+            //    {
+            //        From = 0.55,
+            //        To = 0,
+            //        Duration = TimeSpan.FromSeconds(2)
+            //    };
+            //}
+            //else
+            //{
+            //    fadeAnimation = new DoubleAnimation
+            //    {
+            //        From = 0,
+            //        To = 0.55,
+            //        Duration = TimeSpan.FromSeconds(2)
+            //    };
+            //}
 
-            var c = (_webView2Tabs[SelectedIndex].FindDescendantByName("ButtonBar") as Border);
-            c?.BeginAnimation(DropShadowEffect.OpacityProperty, fadeAnimation);
+            //var c = (_webView2Tabs[SelectedIndex].FindDescendantByName("ButtonBar") as Border);
+            //c?.BeginAnimation(DropShadowEffect.OpacityProperty, fadeAnimation);
 
-            await view.ToggleJourney();
+            //await view.ToggleJourney();
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            AddTab("https://www.duckduckgo.com");
-        }
-
-
-        private void AddTab(string url, string? headerText = null, string? userDataFolder = null)
-        {
-            AddTab(new Uri(url), userDataFolder);
-        }
-        private void AddTab(Uri uri, string? headerText = null, string? userDataFolder = null)
-        {
-            //increment
-            _tabCount++;
-
-            if (headerText == null)
-                headerText = $"Tab {_tabCount}";
-
-            //if userDataFolder hasn't been specified, create a folder in the user's temp folder
-            //each WebView2 instance will have it's own folder
-            if (String.IsNullOrEmpty(userDataFolder))
-                userDataFolder = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetExecutingAssembly().Location) + _tabCount);
-
-            //create new instance setting userDataFolder
-            JourneyWebView2 journeyWebView = new JourneyWebView2();
-            journeyWebView.CoreWebView2InitializationCompleted += WebView2_CoreWebView2InitializationCompleted;
-            journeyWebView.EnsureCoreWebView2Async();
-            journeyWebView.JourneyHighlightColor = Colors.Red;
-
-            //create TextBlock
-            TextBlock textBlock = new TextBlock();
-
-            //add new Run to TextBlock
-            textBlock.Inlines.Add(new Run(headerText));
-
-            //add new Run to TextBlock
-            textBlock.Inlines.Add(new Run("   "));
-
-            //create Run
-            Run runHyperlink = new Run("X");
-            runHyperlink.FontFamily = new FontFamily("Monotype Corsiva");
-            runHyperlink.FontWeight = FontWeights.Bold;
-            runHyperlink.Foreground = new SolidColorBrush(Colors.Red);
-
-            //add Run to HyperLink
-            Hyperlink hyperlink = new Hyperlink(runHyperlink) { Name = $"hyperlink_{_tabCount}" };
-            hyperlink.Click += Hyperlink_Click;
-
-            //add Hyperlink to TextBlock
-            textBlock.Inlines.Add(hyperlink);
-
-            //create new instance and set Content
-            HeaderedContentControl hcc = new HeaderedContentControl() { Content = textBlock };
-
-            //add TabItem
-            _webView2Tabs.Add(new TabItem { Header = hcc, Content = journeyWebView, Name = $"tab_{_tabCount}" });
-
-            //navigate
-            journeyWebView.Source = uri;
-
-            //set selected index
-            BrowserTabs.SelectedIndex = _webView2Tabs.Count - 1;
-        }
 
         private void WebView2_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
         {
@@ -178,131 +153,128 @@ namespace WPFSample
             Debug.WriteLine(msg);
         }
 
-        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+
 
         private void RemoveTab(int index)
         {
-            if (index >= 0 && index < _webView2Tabs.Count)
-            {
-                JourneyWebView2 wv = (JourneyWebView2)_webView2Tabs[index].Content;
+            //if (index >= 0 && index < _webView2Tabs.Count)
+            //{
+            //    JourneyWebView2 wv = (JourneyWebView2)_webView2Tabs[index].Content;
 
-                //get userDataFolder location
-                string userDataFolder = wv.CoreWebView2.Environment.UserDataFolder;
-                //string userDataFolder = wv.WebView2.CreationProperties.UserDataFolder;
+            //    //get userDataFolder location
+            //    string userDataFolder = wv.CoreWebView2.Environment.UserDataFolder;
+            //    //string userDataFolder = wv.WebView2.CreationProperties.UserDataFolder;
 
-                //unsubscribe from event(s)
-                wv.CoreWebView2.NewWindowRequested -= CoreWebView2_NewWindowRequested;
+            //    //unsubscribe from event(s)
+            //    wv.CoreWebView2.NewWindowRequested -= CoreWebView2_NewWindowRequested;
 
-                //get process
-                var wvProcess = Process.GetProcessById((int)wv.CoreWebView2.BrowserProcessId);
+            //    //get process
+            //    var wvProcess = Process.GetProcessById((int)wv.CoreWebView2.BrowserProcessId);
 
-                //dispose
-                wv.Dispose();
+            //    //dispose
+            //    wv.Dispose();
 
-                //TabItem item = _webView2Tabs[index];
-                LogMsg($"Removing {_webView2Tabs[index].Name}");
+            //    //TabItem item = _webView2Tabs[index];
+            //    LogMsg($"Removing {_webView2Tabs[index].Name}");
 
-                //remove
-                _webView2Tabs.RemoveAt(index);
+            //    //remove
+            //    _webView2Tabs.RemoveAt(index);
 
-                //wait for WebView2 process to exit
-                //wvProcess.WaitForExit();
+            //    //wait for WebView2 process to exit
+            //    //wvProcess.WaitForExit();
 
-                ////for security purposes, delete userDataFolder
-                //if (!String.IsNullOrEmpty(userDataFolder) && System.IO.Directory.Exists(userDataFolder))
-                //{
-                //    System.IO.Directory.Delete(userDataFolder, true);
-                //    LogMsg($"UserDataFolder '{userDataFolder}' deleted.");
-                //}
-            }
-            else
-            {
-                LogMsg($"Invalid index: {index}; _webView2Tabs.Count: {_webView2Tabs.Count}");
-            }
+            //    ////for security purposes, delete userDataFolder
+            //    //if (!String.IsNullOrEmpty(userDataFolder) && System.IO.Directory.Exists(userDataFolder))
+            //    //{
+            //    //    System.IO.Directory.Delete(userDataFolder, true);
+            //    //    LogMsg($"UserDataFolder '{userDataFolder}' deleted.");
+            //    //}
+            //}
+            //else
+            //{
+            //    LogMsg($"Invalid index: {index}; _webView2Tabs.Count: {_webView2Tabs.Count}");
+            //}
         }
 
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (_webView2Tabs.Count > 0)
-            {
-                //get instance of WebView2 from last tab
-                JourneyWebView2 wv = (JourneyWebView2)_webView2Tabs[_webView2Tabs.Count - 1].Content;
+            //if (_webView2Tabs.Count > 0)
+            //{
+            //    //get instance of WebView2 from last tab
+            //    JourneyWebView2 wv = (JourneyWebView2)_webView2Tabs[_webView2Tabs.Count - 1].Content;
 
-                //if CoreWebView2 hasn't finished initializing, it will be null
-                if (wv.CoreWebView2?.BrowserProcessId > 0)
-                {
-                    await wv.CoreWebView2.ExecuteScriptAsync($@"window.open('https://www.google.com/', '_blank');");
-                }
-            }
-            else
-            {
-                AddTab("https://www.duckduckgo.com");
-            }
+            //    //if CoreWebView2 hasn't finished initializing, it will be null
+            //    if (wv.CoreWebView2?.BrowserProcessId > 0)
+            //    {
+            //        await wv.CoreWebView2.ExecuteScriptAsync($@"window.open('{HomePage}', '_blank');");
+            //    }
+            //}
+            //else
+            //{
+            //    CreateTab(HomePage);
+            //}
         }
+
 
         private async void CoreWebView2_NewWindowRequested(object? sender, CoreWebView2NewWindowRequestedEventArgs e)
         {
             e.Handled = true;
 
-            AddTab(e.Uri);
+            CreateTab(e.Uri);
         }
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e)
         {
-            Hyperlink hyperlink = (Hyperlink)sender;
+            //Hyperlink hyperlink = (Hyperlink)sender;
 
-            LogMsg($"Hyperlink_Click - name: {hyperlink.Name}");
+            //LogMsg($"Hyperlink_Click - name: {hyperlink.Name}");
 
-            string hyperLinkNumStr = hyperlink.Name.Substring(hyperlink.Name.IndexOf("_") + 1);
-            int hyperLinkNum = 0;
+            //string hyperLinkNumStr = hyperlink.Name.Substring(hyperlink.Name.IndexOf("_") + 1);
+            //int hyperLinkNum = 0;
 
-            //try to convert to int
-            Int32.TryParse(hyperLinkNumStr, out hyperLinkNum);
+            ////try to convert to int
+            //Int32.TryParse(hyperLinkNumStr, out hyperLinkNum);
 
-            int index = 0;
+            //int index = 0;
 
-            //it's possible that an 'X' was clicked on a tab that wasn't selected
-            //since both the tab name and hyperlink name end with the same number,
-            //get the number from the hyperlink name and use that to find the matching 
-            //tab name
-            for (int i = 0; i < _webView2Tabs.Count; i++)
-            {
-                TabItem item = _webView2Tabs[i];
+            ////it's possible that an 'X' was clicked on a tab that wasn't selected
+            ////since both the tab name and hyperlink name end with the same number,
+            ////get the number from the hyperlink name and use that to find the matching 
+            ////tab name
+            //for (int i = 0; i < _webView2Tabs.Count; i++)
+            //{
+            //    TabItem item = _webView2Tabs[i];
 
-                if (item.Name == $"tab_{hyperLinkNum}")
-                {
-                    index = i;
-                    break;
-                }
-            }
+            //    if (item.Name == $"tab_{hyperLinkNum}")
+            //    {
+            //        index = i;
+            //        break;
+            //    }
+            //}
 
-            //set selected index
-            BrowserTabs.SelectedIndex = index;
+            ////set selected index
+            ////BrowserTabs.SelectedIndex = index;
 
-            RemoveTab(index);
+            //RemoveTab(index);
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            if (_webView2Tabs != null && _webView2Tabs.Count > 0)
-            {
-                for (int i = 0; i < _webView2Tabs.Count - 1; i++)
-                {
-                    //remove all tabs which will dispose of each WebView2
-                    RemoveTab(i);
-                }
-            }
+            //if (_webView2Tabs != null && _webView2Tabs.Count > 0)
+            //{
+            //    for (int i = 0; i < _webView2Tabs.Count - 1; i++)
+            //    {
+            //        //remove all tabs which will dispose of each WebView2
+            //        RemoveTab(i);
+            //    }
+            //}
         }
 
 
 
         void OnLoaded(object sender, RoutedEventArgs e)
         {
-            RefreshFrame();
             RefreshDarkMode();
             ThemeManager.Current.ActualApplicationThemeChanged += (_, _) => RefreshDarkMode();
         }
@@ -313,21 +285,48 @@ namespace WPFSample
             HwndSource mainWindowSrc = HwndSource.FromHwnd(mainWindowPtr);
             mainWindowSrc.CompositionTarget.BackgroundColor = Color.FromArgb(0, 0, 0, 0);
 
-            //int flag = int.Parse((string)((RadioButton)sender).Tag);
-            SetWindowAttribute(
-                new WindowInteropHelper(this).Handle,
-                PInvoke.ParameterTypes.DWMWINDOWATTRIBUTE.DWMWA_SYSTEMBACKDROP_TYPE,
-                (int)DWM_SYSTEMBACKDROP_TYPE.DWMSBT_TRANSIENTWINDOW);
+            NativeMethods.SetWindowAttribute(new WindowInteropHelper(this).Handle,
+                               DWMWINDOWATTRIBUTE.DWMWA_SYSTEMBACKDROP_TYPE,
+                               (int)DWM_SYSTEMBACKDROP_TYPE.DWMSBT_TRANSIENTWINDOW);
         }
 
         private void RefreshDarkMode()
         {
-            var isDark = ThemeManager.Current.ActualApplicationTheme == ApplicationTheme.Dark;
+            using var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+            var isDark = (key?.GetValue("AppsUseLightTheme") as int? ?? 1) == 0;
             int flag = isDark ? 1 : 0;
-            SetWindowAttribute(
+            NativeMethods.SetWindowAttribute(
                 new WindowInteropHelper(this).Handle,
-                PInvoke.ParameterTypes.DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE,
+                DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE,
                 flag);
+            NativeMethods.SetWindowAttribute(
+                new WindowInteropHelper(this).Handle,
+                DWMWINDOWATTRIBUTE.DWMWA_SYSTEMBACKDROP_TYPE,
+                (int)DWM_SYSTEMBACKDROP_TYPE.DWMSBT_TRANSIENTWINDOW);
+        }
+        private void SystemEvents_UserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
+        {
+            if (e.Category == UserPreferenceCategory.General)
+            {
+                RefreshDarkMode();
+            }
+        }
+
+        private void ButtonDarkMode_Click(object sender, RoutedEventArgs e)
+        {
+            //var view = ((JourneyWebView2)_webView2Tabs[SelectedIndex].Content);
+            //switch (view.PreferredColorScheme)
+            //{
+            //    case CoreWebView2PreferredColorScheme.Auto:
+            //        view.PreferredColorScheme = CoreWebView2PreferredColorScheme.Light;
+            //        break;
+            //    case CoreWebView2PreferredColorScheme.Light:
+            //        view.PreferredColorScheme = CoreWebView2PreferredColorScheme.Dark;
+            //        break;
+            //    case CoreWebView2PreferredColorScheme.Dark:
+            //        view.PreferredColorScheme = CoreWebView2PreferredColorScheme.Auto;
+            //        break;
+            //}
         }
     }
 }
