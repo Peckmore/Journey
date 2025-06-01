@@ -172,8 +172,8 @@
                 <Canvas.RenderTransform>
                     <TransformGroup>
 
-                        <ScaleTransform ScaleX="{Binding JourneyZoomFactor, Mode=OneWay}"
-                                        ScaleY="{Binding JourneyZoomFactor, Mode=OneWay}" />
+                        <ScaleTransform ScaleX="{Binding JourneyZoomFactor, RelativeSource={RelativeSource AncestorType=local:JourneyWebView2}, Mode=OneWay}"
+                                        ScaleY="{Binding JourneyZoomFactor, RelativeSource={RelativeSource AncestorType=local:JourneyWebView2}, Mode=OneWay}" />
 
                         <TranslateTransform x:Name="JourneyCanvasTranslateTransform" />
 

@@ -116,9 +116,8 @@ namespace Journey
         /// </summary>
         public JourneyWebView2()
         {
-            // Initialize our control, and set the DataContext to itself, to bind to code behind.
+            // Initialize our control.
             InitializeComponent();
-            DataContext = this;
 
             // Merge in the appropriate resource dictionary dependent upon whether the OS is in light or dark mode.
             ApplyTheme();
