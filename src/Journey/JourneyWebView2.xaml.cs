@@ -11,7 +11,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -116,7 +115,7 @@ namespace Journey
         /// <summary>
         /// The WPF <see cref="DependencyProperty" /> which backs the <see cref="ZoomFactor" /> property.
         /// </summary>
-        public static readonly DependencyProperty ZoomFactorProperty = DependencyProperty.Register(nameof(ZoomFactor), typeof(double), typeof(JourneyWebView2));
+        public static readonly DependencyProperty ZoomFactorProperty = DependencyProperty.Register(nameof(ZoomFactor), typeof(double), typeof(JourneyWebView2), new PropertyMetadata(1d));
         /// <summary>
         /// Command to zoom in on the Journey view.
         /// </summary>
