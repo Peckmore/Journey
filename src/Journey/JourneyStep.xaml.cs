@@ -12,7 +12,7 @@ namespace Journey
 
         #endregion
 
-        #region Fields
+        #region Events
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
