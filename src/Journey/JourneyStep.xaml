@@ -2,15 +2,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:journey="clr-namespace:Journey"
              xmlns:resources="clr-namespace:Journey.Resources"
              xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.AeroLite"
-             x:Class="Journey.JourneyStep"
-             x:ClassModifier="internal"
-             x:Name="JourneyStepRoot"
              mc:Ignorable="d"
              d:DesignHeight="90"
-             d:DesignWidth="160">
+             d:DesignWidth="160"
+             x:Class="Journey.JourneyStep"
+             x:ClassModifier="internal"
+             x:Name="JourneyStepRoot">
 
     <!-- Drop Shadow -->
     <themes:SystemDropShadowChrome CornerRadius="8">
