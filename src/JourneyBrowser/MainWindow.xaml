@@ -1,14 +1,18 @@
 ﻿<Window x:Class="JourneyBrowser.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf" xmlns:dragablz="http://dragablz.net/winfx/xaml/dragablz" xmlns:journey="clr-namespace:Journey;assembly=Journey"
+        xmlns:journey="clr-namespace:Journey;assembly=Journey"
         mc:Ignorable="d"
+        x:Name="WindowRoot"
         Background="Transparent"
         Closing="Window_Closing"
         Height="720"
         Loaded="Window_Loaded"
+        MinHeight="295"
+        MinWidth="640"
         Title="Journey Demo"
         Width="1280"
         WindowStartupLocation="CenterScreen">
@@ -17,67 +21,112 @@
         <WindowChrome CaptionHeight="35"
                       ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}"
                       GlassFrameThickness="-1" />
-        <!--UseAeroCaptionButtons="True"/>-->
     </WindowChrome.WindowChrome>
 
     <Window.Resources>
 
-        <Style TargetType="{x:Type dragablz:DragablzItem}" BasedOn="{StaticResource {x:Type dragablz:DragablzItem}}" x:Key="CustomDragablzItemStyle">
-            <Style.Setters>
+        <ResourceDictionary>
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Resources/Themes/Generic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style TargetType="Button">
+
+                <Setter Property="Background"
+                        Value="Transparent" />
+
+                <Setter Property="Height"
+                       Value="30" />
+
+                <Setter Property="Width"
+                       Value="30" />
+
                 <Setter Property="Template">
                     <Setter.Value>
-                        <ControlTemplate>
-                            <Border BorderThickness="{TemplateBinding Border.BorderThickness}" Padding="{TemplateBinding Control.Padding}" BorderBrush="{TemplateBinding Border.BorderBrush}" Background="{TemplateBinding Panel.Background}" SnapsToDevicePixels="True">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                    </Grid.RowDefinitions>
-                                    <Border Background="Cyan"  x:Name="PART_DragableElement">
-                                        <TextBlock>DH</TextBlock>
-                                    </Border>
-                                    <Thumb Grid.Row="1" Width="30" Height="30" Background="Yellow" x:Name="PART_Thumb" />
-                                    <ContentPresenter Grid.Row="2" Content="{TemplateBinding ContentControl.Content}" ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}" ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}" HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
-                                </Grid>
+                        <ControlTemplate TargetType="Button">
+
+                            <Border x:Name="border"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="Transparent"
+                                    BorderThickness="0"
+                                    CornerRadius="3"
+                                    SnapsToDevicePixels="true">
+
+                                <ContentPresenter x:Name="contentPresenter"
+                                                  Focusable="False"
+                                                  HorizontalAlignment="Center"
+                                                  Margin="0"
+                                                  RecognizesAccessKey="True"
+                                                  SnapsToDevicePixels="True"
+                                                  VerticalAlignment="Center"/>
                             </Border>
+
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver"
+                                         Value="true">
+
+                                    <Setter Property="Background"
+                                            TargetName="border"
+                                            Value="{DynamicResource ActiveBorderBrush}" />
+
+                                </Trigger>
+
+                                <Trigger Property="IsPressed"
+                                         Value="true">
+
+                                    <Setter Property="Background"
+                                            TargetName="border"
+                                            Value="{DynamicResource PressedBrush}" />
+
+                                </Trigger>
+
+                            </ControlTemplate.Triggers>
+
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
-            </Style.Setters>
-        </Style>
 
-        <Style TargetType="{x:Type dragablz:TabablzControl}" x:Key="BasicExamplesTabStyle">
-            <Setter Property="Margin" Value="8 8 8 8" />
-            <Setter Property="HeaderPrefixContent" Value="☺" />
-            <Setter Property="HeaderSuffixContent" Value="☻" />
-            <Setter Property="HeaderSuffixContentTemplate">
-                <Setter.Value>
-                    <DataTemplate>
-                        <TextBlock Text="☻" ToolTip="You can easily insert content here using HeaderSuffixContent" Margin="2 0 2 0"/>
-                    </DataTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+            </Style>
 
+            <Style TargetType="Image" x:Key="ButtonBar">
 
+                <Setter Property="Height"
+                        Value="22" />
 
+                <Setter Property="Opacity"
+                        Value="1"/>
 
-        <!-- TabItem Style -->
-        <Style TargetType="dragablz:DragablzItem"
+                <Setter Property="Width"
+                        Value="22" />
+
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource AncestorType=Button}}"
+                                 Value="False">
+
+                        <Setter Property="Opacity"
+                                Value="0.4"/>
+
+                    </DataTrigger>
+                </Style.Triggers>
+
+            </Style>
+
+            <!-- TabItem Style -->
+            <Style TargetType="TabItem"
                x:Key="JourneyBrowserTabItemStyle">
 
-            <Setter Property="Background"
+                <Setter Property="Background"
                     Value="Transparent"/>
 
-            <Setter Property="Margin"
+                <Setter Property="Margin"
                     Value="0"/>
 
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TabItem">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TabItem">
 
-                        <Border Name="TabBorder"
+                            <Border Name="TabBorder"
                                 Background="{TemplateBinding Background}"
                                 BorderThickness="0"
                                 CornerRadius="6,6,0,0"
@@ -85,92 +134,85 @@
                                 Margin="0"
                                 Width="150">
 
-                            <ContentPresenter x:Name="ContentSite"
+                                <ContentPresenter x:Name="ContentSite"
                                               VerticalAlignment="Center"
                                               HorizontalAlignment="Left"
                                               ContentSource="Header"/>
 
-                        </Border>
+                            </Border>
 
-                        <ControlTemplate.Triggers>
+                            <ControlTemplate.Triggers>
 
-                            <Trigger Property="IsSelected"
+                                <Trigger Property="IsSelected"
                                      Value="True">
 
-                                <Setter TargetName="TabBorder"
+                                    <Setter TargetName="TabBorder"
                                         Property="Background"
                                         Value="White" />
 
-                            </Trigger>
+                                </Trigger>
 
-                            <MultiTrigger>
+                                <MultiTrigger>
 
-                                <MultiTrigger.Conditions>
+                                    <MultiTrigger.Conditions>
 
-                                    <Condition Property="IsMouseOver"
+                                        <Condition Property="IsMouseOver"
                                                Value="True"/>
 
-                                    <Condition Property="IsSelected"
+                                        <Condition Property="IsSelected"
                                                Value="False"/>
 
-                                </MultiTrigger.Conditions>
+                                    </MultiTrigger.Conditions>
 
-                                <Setter TargetName="TabBorder"
+                                    <Setter TargetName="TabBorder"
                                         Property="Background"
                                         Value="#CDCDCD"/>
 
-                            </MultiTrigger>
+                                </MultiTrigger>
 
-                        </ControlTemplate.Triggers>
+                            </ControlTemplate.Triggers>
 
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
 
-        <!-- TabControl Style -->
-        <Style TargetType="dragablz:TabablzControl"
-               BasedOn="{StaticResource {x:Type dragablz:TabablzControl}}"
-               x:Key="JourneyBrowserTabControlStyle">
+            <!-- TabControl Style -->
+            <Style TargetType="TabControl"
+                   x:Key="JourneyBrowserTabControlStyle">
 
-            <Setter Property="ItemContainerStyle"
+                <Setter Property="ItemContainerStyle"
                     Value="{StaticResource JourneyBrowserTabItemStyle}"/>
-            
-            <Setter Property="OverridesDefaultStyle"
+
+                <Setter Property="OverridesDefaultStyle"
                     Value="True" />
 
-            <Setter Property="ShowDefaultAddButton"
+                <Setter Property="SnapsToDevicePixels"
                     Value="True" />
 
-            <Setter Property="ShowDefaultCloseButton"
-                    Value="True" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TabControl">
+                            <Grid>
 
-            <Setter Property="SnapsToDevicePixels"
-                    Value="True" />
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
 
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TabControl">
-                        <Grid>
+                                <!-- Tabs -->
+                                <DockPanel Grid.Row="0"
+                                           LastChildFill="False"
+                                           Margin="12,7,150,0">
 
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
+                                    <!-- Tab Panel -->
+                                    <TabPanel x:Name="HeaderPanel"
+                                              Background="Transparent"
+                                              Margin="0"
+                                              Panel.ZIndex="1"/>
 
-                            <!-- Tabs -->
-                            <DockPanel Grid.Row="0"
-                                       LastChildFill="False"
-                                       Margin="12,7,150,0">
-
-                                <!-- Tab Panel -->
-                                <dragablz:DragablzItemsControl x:Name="HeaderPanel"
-                                          Background="Transparent"
-                                          Margin="0"
-                                          Panel.ZIndex="1"/>
-
-                                <!-- New Tab Button -->
-                                <Button x:Name="NewTabButton"
+                                    <!-- New Tab Button -->
+                                    <Button x:Name="NewTabButton"
                                         Click="NewTabButton_Click"
                                         Content="+"
                                         Height="28"
@@ -178,111 +220,33 @@
                                         VerticalAlignment="Bottom"
                                         Width="32"/>
 
-                            </DockPanel>
+                                </DockPanel>
 
-                            <ContentPresenter x:Name="PART_SelectedContentHost"
-                                              ContentSource="SelectedContent"
-                                              Grid.Row="1"
-                                              Margin="0"/>
+                                <ContentPresenter x:Name="PART_SelectedContentHost"
+                                                  ContentSource="SelectedContent"
+                                                  Grid.Row="1"
+                                                  Margin="0"/>
 
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
 
-        </Style>
+            </Style>
+
+        </ResourceDictionary>
+
 
     </Window.Resources>
 
     <Grid>
 
-        <dragablz:TabablzControl x:Name="BrowserTabControl"
-                                 IsSynchronizedWithCurrentItem="True"
-                                 ItemsSource="{Binding Tabs}"
-                                 SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
-                                 ShowDefaultAddButton="True"
-                                 ShowDefaultCloseButton="True"
-                                 Style="{StaticResource BasicExamplesTabStyle}"
-                                 WindowChrome.IsHitTestVisibleInChrome="True">
-
-            <dragablz:TabablzControl.InterTabController>
-                <dragablz:InterTabController />
-            </dragablz:TabablzControl.InterTabController>
-
-            <dragablz:TabablzControl.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Address}" />
-                </DataTemplate>
-            </dragablz:TabablzControl.ItemTemplate>
-
-            <dragablz:TabablzControl.ContentTemplate>
-                <DataTemplate>
-                    <Grid>
-
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-
-                        <!-- Button Bar -->
-                        <Border Grid.Row="0"
-                                BorderBrush="LightGray"
-                                BorderThickness="0,0,0,1">  
-
-                            <Grid Background="White">
-
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="10"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="10"/>
-                                </Grid.ColumnDefinitions>
-
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="10"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="10"/>
-                                </Grid.RowDefinitions>
-
-                                <TextBox Name="addressBar"
-                                         HorizontalAlignment="Center"
-                                         Grid.Column="2"
-                                         Grid.Row="1"
-                                         MinWidth="250"
-                                         Width="500"
-                                         Text="{Binding Address, Mode=TwoWay}"/>
-
-                                <Button x:Name="Journey"
-                                        Click="ButtonJourney_Click"
-                                        Grid.Column="3"
-                                        Grid.Row="1"
-                                        Content="Journey"
-                                        HorizontalAlignment="Right"
-                                        Width="40"/>
-
-                                <Button x:Name="DarkMode"
-                                        Click="ButtonDarkMode_Click"
-                                        Grid.Column="4"
-                                        Grid.Row="1"
-                                        Content="Theme"
-                                        HorizontalAlignment="Right"
-                                        Width="40"/>
-
-                            </Grid>
-
-                        </Border>
-
-                        <!-- JourneyWebView2 -->
-                        <journey:JourneyWebView2 Grid.Row="1"
-                                                 Source="{Binding Address, Mode=TwoWay}" />
-
-                    </Grid>
-                </DataTemplate>
-            </dragablz:TabablzControl.ContentTemplate>
-
-        </dragablz:TabablzControl>
+        <TabControl x:Name="BrowserTabControl"
+                    IsSynchronizedWithCurrentItem="True"
+                    ItemsSource="{Binding ElementName=WindowRoot, Path=Tabs}"
+                    SelectedIndex="{Binding ElementName=WindowRoot, Path=SelectedIndex, Mode=TwoWay}"
+                    Style="{StaticResource JourneyBrowserTabControlStyle}"
+                    WindowChrome.IsHitTestVisibleInChrome="True"/>
 
     </Grid>
 

@@ -1,0 +1,20 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Brushes -->
+    <SolidColorBrush x:Key="ActiveBorderBrush" Color="#FF444444" />
+    <SolidColorBrush x:Key="LineBrush" Color="#FFCCCCCC" />
+    <SolidColorBrush x:Key="PressedBrush" Color="#FF333333" />
+    <SolidColorBrush x:Key="TextBrush" Color="#FFFEFEFE" />
+    <SolidColorBrush x:Key="TextLightBrush" Color="#FFBBBBBB" />
+    <SolidColorBrush x:Key="WindowBrush" Color="#FF232323" />
+
+    <!-- Images -->
+    <BitmapImage x:Key="BackImage" UriSource="pack://application:,,,/Resources/Images/Dark/back.png" />
+    <BitmapImage x:Key="DarkModeImage" UriSource="pack://application:,,,/Resources/Images/Dark/dark_mode.png"/>
+    <BitmapImage x:Key="ForwardImage" UriSource="pack://application:,,,/Resources/Images/Dark/forward.png" />
+    <BitmapImage x:Key="HomeImage" UriSource="pack://application:,,,/Resources/Images/Dark/home.png"/>
+    <BitmapImage x:Key="JourneyImage" UriSource="pack://application:,,,/Resources/Images/Dark/journey.png"/>
+    <BitmapImage x:Key="RefreshImage" UriSource="pack://application:,,,/Resources/Images/Dark/refresh.png"/>
+
+</ResourceDictionary>

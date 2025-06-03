@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
+using Journey;
 
 
 namespace JourneyBrowser
@@ -25,6 +26,7 @@ namespace JourneyBrowser
 
         #region Fields
 
+        private CoreWebView2PreferredColorScheme _colorScheme;
         private int _selectedIndex;
 
         #endregion
@@ -39,12 +41,15 @@ namespace JourneyBrowser
 
         public MainWindow()
         {
+            // Set fields and properties
+            _colorScheme = CoreWebView2PreferredColorScheme.Auto;
+            Tabs = new();
+
             // Initialize window.
             InitializeComponent();
-            DataContext = this;
 
-            // Initialize Properties
-            Tabs = new();
+            // Merge in the appropriate resource dictionary dependent upon whether the OS is in light or dark mode.
+            ApplyTheme();
 
             //SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
         }
@@ -75,6 +80,14 @@ namespace JourneyBrowser
             var newTab = CreateTab(HomePage);
             BrowserTabControl.SelectedItem = newTab;
         }
+        private void WebView2_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
+        {
+            if (sender is IWebView2 webView2)
+            {
+                webView2.CoreWebView2InitializationCompleted -= WebView2_CoreWebView2InitializationCompleted;
+                webView2.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
+            }
+        }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             RefreshFrame();
@@ -84,7 +97,43 @@ namespace JourneyBrowser
         #endregion
 
         #region Private
+        
+        private void ApplyTheme()
+        {
+            // Set a flag to indicate whether we should use dark mode.
+            var isDark = false;
+            if (_colorScheme == CoreWebView2PreferredColorScheme.Dark)
+            {
+                // If the WebView2 profile is set to dark mode, we'll use that.
+                isDark = true;
+            }
+            else if (_colorScheme == CoreWebView2PreferredColorScheme.Auto)
+            {
+                // If the WebView2 profile is set to auto, we'll check the registry to see whether the app should be in light or dark mode.
+                using (var themeRegistryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
+                {
+                    isDark = (themeRegistryKey?.GetValue("AppsUseLightTheme") as int? ?? 1) == 0;
+                }
+            }
 
+            // Remove any previously merged dictionary and merge in the appropriate dictionary based on the current light/dark mode.
+            var themeDictionary = new ResourceDictionary
+            {
+                Source = new Uri(isDark ? "pack://application:,,,/Resources/Themes/Theme.Dark.xaml"
+                                        : "pack://application:,,,/Resources/Themes/Theme.Light.xaml", UriKind.Absolute)
+            };
+
+            var dictionariesToRemove = Resources.MergedDictionaries
+                                       .Where(d => d.Source != null && (d.Source.OriginalString.Contains("Theme.Dark.xaml")
+                                                                        || d.Source.OriginalString.Contains("Theme.Light.xaml"))).ToList();
+
+            foreach (var dict in dictionariesToRemove)
+            {
+                Resources.MergedDictionaries.Remove(dict);
+            }
+
+            Resources.MergedDictionaries.Add(themeDictionary);
+        }
         private BrowserTab CreateTab(string address)
         {
             var tab = new BrowserTab(address);
@@ -136,14 +185,6 @@ namespace JourneyBrowser
         }
 
 
-        private void WebView2_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
-        {
-            if (sender is IWebView2 webView2)
-            {
-                webView2.CoreWebView2InitializationCompleted -= WebView2_CoreWebView2InitializationCompleted;
-                webView2.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
-            }
-        }
 
         private void LogMsg(string msg, bool includeTimestamp = true)
         {

@@ -1,23 +1,37 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net9.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UseWPF>true</UseWPF>
-    <RootNamespace>JourneyBrowser</RootNamespace>
-    <AssemblyName>JourneyBrowser</AssemblyName>
-    <AssemblyTitle>JourneyBrowser</AssemblyTitle>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net9.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UseWPF>true</UseWPF>
+		<RootNamespace>JourneyBrowser</RootNamespace>
+		<AssemblyName>JourneyBrowser</AssemblyName>
+		<AssemblyTitle>JourneyBrowser</AssemblyTitle>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Dragablz" Version="0.0.3.234" />
-    <PackageReference Include="ModernWpfUI" Version="0.9.5" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="Resources\Fonts\**\*" />
+		<None Remove="Resources\Images\**\*" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Journey\Journey.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<Resource Include="Resources\Fonts\**\*">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+		<Resource Include="Resources\Images\**\*">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Dragablz" Version="0.0.3.234" />
+		<PackageReference Include="ModernWpfUI" Version="0.9.5" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Journey\Journey.csproj" />
+	</ItemGroup>
 
 </Project>
