@@ -24,7 +24,7 @@ namespace Journey
         {
             InitializeComponent();
 
-            // Set bitmpa scaling to low quality to try and keep performance high.
+            // Set bitmap scaling to low quality to try and keep performance high.
             RenderOptions.SetBitmapScalingMode(SnapshotImage, BitmapScalingMode.LowQuality);
 
             JourneyEntry = model;
