@@ -181,6 +181,9 @@ namespace Journey
             WebView.WebMessageReceived += (_, args) => { WebMessageReceived?.Invoke(this, args); };
             WebView.ZoomFactorChanged += (_, args) => { ZoomFactorChanged?.Invoke(this, args); };
 
+            // Subscribe to the initialization completed event.
+            WebView.CoreWebView2InitializationCompleted += WebView_CoreWebView2InitializationCompleted;
+
             // The size of Journey "steps" is calculated as a division of the primary monitor resolution. We're keeping this simple for
             // now and just covering the scenarios of either a single monitor, or multiple monitors of the same resolution. Monitors with
             // different resolutions are a different case that would need to be accounted for in future development.
@@ -360,6 +363,17 @@ namespace Journey
 
         #region Event Handlers
 
+        private void CoreWebView2_HistoryChanged(object? sender, object e)
+        {
+            // It's not possible to bind a readonly DependencyProperty, even with OneWayToSource, so there isn't an easy way of determining
+            // when `CanGoBack` and `CanGoForward` have changed value on the inner WebView2 control, and updating our external properties.
+            // There are various alternative solutions (multi-bindings + converters, etc.), but a quick way for now is just to refresh those
+            // properties when the CoreWebView2 instance indicates that the history has changed, which is usually when the Back and Forward
+            // buttons would change enabled state anyway.
+
+            CanGoBack = WebView.CanGoBack;
+            CanGoForward = WebView.CanGoForward;
+        }
         private async void JourneyStep_MouseUp(object sender, MouseButtonEventArgs e)
         {
             // If we've received a single click event for a Journey step, check whether the mouse has moved between mouse down and
@@ -482,6 +496,14 @@ namespace Journey
                 ApplyTheme();
             }
         }
+        private void WebView_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
+        {
+            // Once the CoreWebView2 instance has initialized, we can remove the handler to the event, and add a handler to the history
+            // changed event.
+
+            WebView.CoreWebView2InitializationCompleted -= WebView_CoreWebView2InitializationCompleted;
+            WebView.CoreWebView2.HistoryChanged += CoreWebView2_HistoryChanged;
+        }
 
         #endregion
 
@@ -544,6 +566,10 @@ namespace Journey
                     JourneyCanvas.Children.Clear();
                     _journeyManager.Dispose();
                     WebView.Dispose();
+
+                    // Unhook our event handlers.
+                    WebView.CoreWebView2InitializationCompleted -= WebView_CoreWebView2InitializationCompleted;
+                    WebView.CoreWebView2.HistoryChanged -= CoreWebView2_HistoryChanged;
                 }
 
                 _isDisposed = true;
