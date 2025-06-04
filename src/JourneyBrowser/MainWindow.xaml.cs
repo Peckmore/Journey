@@ -90,7 +90,7 @@ namespace JourneyBrowser
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            RefreshFrame();
+            //RefreshFrame();
             CreateTab(HomePage);
         }
 
