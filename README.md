@@ -40,7 +40,7 @@ A typical use case for a _browser_ is to use a search engine to find the solutio
 
 The situation can be further compounded if several of the results lead to different answers on the same web site, resulting in many of the results having similar URLs and titles. In this case, the user may be forced to return to the search results and click on each link again, or use the _history_ feature of their _browser_ to attempt to find the page they were looking for. However, this can be time consuming and frustrating, especially if the user has visited a number of pages in a short period of time.
 
-This problem posits the question of whether it could be possible for the _travellog_ to be more helpful in such scenarios. There are already a number of tools and extensions to enhance the _history_ of a _browser_<sup>[1](#[1]-BetterHistory.io,-https://betterhistory.io/)[2](https://browserhistory.net/)[3](https://chromewebstore.google.com/detail/history-plus/kloodnjmhgicecceindgbfpjencnhajh)</sup>, but no tool or extension that would enhance the _travellog_.
+This problem posits the question of whether it could be possible for the _travellog_ to be more helpful in such scenarios. There are already a number of tools and extensions to enhance the _history_ of a _browser_<sup>[1][1] [2](https://browserhistory.net/)[3](https://chromewebstore.google.com/detail/history-plus/kloodnjmhgicecceindgbfpjencnhajh)</sup>, but no tool or extension that would enhance the _travellog_.
 
 To discover if there could be a better solution to the problem, an experiment was undertaken to investigate a way to enhance the _travellog_. The solution would need to allow the user to see their _travellog_ in a more visual way, and show the organic path the user took when visting pages in their _browser_.
 
@@ -226,7 +226,7 @@ Hopefully proves interesting
 ## Acknowledgements
 
 ## References
-#### [1] BetterHistory.io, https://betterhistory.io/
+[1]: https://betterhistory.io/ BetterHistory.io
 
 [2] Browser History Plus, https://browserhistory.net/
 
