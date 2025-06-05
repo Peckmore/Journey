@@ -17,8 +17,10 @@ This repo contains the following projects:
 
 Project            | Description
 -------------------|------------
-**Journey**        | An implementation of the **Journey** concept. `JourneyWebView2` implements `IWebView2`, and internally wraps a `WebView2` instance. The control _should_ be a drop-in replacement for a `WebView2` control, but your mileage may vary!
+**Journey**        | An implementation of the **Journey** concept. `JourneyWebView2` implements `IWebView2`, and internally wraps a `WebView2` instance.
 **JourneyBrowser** | A minimal "browser" implementation that uses the `JourneyWebView2` control to demonstrate the **Journey** concept.
+
+`JourneyWebView2` _should_ be a drop-in replacement for `WebView2`, but it was only developed as a proof-of-concept, so your mileage may vary!
 
 ## Abstract
 
@@ -36,56 +38,21 @@ Project            | Description
 
 ## Introduction
 
-A typical use case for a _browser_ is to use a search engine to find the solution to a problem. A user will often do this by initiating a search for the problem and then clicking on a number of links that appear in the search results. The user may click on several links, returning to the search results between each link, and repeat this for a number of iterations. Doing so can lead to a situation whereby the user has visited a number of pages, but is unable to remember which page contained the most helpful solution to their problem.
+A typical use case for a _browser_ is to use a search engine to find the solution to a problem. A user will often do this by initiating a search in their _browser_ and then clicking on links that appear in the search results. The user may click on several links, returning to the search results between each link, and repeat this for a number of iterations. In doing this the user can end up in a situation whereby they have visited a number of pages, but are unable to remember which page contained the most helpful solution to their problem.
 
-The situation can be further compounded if several of the results lead to different answers on the same web site, resulting in many of the results having similar URLs and titles. In this case, the user may be forced to return to the search results and click on each link again, or use the _history_ feature of their _browser_ to attempt to find the page they were looking for. However, this can be time consuming and frustrating, especially if the user has visited a number of pages in a short period of time.
+The situation could be further compounded if several of the results led to different answers on the same web site, resulting in many of the results having similar URLs and titles. The user may be forced to return to the search results and click on each link again, or use the _history_ feature of their _browser_ to attempt to find the page they were looking for. However, this can be time consuming and frustrating, especially if the user visited a number of pages in a short period of time.
 
-This problem posits the question of whether it could be possible for the _travellog_ to be more helpful in such scenarios. There are already a number of tools and extensions to enhance the _history_ of a _browser_[^BetterHistory] [^BrowserHistoryPlus] [^HistoryPlus] , but no tool or extension that would enhance the _travellog_.
+The scenario posits the question of whether it could be possible for the _travellog_ to be more helpful in such scenarios. There are already a number of tools and extensions to enhance the _history_ of a _browser_ [^BetterHistory] [^BrowserHistoryPlus] [^HistoryPlus], but no tool or extension that would enhance the _travellog_.
 
-To discover if there could be a better solution to the problem, an experiment was undertaken to investigate a way to enhance the _travellog_. The solution would need to allow the user to see their _travellog_ in a more visual way, and show the organic path the user took when visting pages in their _browser_.
-
-## Research
-
-There are many ways of visualizing branching choices, but the following types of visualization were considered for this experiment:
-
-- **Flowchart**
-
-  _"A flowchart is a type of diagram that represents a workflow or process. A flowchart can also be defined as a diagrammatic representation of an algorithm, a step-by-step approach to solving a task._
-
-  _"The flowchart shows the steps as boxes of various kinds, and their order by connecting the boxes with arrows. This diagrammatic representation illustrates a solution model to a given problem. Flowcharts are used in analyzing, designing, documenting or managing a process or program in various fields."_ [^Flowchart]
-
-  ![Flowchart](res/images/LampFlowchart.png)  
-  ^An example of a flowchart^ [^Flowchart]
-
-  Flowcharts are excellent for illustrating the flow of decisions and their outcomes, with each choice leading to a new path.
-
-- **Tree Diagrams**
-
-  _"A tree structure, tree diagram, or tree model is a way of representing the hierarchical nature of a structure in a graphical form. It is named a "tree structure" because the classic representation resembles a tree, although the chart is generally upside down compared to a biological tree, with the "stem" at the top and the "leaves" at the bottom."_ [^Treestructure]
-
-  ![Tree Diagram](res/images/Binary_tree_structure.png)  
-  ^An example of a tree diagram^ [^Treestructure]
-
-  Tree diagrams are excellent for representing hierarchical relationships between choices. The root node represents the initial starting point, with each branch representing a different choice and it's subsequent choices and outcomes.
-
-- **Network Diagrams**
-
-  Network diagrams are suitable for visualizing complex relationships and connections between various elements, including characters, locations, and events. They can represent how choices influence multiple aspects of the narrative. 
-
-- **Sankey Diagrams**
-
-Sankey diagrams are particularly helpful for showing the flow of information or resources. They can be used to illustrate how choices lead to different outcomes, with the width of the "ribbons" representing the "flow" or probability of each path. 
-
-
-
+This project was undertaken to discover a way of enhancing the _travellog_ and providing a better solution to the problem. The solution would need to allow the user to see their _travellog_ in a more visual way, and show the organic path the user took when visting pages in their _browser_.
 
 ## Goals
 
-Based on the research undertaken, the following goals were identified for the project:
+The following goals were identified for the project:
 
-- **Tree Structure**
+- **Structured**
 
-  The tool should represent the users browsing travellog as a tree structure, with each page visited represented as a node in the tree.
+  The tool should represent the users browsing _travellog_ as a visual structure, with each page visited represented as a node in the structure.
 
 - **Visual**
 
@@ -101,15 +68,63 @@ Based on the research undertaken, the following goals were identified for the pr
 
 - **Consistency**
 
-  The tool should follow the same interactivity principles as the browser; that is, elements such as mouse cursors, shortcut keys, and means of interacting with elements should be consistent between viewing a web page and viewing the travellog.
+  The tool should follow the same interactivity principles as the _browser_; that is, elements such as mouse cursors, shortcut keys, and means of interacting with elements should be consistent between viewing a web page and viewing the travellog.
 
 - **Seamless**
 
-  The tool should integrate seamlessly into the users browser interface, and not require any additional steps to use, other than a way of invoking the tool.
+  The tool should integrate seamlessly into the users _browser_ interface, and not require any additional steps to use, other than a way of invoking the tool.
 
 - **Performant**
 
   The tool should be performant, and not slow down the users browsing experience.
+
+## Research
+
+The first step out research into ways of visualising branching choices, which would form the core focus of the experiment.
+
+### Network Graph
+
+_"A network graph is a chart that displays relations between elements (nodes) using simple links. Network graph allows us to visualize clusters and relationships between the nodes quickly..."_ [^Networkgraph]
+
+<div align="center">
+
+![Network Graph](res/images/network-graph.png)  
+_An example of a network graph_ [^Networkgraph]
+
+</div>
+
+Network graphs were the first visualisation considered for the project. However, they offered a level of complexity beyond the needs of the project, and the typical arrangement for a network graph meant that they did not meet the project's goals - they are typically not visually conducive to relaying the chronology of nodes.
+
+### Flowchart
+
+_"A flowchart is a type of diagram that represents a workflow or process. A flowchart can also be defined as a diagrammatic representation of an algorithm, a step-by-step approach to solving a task."_ [^Flowchart]
+
+<div align="center">
+
+![Flowchart](res/images/flowchart.png)  
+_An example of a flowchart_ [^Flowchart]
+
+</div>
+
+Flowcharts were the next visualisation to be considered, and were a strong match for the goals of the project. However, flowcharts present nodes in the "present tense", as a series of questions, rather than showing the chronological layout of choices already made.
+
+### Tree Diagram
+
+_"A tree structure, tree diagram, or tree model is a way of representing the hierarchical nature of a structure in a graphical form. It is named a "tree structure" because the classic representation resembles a tree, although the chart is generally upside down compared to a biological tree, with the "stem" at the top and the "leaves" at the bottom."_ [^Treestructure]
+
+<div align="center">
+
+![Tree Diagram](res/images/tree-diagram.png)  
+_An example of a tree diagram_ [^Treestructure]
+
+</div>
+
+
+
+  Tree diagrams are excellent for representing hierarchical relationships between choices. The root node represents the initial starting point, with each branch representing a different choice and it's subsequent choices and outcomes.
+
+
+
 
 ## Design
 
@@ -231,4 +246,4 @@ Hopefully proves interesting
 [^HistoryPlus]: [HistoryPlus](https://chromewebstore.google.com/detail/history-plus/kloodnjmhgicecceindgbfpjencnhajh)
 [^Flowchart]: [Flowchart](https://en.wikipedia.org/wiki/Flowchart)
 [^Treestructure]: [Tree structure](https://en.wikipedia.org/wiki/Tree_structure)
-[^6]: [Graphic drawing](https://en.wikipedia.org/wiki/Graph_drawing)
+[^Networkgraph]: [Network graph](https://www.highcharts.com/blog/tutorials/network-graph/)
