@@ -4,8 +4,8 @@
 
 A UI/UX experiment in visual, branching browser history.
 
-_“Its the not the destination, It's the journey.”_<br/>
-**Ralph Waldo Emerson**
+_“The journey is the reward.”_<br/>
+**Lao Tzu**
 
 SCREENSHOT
 
@@ -13,9 +13,12 @@ SCREENSHOT
 
 **Journey** is a **WPF** user control written in **C#** which aims to provide the ability to view your browsing history as an interactive tree diagram.
 
-**Journey** is implemented as `JourneyWebView2`, which implements `IWebView2` and internally wraps a `WebView2` instance. As a result, the control should be a drop-in replacement for `WebView2`.
+This repo contains the following projects:
 
-Included in the repo is a demo application called **JourneyBrowser**, which is a minimal "browser" implementation that uses the `JourneyWebView2` control to demonstrate the **Journey** concept.
+Project            | Description
+-------------------|------------
+**Journey**        | An implementation of the **Journey** concept. `JourneyWebView2` implements `IWebView2`, and internally wraps a `WebView2` instance.<br/><br/>The control _should_ be a drop-in replacement for a `WebView2` control, but your mileage may vary!
+**JourneyBrowser** | A minimal "browser" implementation that uses the `JourneyWebView2` control to demonstrate the **Journey** concept.
 
 ## Abstract
 
@@ -25,20 +28,22 @@ Included in the repo is a demo application called **JourneyBrowser**, which is a
 
 - _**browser:**_ a software application with a graphical user interface for displaying, and navigating between, web pages
 
-- _**browsing area:**_ the area of the browser in which web content is displayed, typically the area below the address bar, and which does not include the browser UI
+- _**browsing area:**_ the area of the _browser_ in which web content is displayed, typically the area below the address bar, and which does not include the _browser_ UI
 
 - _**history:**_ the typical _history_ feature presented to the user that displays a list of all pages visited, across all tabs and sessions, usually with a date and time stamp, and often with the ability to search for specific pages
 
-- _**travellog:**_ the short-term history associated with a page or tab within a browser that allows for navigation backwords and forwards, sometimes referred to internally within browsers as the _travellog_
+- _**travellog:**_ the short-term history associated with a page or tab within a _browser_ that allows for navigation backwords and forwards, sometimes referred to internally within a _browser_ as the _session history_
 
 ## Introduction
 
-A typical use case for a browser is to use a search engine to find the solution to a problem. This is often done by initiating a search for the problem, and then clicking on a number of links that appear in the search results. A user may click on several links, returning to the search results between each link, and repeat this for a number of iterations. Doing so can lead to a situation whereby the user has visited a number of pages, but is unable to remember which page contained the most helpful solution to their problem.
+A typical use case for a _browser_ is to use a search engine to find the solution to a problem. A user will often do this by initiating a search for the problem and then clicking on a number of links that appear in the search results. The user may click on several links, returning to the search results between each link, and repeat this for a number of iterations. Doing so can lead to a situation whereby the user has visited a number of pages, but is unable to remember which page contained the most helpful solution to their problem.
 
-The situation can be further compounded if several of the results lead to different answers on the same web site, resulting in many of them having similar URLs and titles. In this case, the user may be forced to return to the search results and click on each link again, or use the _history_ feature of the browser to attempt to find the page they were looking for. However, this can be time consuming and frustrating, especially if the user has visited a number of pages in a short period of time.
+The situation can be further compounded if several of the results lead to different answers on the same web site, resulting in many of the results having similar URLs and titles. In this case, the user may be forced to return to the search results and click on each link again, or use the _history_ feature of their _browser_ to attempt to find the page they were looking for. However, this can be time consuming and frustrating, especially if the user has visited a number of pages in a short period of time.
 
-The problem posited the question of whether it could be possible for the travellog to be more helpful in such scenarios, and what solutions already existed to achieve this. A search for tools to enhance the travellog resulted in a number of browser extensions
-^[1](https://betterhistory.io/)^ ^[2](https://browserhistory.net/)^ ^[3](https://chromewebstore.google.com/detail/history-plus/kloodnjmhgicecceindgbfpjencnhajh)^ that could enhance the _history_ of a browser, but nothing that would improve the travellog.
+This problem posits the question of whether it could be possible for the travellog to be more helpful in such scenarios.
+
+A search for tools to enhance the travellog resulted in a number of browser extensions
+$^{[1](https://betterhistory.io/)}$ ^[2](https://browserhistory.net/)^ ^[3](https://chromewebstore.google.com/detail/history-plus/kloodnjmhgicecceindgbfpjencnhajh)^ that could enhance the _history_ of a browser, but nothing that would improve the travellog.
 
 With no existing solution found, an experiment was undertaken to investigate a way to enhance the _travellog_, and allow for a better solution to the problem. The solution would need to allow the user to see their travellog in a more visual way, provide a beter representation of a users browsing session, allow for easy navigation between previously visited pages and, most crucially, show the organic path the user took when visting the pages in their browser.
 
