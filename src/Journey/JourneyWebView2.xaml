@@ -78,7 +78,7 @@
 
             </Style>
 
-            <Style TargetType="Image" x:Key="ButtonBar">
+            <Style TargetType="Image" x:Key="ButtonBarButtonStyle">
 
                 <Setter Property="Height"
                         Value="20" />
@@ -217,7 +217,7 @@
                             ToolTip="{x:Static resources:Strings.JourneyWebView2_ZoomOut_ToolTip}">
 
                         <Image Source="{DynamicResource ZoomOutImage}"
-                               Style="{StaticResource ButtonBar}" />
+                               Style="{StaticResource ButtonBarButtonStyle}" />
 
                     </Button>
 
@@ -228,7 +228,7 @@
                             ToolTip="{x:Static resources:Strings.JourneyWebView2_ZoomIn_ToolTip}">
 
                         <Image Source="{DynamicResource ZoomInImage}"
-                               Style="{StaticResource ButtonBar}" />
+                               Style="{StaticResource ButtonBarButtonStyle}" />
 
                     </Button>
 
@@ -239,7 +239,7 @@
                             ToolTip="{x:Static resources:Strings.JourneyWebView2_ResetZoomLevel_ToolTip}">
 
                         <Image Source="{DynamicResource ResetZoomImage}"
-                               Style="{StaticResource ButtonBar}" />
+                               Style="{StaticResource ButtonBarButtonStyle}" />
 
                     </Button>
 
@@ -259,7 +259,7 @@
                             ToolTip="{x:Static resources:Strings.JourneyWebView2_ResetView_ToolTip}">
 
                         <Image Source="{DynamicResource ResetViewImage}"
-                               Style="{StaticResource ButtonBar}" />
+                               Style="{StaticResource ButtonBarButtonStyle}" />
 
                     </Button>
 
