@@ -2,12 +2,20 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- Colors -->
-    <SolidColorBrush x:Key="ActiveBorderBrush" Color="#FFCCCCCC" />
-    <SolidColorBrush x:Key="LineBrush" Color="#FF777777" />
-    <SolidColorBrush x:Key="PressedBrush" Color="#FFE0E0E0" />
-    <SolidColorBrush x:Key="TextBrush" Color="#FF010101" />
-    <SolidColorBrush x:Key="TextLightBrush" Color="#FF444444" />
-    <SolidColorBrush x:Key="WindowBrush" Color="#FFF0F0F0" />
+    <SolidColorBrush x:Key="ButtonHoverBrush" Color="#FFE0E0E0" />
+    <SolidColorBrush x:Key="ButtonNormalBrush" Color="Transparent" />
+    <SolidColorBrush x:Key="ButtonPressedBrush" Color="#FFD1D1D1" />
+
+    <SolidColorBrush x:Key="SeparatorBrush" Color="#FFDDDDDD" />
+
+    <SolidColorBrush x:Key="TabActiveBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="TabHoverBrush" Color="#FFCCCCCC" />
+    <SolidColorBrush x:Key="TabInactiveBrush" Color="Transparent" />
+    
+    
+    <!--<SolidColorBrush x:Key="TextBrush" Color="#FF010101" />
+    <SolidColorBrush x:Key="TextLightBrush" Color="#FF444444" />-->
+    <!--<SolidColorBrush x:Key="WindowBrush" Color="#FFF0F0F0" />-->
 
     <!-- Images -->
     <BitmapImage x:Key="BackImage" UriSource="pack://application:,,,/Resources/Images/Light/back.png" />
