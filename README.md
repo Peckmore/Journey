@@ -4,7 +4,7 @@
 
 A UI/UX experiment in visual, branching browser history.
 
-_“The journey is the reward.”_<br/>
+_“The journey is the reward.”_  
 **Lao Tzu**
 
 SCREENSHOT
@@ -40,7 +40,7 @@ A typical use case for a _browser_ is to use a search engine to find the solutio
 
 The situation can be further compounded if several of the results lead to different answers on the same web site, resulting in many of the results having similar URLs and titles. In this case, the user may be forced to return to the search results and click on each link again, or use the _history_ feature of their _browser_ to attempt to find the page they were looking for. However, this can be time consuming and frustrating, especially if the user has visited a number of pages in a short period of time.
 
-This problem posits the question of whether it could be possible for the _travellog_ to be more helpful in such scenarios. There are already a number of tools and extensions to enhance the _history_ of a _browser_<sup>[1][1] [2](https://browserhistory.net/)[3](https://chromewebstore.google.com/detail/history-plus/kloodnjmhgicecceindgbfpjencnhajh)</sup>, but no tool or extension that would enhance the _travellog_.
+This problem posits the question of whether it could be possible for the _travellog_ to be more helpful in such scenarios. There are already a number of tools and extensions to enhance the _history_ of a _browser_[^BetterHistory] [^BrowserHistoryPlus] [^HistoryPlus] , but no tool or extension that would enhance the _travellog_.
 
 To discover if there could be a better solution to the problem, an experiment was undertaken to investigate a way to enhance the _travellog_. The solution would need to allow the user to see their _travellog_ in a more visual way, and show the organic path the user took when visting pages in their _browser_.
 
@@ -52,19 +52,19 @@ There are many ways of visualizing branching choices, but the following types of
 
   _"A flowchart is a type of diagram that represents a workflow or process. A flowchart can also be defined as a diagrammatic representation of an algorithm, a step-by-step approach to solving a task._
 
-  _"The flowchart shows the steps as boxes of various kinds, and their order by connecting the boxes with arrows. This diagrammatic representation illustrates a solution model to a given problem. Flowcharts are used in analyzing, designing, documenting or managing a process or program in various fields."_ <sup>[4](https://en.wikipedia.org/wiki/Flowchart)</sup>
+  _"The flowchart shows the steps as boxes of various kinds, and their order by connecting the boxes with arrows. This diagrammatic representation illustrates a solution model to a given problem. Flowcharts are used in analyzing, designing, documenting or managing a process or program in various fields."_ [^Flowchart]
 
-  ![Flowchart](res/images/LampFlowchart.png)<br/>
-  ^An example of a flowchart^ <sup>[4](https://en.wikipedia.org/wiki/Flowchart)</sup>
+  ![Flowchart](res/images/LampFlowchart.png)  
+  ^An example of a flowchart^ [^Flowchart]
 
   Flowcharts are excellent for illustrating the flow of decisions and their outcomes, with each choice leading to a new path.
 
 - **Tree Diagrams**
 
-  _"A tree structure, tree diagram, or tree model is a way of representing the hierarchical nature of a structure in a graphical form. It is named a "tree structure" because the classic representation resembles a tree, although the chart is generally upside down compared to a biological tree, with the "stem" at the top and the "leaves" at the bottom."_ ^[5](https://en.wikipedia.org/wiki/Tree_structure)^
+  _"A tree structure, tree diagram, or tree model is a way of representing the hierarchical nature of a structure in a graphical form. It is named a "tree structure" because the classic representation resembles a tree, although the chart is generally upside down compared to a biological tree, with the "stem" at the top and the "leaves" at the bottom."_ [^Treestructure]
 
-  ![Tree Diagram](res/images/Binary_tree_structure.png)<br/>
-  ^An example of a tree diagram^ ^[5](https://en.wikipedia.org/wiki/Tree_structure)^
+  ![Tree Diagram](res/images/Binary_tree_structure.png)  
+  ^An example of a tree diagram^ [^Treestructure]
 
   Tree diagrams are excellent for representing hierarchical relationships between choices. The root node represents the initial starting point, with each branch representing a different choice and it's subsequent choices and outcomes.
 
@@ -225,15 +225,10 @@ Hopefully proves interesting
 
 ## Acknowledgements
 
-## References
-[1]: https://betterhistory.io/ BetterHistory.io
 
-[2] Browser History Plus, https://browserhistory.net/
-
-[3] HistoryPlus, https://chromewebstore.google.com/detail/history-plus/kloodnjmhgicecceindgbfpjencnhajh
-
-[4] Flowchart, https://en.wikipedia.org/wiki/Flowchart
-
-[5] Tree structure, https://en.wikipedia.org/wiki/Tree_structure
-
-[6] Graphic drawing, https://en.wikipedia.org/wiki/Graph_drawing
+[^BetterHistory]: [BetterHistory.io](https://betterhistory.io)
+[^BrowserHistoryPlus]: [Browser History Plus](https://browserhistory.net)
+[^HistoryPlus]: [HistoryPlus](https://chromewebstore.google.com/detail/history-plus/kloodnjmhgicecceindgbfpjencnhajh)
+[^Flowchart]: [Flowchart](https://en.wikipedia.org/wiki/Flowchart)
+[^Treestructure]: [Tree structure](https://en.wikipedia.org/wiki/Tree_structure)
+[^6]: [Graphic drawing](https://en.wikipedia.org/wiki/Graph_drawing)
