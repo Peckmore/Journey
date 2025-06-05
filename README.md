@@ -11,13 +11,13 @@ SCREENSHOT
 
 </div>
 
-**Journey** is a **WPF** user control written in **C#** which aims to provide the ability to view your browsing history as an interactive tree diagram.
+**Journey** is a **C# WPF** user control which aims to provide the ability to view your browsing history as an interactive tree diagram.
 
 This repo contains the following projects:
 
 Project            | Description
 -------------------|------------
-**Journey**        | An implementation of the **Journey** concept. `JourneyWebView2` implements `IWebView2`, and internally wraps a `WebView2` instance.<br/><br/>The control _should_ be a drop-in replacement for a `WebView2` control, but your mileage may vary!
+**Journey**        | An implementation of the **Journey** concept. `JourneyWebView2` implements `IWebView2`, and internally wraps a `WebView2` instance. The control _should_ be a drop-in replacement for a `WebView2` control, but your mileage may vary!
 **JourneyBrowser** | A minimal "browser" implementation that uses the `JourneyWebView2` control to demonstrate the **Journey** concept.
 
 ## Abstract
@@ -40,12 +40,9 @@ A typical use case for a _browser_ is to use a search engine to find the solutio
 
 The situation can be further compounded if several of the results lead to different answers on the same web site, resulting in many of the results having similar URLs and titles. In this case, the user may be forced to return to the search results and click on each link again, or use the _history_ feature of their _browser_ to attempt to find the page they were looking for. However, this can be time consuming and frustrating, especially if the user has visited a number of pages in a short period of time.
 
-This problem posits the question of whether it could be possible for the travellog to be more helpful in such scenarios.
+This problem posits the question of whether it could be possible for the _travellog_ to be more helpful in such scenarios. There are already a number of tools and extensions to enhance the _history_ of a _browser_<sup>[1](#[1]-BetterHistory.io,-https://betterhistory.io/)[2](https://browserhistory.net/)[3](https://chromewebstore.google.com/detail/history-plus/kloodnjmhgicecceindgbfpjencnhajh)</sup>, but no tool or extension that would enhance the _travellog_.
 
-A search for tools to enhance the travellog resulted in a number of browser extensions
-$^{[1](https://betterhistory.io/)}$ ^[2](https://browserhistory.net/)^ ^[3](https://chromewebstore.google.com/detail/history-plus/kloodnjmhgicecceindgbfpjencnhajh)^ that could enhance the _history_ of a browser, but nothing that would improve the travellog.
-
-With no existing solution found, an experiment was undertaken to investigate a way to enhance the _travellog_, and allow for a better solution to the problem. The solution would need to allow the user to see their travellog in a more visual way, provide a beter representation of a users browsing session, allow for easy navigation between previously visited pages and, most crucially, show the organic path the user took when visting the pages in their browser.
+To discover if there could be a better solution to the problem, an experiment was undertaken to investigate a way to enhance the _travellog_. The solution would need to allow the user to see their _travellog_ in a more visual way, and show the organic path the user took when visting pages in their _browser_.
 
 ## Research
 
@@ -55,10 +52,10 @@ There are many ways of visualizing branching choices, but the following types of
 
   _"A flowchart is a type of diagram that represents a workflow or process. A flowchart can also be defined as a diagrammatic representation of an algorithm, a step-by-step approach to solving a task._
 
-  _"The flowchart shows the steps as boxes of various kinds, and their order by connecting the boxes with arrows. This diagrammatic representation illustrates a solution model to a given problem. Flowcharts are used in analyzing, designing, documenting or managing a process or program in various fields."_ ^[4](https://en.wikipedia.org/wiki/Flowchart)^
+  _"The flowchart shows the steps as boxes of various kinds, and their order by connecting the boxes with arrows. This diagrammatic representation illustrates a solution model to a given problem. Flowcharts are used in analyzing, designing, documenting or managing a process or program in various fields."_ <sup>[4](https://en.wikipedia.org/wiki/Flowchart)</sup>
 
   ![Flowchart](res/images/LampFlowchart.png)<br/>
-  ^An example of a flowchart^ ^[4](https://en.wikipedia.org/wiki/Flowchart)^
+  ^An example of a flowchart^ <sup>[4](https://en.wikipedia.org/wiki/Flowchart)</sup>
 
   Flowcharts are excellent for illustrating the flow of decisions and their outcomes, with each choice leading to a new path.
 
@@ -229,7 +226,7 @@ Hopefully proves interesting
 ## Acknowledgements
 
 ## References
-[1] BetterHistory.io, https://betterhistory.io/
+#### [1] BetterHistory.io, https://betterhistory.io/
 
 [2] Browser History Plus, https://browserhistory.net/
 
