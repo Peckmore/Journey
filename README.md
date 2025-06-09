@@ -84,19 +84,19 @@ The following goals were identified for **Journey**:
 
 ### Data Structure
 
-The data for the users **Journey** consists of a series of pages visited (_nodes_), each one linked to the page that came before it (_parent_) and to the pages that came after it (_children_). Each page can have multiple _children_, given that the user can navigate backwards and forwards through their travellog at any time, resulting in branches in their navigation history. Therefore, **Journey** moves beyond storing data as a simple list, as existing _travellogs_ do.
+The data for the users **Journey** consists of a series of pages visited (_nodes_), each one linked to the page that came before it (_parent_) and to the pages that came after it (_children_). Each page can have multiple _children_, given that the user can navigate backwards and forwards through their travellog at any time, resulting in branches in their navigation history. Therefore, **Journey** moves beyond storing data as a simple list, as existing travellogs do.
 
 According to _Adrian Rusu_: [^tree-drawing-algorithms]
 
 > "The typical data structure for modeling hierarchical information is a tree whose vertices represent entities and whose edges correspond to relationships between entities."
 
-It becomes clear that our data lends itself naturally to a tree data structure, whereby our _nodes_ (pages visited) form a hierachy, with each _node_ representing a page the user has visited, and the relationships between _parent_ and _child_ nodes representing the chronology in which the pages have been visited. 
+It becomes clear that our data lends itself naturally to a tree data structure, whereby our _nodes_ form a hierachy, with each _node_ representing a page the user has visited, and the relationships between _parent_ and _child_ nodes representing the chronology in which the pages have been visited. 
 
 It must be noted however, that this chronology is limited only to the order that links were followed from each page, and not to the times that they were followed; the depth of nodes within the tree does not indicate order.
 
-For example, if the user navigates back from a page that has a depth of 10 (is 10-levels deep within the tree) to a page that has a depth of 2, and then visits a new page, that new page will be have a depth of 3. However, this page was visited after the page with a depth of 10. This illustrates how depth cannot be used to determine the order in which pages were visited in relation to other nodes within the tree.
+For example, if the user navigates back from a page that has a depth of 10 (is 10-levels deep within the tree) to a page that has a depth of 2, and then visits a new page, that new page will have a depth of 3 even though it was visited after the page with a depth of 10. This illustrates how depth cannot be used to determine the order in which pages were visited in relation to other nodes within the tree.
 
-At a high-level, there are three types of defined tree structures, with various further specialisations within each type: **binary tree**, **ternary tree**, and **n-ary tree**. These are illustrated below:
+At a high-level there are three types of defined tree structure, with various further specialisations within each type; **binary tree**, **ternary tree**, and **n-ary tree**. These are illustrated below:
 
 <div align="center">
 
@@ -115,7 +115,7 @@ When it comes to visualising tree structures, _Adrian Rusu_ goes on to state: [^
 
 Much of the value of a tree structure is in how easily it's information can be conveyed to the viewer; if a tree is visualised poorly, it's information may be hard to discern or, worse, incorrectly interpreted. It is therefore essential that the tree structure is presented in a clear and logical fashion
 
-There are many ways in which tree structures can be visualised but after briefly looking at many types of visualisation, we find that only three are suitable for further consideration; **network graph**, **flowchart**, and **tree diagram**.
+There are many ways in which tree structures can be visualised but, after briefly considering many types of visualisation, we find that only three are suitable for further consideration; **network graph**, **flowchart**, and **tree diagram**.
 
 #### Network Graph
 
@@ -128,9 +128,9 @@ _An example of a network graph_ [^network-graph]
 
 </div>
 
-When considered more closely, we can see that network graphs offer a level of complexity beyond the needs of this project; multiple links between nodes, multiple parent nodes, and two-way relationships are some of the features that can be achieved with a network graph that are beyond our requirements.
+When considered more closely, we can see that network graphs offer a level of complexity beyond the needs of this project; multiple links between nodes, and multiple parent nodes are some of the features that can be achieved with a network graph that are beyond our requirements.
 
-Further, the typical arrangement for a network graph, as shown in the diagram above, is not effective at visually relaying the chronology of nodes - it is hard to see in the diagram which node comes first, as there is no natural visual starting point, and the "random" nature of the layout does not asist the user visually in determing how links were followed.
+Further, the typical arrangement for a network graph, as shown in the diagram above, is not effective at visually relaying the chronology of nodes - it is hard to see in the diagram which node comes first, as there is no natural visual starting point, and the "random" nature of the layout does not asist the user visually in determing how links have been followed.
 
 Instead, the visualisation has a stronger focus on the relationships between nodes. Given that our requirements are to illustrate the users browsing "flow", moving from one page to the next, we can see that _network graphs_ are not the appropriate visualisation for this project.
 
@@ -145,7 +145,7 @@ _An example of a flowchart_ [^flowchart]
 
 </div>
 
-Initially, flowcharts appear a strong match for the requirements of the project, effective at conveying both a starting point and a natural chronology. However, we find that flowcharts present nodes in the "present tense"; that is, as a series of _decisions_ (diamond shaped nodes), showing choices a user _can_ make, and their possible outcomes, _processes_ and _terminals_ (rectangular and rounded rectangular nodes respectively).
+Initially flowcharts appear a strong match for the requirements of the project, effective at conveying both a starting point and a natural chronology. However, we find that flowcharts present nodes in the "present tense"; that is, as a series of _decisions_ (diamond shaped nodes), showing choices a user _can_ make, and their possible outcomes, _processes_ and _terminals_ (rectangular and rounded rectangular nodes respectively).
 
 This means that flowcharts are more suited to showing a process that can be followed, with the user making choices at each step, rather than showing a record of choices already made. In the case of **Journey**, we are not looking to show possible decisions, as decisions are simply the available links on each page, and so we find that _flowcharts_ are also not the appropriate visualisation for this project.
 
@@ -160,29 +160,29 @@ _An example of a tree diagram_ [^tree-structure]
 
 </div>
 
-Tree diagrams are a common way of representing hierarchical data, and are often used for representing data with sub-data, such as categories and sub-categories, as shown in the diagram above. They are also excellent for representing chronological relationships between choices, with a root node representing the initial starting point, and each branch representing the outcome of different choices. In this way they are similar to flowcharts, but without the "present tense" nature of flowcharts, whereby each decision is also represented.
+Tree diagrams are a common way of representing hierarchical structures, and are often used for representing data with sub-data, such as categories and sub-categories, as shown in the diagram above. They are also excellent for representing chronological relationships between choices, with a root node representing the initial starting point, and each branch representing the outcome of different choices. In this way they are similar to flowcharts, but without the "present tense" nature of flowcharts, whereby each decision is also represented.
 
-They also meet our requirement of effectively conveying information, with a natural flow from the root node downwards, and a clear visual representation of the hierarchy of nodes. We can see that this makes them ideal for representing the users **Journey**, and so are the most appropriate visualisation to use for this project.
+They also meet our requirement of effectively conveying information, with a natural flow from the root node downwards, and a clear visual representation of the hierarchy of nodes. We can see that this makes them ideal for representing the users **Journey**, and thus the most appropriate visualisation for this project.
 
 ### Tree Layout
 
-When creating a tree diagram there are challenges around how to arrange nodes in a performant manner that is both visually pleasing, and without any node collisions or overlaps. Thankfully this is a field that has been well studied, with numerous algorithms [^tree-drawing-algorithms] having been created for drawing tree diagrams.
+When creating a tree diagram there are challenges around how to arrange nodes in a performant manner that is both visually pleasing, and without any node collisions or overlaps. Thankfully this is a field that has been well studied, with numerous algorithms [^tree-drawing-algorithms] having been created.
 
-For this project we will be working with a _layered_ tree, whereby all nodes of the same depth are visually drawn on the same horizontal line. This is a common way of drawing trees, often referred to as _tidy trees_, and Wetherell and Shannon [^tidy-drawings] presented the first O(n) algorithm to draw them in 1979, along with formalising three aesthetic rules for tree layout. Reingold and Tilford [^tidier-drawings] then continued this work, and in 1981 improved the algorithm and added a fourth aesthetic rule.
+For this project we will be working with a _layered_ tree, whereby all nodes of the same depth are visually drawn on the same "row". This is a common way of drawing trees, often referred to as _tidy trees_, and Wetherell and Shannon [^tidy-drawings] presented the first O(n) algorithm for drawing them in 1979, along with formalising three aesthetic rules for tree layout. Reingold and Tilford [^tidier-drawings] then continued this work, and in 1981 improved the algorithm and added a fourth aesthetic rule.
 
-Whilst much work has since been done in this area, such as by Walker [^walker], and Buchheim, Jünger, and Leipert [^buchheim], we find that the Reingold-Tilford algorithm continues to be one of the most popular and widely used algorithms for drawing tidy trees, and appropriate for the tree structures we will be drawing for this project.
+Whilst much work has since been done in this area, such as by Walker [^walker], and Buchheim, Jünger, and Leipert [^buchheim], we find that the Reingold-Tilford algorithm continues to be one of the most popular and widely used for drawing tidy trees, and appropriate for the tree structures we will be drawing for this project.
 
 ### Beautiful and Usable
 
 **Journey** was conceived as a UI/UX experiment, and from the very beginning both usability and aesthetics have been at the very core of the project. However, given that the goal of the project is to determine whether there is feasibility in enhancing the travellog with a branching structure, should we focus or prioritise one of either usability or aesthetics over the other? If we focus on one area to the detriment of the other, will the perceived usefulness of the tool be diminished?
 
-In the study by Tractinsky et al, they found that a more visually appealing interface was perceived as more usable, even when the interface was not actually more usable.
+In a study by Tractinsky et al, they found that a more visually appealing interface was perceived as more usable, even if the interface was not _actually_ more usable.
 
-> "This study demonstrated once again the tight relationships between users' initial perceptions of interface aesthetics and their perceptions of the system's usablity. Moreover, we showed that these relations endure event after actual use of the system." [^beautiful]
+> "This study demonstrated once again the tight relationships between users' initial perceptions of interface aesthetics and their perceptions of the system's usablity. Moreover, we showed that these relations endure even after actual use of the system." [^beautiful]
 
-The findings of this paper are summarised under the notion _"What is beautiful is usable"_, and have been repeated in many other studies, with Hassenzahl and Monk performing: [^hassenzahl]
+The findings of this paper are summarised under the notion _"What is beautiful is usable"_, and have been repeated in many other studies, with Hassenzahl and Monk performing:
 
-> "...a review of 15 papers reporting 25 independent correlations of perceived beauty with perceived usability..."
+> "...a review of 15 papers reporting 25 independent correlations of perceived beauty with perceived usability..." [^hassenzahl]
 
 However, there have also been studies into the counter-argument of _"What is usable is beautiful"_, with Tuch et al finding that:
 
@@ -196,7 +196,7 @@ From these studies we can conclude that attention must be given to both the usab
 
 ### Consistency
 
-Consistency was already highlighted as a goal for the project, but knowing how important consistency is to the user experience would influence the design of the tool.
+Consistency was already highlighted as a goal for the project, but knowing _how_ important consistency is to the user experience wil ultimately influence the design of the tool.
 
 "Consistency and standards" are the fourth of Jakob Nielsen's ten heuristics:
 
@@ -214,7 +214,7 @@ Our expectation is that if we maintain internal consistency with the browser we 
 
 ## Design
 
-The initial project goals can be refined through the research undertaken, and both can be used to inform the design of **Journey**. The final design requirements are generated using the _MoSCoW_ method [^moscow], and are as follows:
+The initial project goals can be refined through the research undertaken, and both can be used to inform the design of **Journey**. Using the _MoSCoW_ [^moscow] method, the final design requirements are as follows:
 
 ### Structured
 
@@ -234,7 +234,7 @@ The initial project goals can be refined through the research undertaken, and bo
 
 - Each page visited **must** show the URL of the page.
 
-- Arrows **should** be shown to illustrate the direction of travel between pages, with the arrow pointing from the parent node to the child node.
+- Connections **should** be shown to illustrate the flow of travel between pages.
 
 ### Interactive
 
@@ -250,9 +250,9 @@ The initial project goals can be refined through the research undertaken, and bo
 
 - Interacting with elements **must** be achieved by clicking the left mouse button.
 
-- Scrolling the mouse wheel "down" (towards the user) **should** move visual elements "up" (towards the top of the screen), and the inverse should apply accordingly.
+- Scrolling the mouse wheel "down" (towards the user) **should** move visual elements "up" (towards the top of the screen), and the inverse **should** apply accordingly.
 
-- When a modifier key is held, scrolling the mouse wheel "down" (towards the user) **should** zoom out, and the inverse should apply accordingly.
+- When a modifier key is held, scrolling the mouse wheel "down" (towards the user) **should** zoom out, and the inverse **should** apply accordingly.
 
 - The CTRL key **should** be used as the modifier key for zooming.
 
@@ -298,13 +298,13 @@ By also implementing the `IWebView2` interface on our user control, it _should_ 
 
 ### Tree Structure
 
-We implement a simple generic tree structure in C#, representing a strongly typed collection of objects that can be traversed as a tree; each node contains a strongly type object, and can have 0 or more child nodes. Each node also provides methods and properties for traversal and information.
+**Journey** implements a simple, generic tree structure in **C#**, representing a strongly typed collection of objects that can be traversed as a tree; each node contains a strongly type object, and can have 0 or more child nodes. Each node also provides methods and properties for traversal and information.
 
 In order to optimise traversal of the tree (in anticipation of node positioning) we calculate all node properties at the point of insertion or removal; whenever a child node is added or removed, the parent node (and all cascading child nodes) have their properties updated to reflect the change. This allows us to quickly traverse the tree and access properties such as depth, height, and number of children without having to recalculate them each time, but at the expense of a small increase in memory usage, and a slightly longer insertion and removal time.
 
 ### Reingold-Tilford Algorithm
 
-Our tree visualisation is arranged using the Reingold-Tilford algorithm [^tidier-drawings]. A detailed explanation of the algorithm was provided by Kay Jan Wong [^rt-walkthrough], but a special mention must be given to Rachel Lim [^rt-rachel], whose implementation was used as the basis of the implementation in this project.
+Our tree visualisation is arranged using the Reingold-Tilford algorithm [^tidier-drawings]. A detailed explanation of the algorithm was provided by _Kay Jan Wong_ [^rt-walkthrough], but a special mention must be given to _Rachel Lim_ [^rt-rachel], whose implementation was used as the basis of the implementation in this project.
 
 ## Challenges
 
@@ -312,9 +312,9 @@ Our tree visualisation is arranged using the Reingold-Tilford algorithm [^tidier
 
 `WebView2` does not provide programmatic access to the travellog, other than being able to navigate backwards or forwards. It also does not allow for manipulation of the travellog, or the ability to change entries that are in the stack.
 
-At the time of this project, the only way to access the full travellog is using the Chrome DevTools Protocol [^devtools-protocol], which provides a way of obtaining the entire history and which entry the user is currently on. [^navigation-history] There is still no way to manipulate the history however, although it is a requested feature. [^travellog-api]
+At the time of this project, the only way to access the full travellog is using the Chrome DevTools Protocol [^devtools-protocol], which provides a way of obtaining the entire history and which entry the user is currently on. [^navigation-history] There is no way to manipulate the history however, although it is a requested feature. [^travellog-api]
 
-Without the ability to manipulate the history for a browser session, our design has to change to accomodate what we can achieve. Previously, the concept was that the user could click on any node in the browsing tree and navigate to the respective page. As part of that navigation, we would replace the travellog within the browser to reflect the users current page.
+Without the ability to manipulate the history for a browser session, our design has to change to accomodate what we can achieve. Previously, the concept was that the user could click on any node in the browsing tree and navigate to the respective page. As part of that navigation, we would replace the travellog within the browser to reflect the users current position.
 
 However, although we could still navigate to any page the user clicks in the tree, we are unable to control how that navigation would appear in the travellog - any page in the tree that was navigated to that wasn't currently in the browser travellog would appear as a new navigation, and therefore as a new child node of the current page, rather than changing the current page to an existing node.
 
@@ -330,7 +330,7 @@ Our design therefore adapts to accomodate this technical restriction as follows:
 
 ### Airspace Issues
 
-Airspace problems have been generally present in WPF for a long time [^airspace], and `WebView2` had an issue opened for airspace problems in 2020 [^airspace-wpf], although the issue was recently closed with the introduction of `WebView2CompositionControl` [^webview2compositioncontrol]. 
+Airspace problems have been generally present in WPF for a long time [^airspace], and `WebView2` had an issue opened for airspace problems in 2020 [^airspace-wpf], although the issue was recently closed with the introduction of the `WebView2CompositionControl` [^webview2compositioncontrol]. 
 
 The airspace problems make visually integrating the wrapped `WebView2` control harder - we cannot overlay elements on the top of the control, or fade/transition to/from the control as easily. This impacts the visual appearance of our implementation, and how we can seamlessly transition from the browser view to the **Journey** view.
 
@@ -361,13 +361,13 @@ The current implementation does not allow the **Journey** travellog tree to be m
 
 ### Right-hand Alignment
 
-The _active path_ within the **Journey** tree will always be the right-most nodes. To make this easier for the user to see, we could update the tree layout algorithm to "right-align" the tree, so the active path was a series of nodes all within a single column, with all branches appearing as nodes to the left.
+The _active path_ within the **Journey** tree will always consist of the right-most nodes of the tree. To make this easier for the user to see, we could update the tree layout algorithm to "right-align" the tree, so the active path was a series of nodes all within a single column, with all branches appearing as nodes to the left.
 
 ### Memory Pressure
 
-Although there is no empirical data to validate, there are concerns that a very large number of pages in the history could consume a large amount of memory, as full-size image snapshots are capture for each page.
+Although there is no empirical data to validate, there are concerns that a very large number of pages in the history could consume a large amount of memory as full-size image snapshots are captured for each page.
 
-There are two mitigations that could be implemented to relieve memory pressure
+There are two mitigations that could be implemented to potentially relieve memory pressure:
 
 - For all nodes in the tree that are classed as _archived_, the snapshots could be reduced in both size and quality to reduce their memory consumption. Only nodes in the _active path_ will be animated back to "full screen", so only these nodes need full size images.
 
