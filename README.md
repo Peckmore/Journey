@@ -20,7 +20,7 @@ Project            | Description
 **Journey**        | An implementation of the **Journey** concept. `JourneyWebView2` implements `IWebView2`, and internally wraps a `WebView2` instance.
 **JourneyBrowser** | A minimal "browser" implementation that uses the `JourneyWebView2` control to demonstrate the **Journey** concept.
 
-`JourneyWebView2` _should_ be a drop-in replacement for `WebView2`, but it is only a proof-of-concept so _caveat emptor_!
+`JourneyWebView2` _should_ be a drop-in replacement for `WebView2`, but it is only a proof-of-concept so _caveat emptor_...
 
 ## Abstract
 
@@ -34,7 +34,7 @@ Project            | Description
 
 - _**history:**_ the typical _history_ feature presented to the user that displays a list of all pages visited, across all tabs and sessions, usually with a date and time stamp, and often with the ability to search for specific pages
 
-- _**session:**_ the period of activity that starts when you open a browser window or tab, and ends when you close it
+- _**session:**_ the period of activity that starts when a user opens a browser window or tab, and ends when they close it
 
 - _**travellog:**_ the short-term history associated with a page or tab within a _browser_ that allows for navigation backwords and forwards, sometimes referred to internally within a _browser_ as the _session history_
 
@@ -42,7 +42,7 @@ Project            | Description
 
 A typical use case for a _browser_ is to use a search engine to find the solution to a problem, which a user will often do by initiating a search in their _browser_ and then clicking on links that appear in the search results. The user may click on several links, returning to the search results between each link, and repeat this for a number of iterations. In doing this, the user can end up in a situation whereby they have visited a number of pages, but are unable to remember which page contained the most helpful solution to their problem.
 
-The situation can be further compounded if several results lead to different answers on the same web site, resulting in many of the page having similar URLs and titles. The user may be forced to return to the search results and click on each link again, or use the _history_ feature of their _browser_ to attempt to find the page they were looking for. This can be both time consuming and frustrating, especially if the user has visited a number of pages within a short period of time.
+The situation can be further compounded if several results lead to different answers on the same web site, resulting in many of the pages having similar URLs and titles. The user may be forced to return to the search results and click on each link again, or use the _history_ feature of their _browser_ to attempt to find the page they were looking for. This can be both time consuming and frustrating, especially if the user has visited a number of pages within a short period of time.
 
 This scenario naturally posits the question, _"could the travellog be more helpful in such scenarios?"_ Whilst there are already a number of tools and extensions to enhance the _history_ of a _browser_ [^better-history] [^browser-history-plus] [^history-plus], at the time of this project there appears to be no tool or extension that enhances the _travellog_.
 
@@ -54,11 +54,11 @@ The following goals were identified for **Journey**:
 
 - **Structured**
 
-  The tool should represent the users browsing _travellog_ as a visual structure, with each page visited represented as a node within the structure.
+  The tool should represent the users browsing _travellog_ as a visual structure, with each page visited represented as an item within the structure.
 
 - **Visual**
 
-  The tool should be a "visual tool"; visual elements, such as thumbnail images of each page visited, or animations, should be used to aid the user in using the tool.
+  The tool should be a "visual tool"; visual elements, such as images or animations, should be used to aid the user in using the tool.
 
 - **Interactive**
 
@@ -80,7 +80,9 @@ The following goals were identified for **Journey**:
 
   The tool should be performant, and not slow down the users browsing experience.
 
-## Data Structure
+## Research
+
+### Data Structure
 
 The data for the users **Journey** consists of a series of pages visited (_nodes_), each one linked to the page that came before it (_parent_) and to the pages that came after it (_children_). Each page can have multiple _children_, given that the user can navigate backwards and forwards through their _travellog_ at any time, resulting in branches in their navigation history. Therefore, **Journey** moves beyond storing data as a simple list, as existing _travellogs_ do.
 
@@ -105,7 +107,7 @@ _Types of trees_ [^types-of-trees]
 
 As each node in our tree structure could have any number of child elements, an _n-ary tree_ (also known as a _general tree_) will be used to store the users **Journey**.
 
-## Visualisation
+### Visualisation
 
 When it comes to visualising tree structures, _Adrian Rusu_ goes on to state: [^tree-drawing-algorithms]
 
@@ -115,7 +117,7 @@ Much of the value of a tree structure is in how easily it's information can be c
 
 There are many ways in which tree structures can be visualised but after briefly looking at many types of visualisation, we find that only three are suitable for further consideration; **network graph**, **flowchart**, and **tree diagram**.
 
-### Network Graph
+#### Network Graph
 
 > "A network graph is a chart that displays relations between elements (nodes) using simple links. Network graph allows us to visualize clusters and relationships between the nodes quickly..." [^network-graph]
 
@@ -132,7 +134,7 @@ Further, the typical arrangement for a network graph, as shown in the diagram ab
 
 Instead, the visualisation has a stronger focus on the relationships between nodes. Given that our requirements are to illustrate the users browsing "flow", moving from one page to the next, we can see that _network graphs_ are not the appropriate visualisation for this project.
 
-### Flowchart
+#### Flowchart
 
 > "A flowchart is a type of diagram that represents a workflow or process. A flowchart can also be defined as a diagrammatic representation of an algorithm, a step-by-step approach to solving a task." [^flowchart]
 
@@ -147,7 +149,7 @@ Initially, flowcharts appear a strong match for the requirements of the project,
 
 This means that flowcharts are more suited to showing a process that can be followed, with the user making choices at each step, rather than showing a record of choices already made. In the case of **Journey**, we are not looking to show possible decisions, as decisions are simply the available links on each page, and so we find that _flowcharts_ are also not the appropriate visualisation for this project.
 
-### Tree Diagram
+#### Tree Diagram
 
 > "A tree structure, tree diagram, or tree model is a way of representing the hierarchical nature of a structure in a graphical form. It is named a "tree structure" because the classic representation resembles a tree, although the chart is generally upside down compared to a biological tree, with the "stem" at the top and the "leaves" at the bottom." [^tree-structure]
 
@@ -162,7 +164,7 @@ Tree diagrams are a common way of representing hierarchical data, and are often 
 
 They also meet our requirement of effectively conveying information, with a natural flow from the root node downwards, and a clear visual representation of the hierarchy of nodes. We can see that this makes them ideal for representing the users **Journey**, and so are the most appropriate visualisation to use for this project.
 
-## Tree Layout
+### Tree Layout
 
 When creating a tree diagram there are challenges around how to arrange nodes in a performant manner that is both visually pleasing, and without any node collisions or overlaps. Thankfully this is a field that has been well studied, with numerous algorithms [^tree-drawing-algorithms] having been created for drawing tree diagrams.
 
@@ -170,7 +172,7 @@ For this project we will be working with a _layered_ tree, whereby all nodes of 
 
 Whilst much work has since been done in this area, such as by Walker [^walker], and Buchheim, Jünger, and Leipert [^buchheim], we find that the Reingold-Tilford algorithm continues to be one of the most popular and widely used algorithms for drawing tidy trees, and appropriate for the tree structures we will be drawing for this project.
 
-## Beautiful and Usable
+### Beautiful and Usable
 
 **Journey** was conceived as a UI/UX experiment, and from the very beginning both usability and aesthetics have been at the very core of the project. However, given that the goal of the project is to determine whether there is feasibility in enhancing the _travellog_ with a branching structure, should we focus or prioritise one of either usability or aesthetics over the other? If we focus on one area to the detriment of the other, will the perceived usefulness of the tool be diminished?
 
@@ -192,7 +194,7 @@ Hamborg et al explored this counter-argument further and ultimately concluded th
 
 From these studies we can conclude that attention must be given to both the usability of the tool, but also the visual presentation; a tool that is not visually appealing may be perceived as less usable, and a tool that is difficult to use will connote negative reactions from users.
 
-## Consistency
+### Consistency
 
 Consistency was already highlighted as a goal for the project, but knowing how important consistency is to the user experience would influence the design of the tool.
 
@@ -290,74 +292,97 @@ The scope of the project is not to develop an entire _browser_, but rather to en
 
 ### WebView2
 
-We leverage work already done in the browser space and utilise a `WebView2` [^webview] control as the basis of our user control. In order to provide a seamless transition between a web page and the **Journey** view, we implement our user control as a custom control that wraps a `WebView2` instance. This allows us to display the users branching _travellog_ within the same visual space as the browsing area of the users current browser tab or window.
+We leverage work already done in the browser space and utilise a `WebView2` [^webview] control as the basis of our user control. In order to provide a seamless transition between a web page and the **Journey** view, we implement our user control as a custom control that wraps a `WebView2` instance. This allows us to display the users branching _travellog_ within the same visual space as the browsing area of the users current _browser_ tab or window.
 
 By also implementing the `IWebView2` interface on our user control, it _should_ mean that the final implementation can be used as a drop-in replacement for a `WebView2` control.
 
 ### Tree Structure
 
-We implement a simple generic tree structure in C#, representing a strongly typed collection of objects that can be traversed as a tree; each node contains a strongly type object, and can have 0 or more child nodes. Each nodes also provides methods and properties for traversal and information.
+We implement a simple generic tree structure in C#, representing a strongly typed collection of objects that can be traversed as a tree; each node contains a strongly type object, and can have 0 or more child nodes. Each node also provides methods and properties for traversal and information.
 
-In order to optimise traversal of the tree (in anticipation of node positioning) we calculate all node properties at the point of insertion of removal. Whenever a child node is added or removed, the parent node (and all cascading child nodes) have their properties updated to reflect the change. This allows us to quickly traverse the tree and access properties such as depth, height, and number of children without having to recalculate them each time, but at the expense of a small increase in memory usage, and a slightly longer insertion and removal time.
+In order to optimise traversal of the tree (in anticipation of node positioning) we calculate all node properties at the point of insertion or removal; whenever a child node is added or removed, the parent node (and all cascading child nodes) have their properties updated to reflect the change. This allows us to quickly traverse the tree and access properties such as depth, height, and number of children without having to recalculate them each time, but at the expense of a small increase in memory usage, and a slightly longer insertion and removal time.
 
 ### Reingold-Tilford Algorithm
 
-https://rachel53461.wordpress.com/2014/04/20/algorithm-for-drawing-trees/
-https://towardsdatascience.com/reingold-tilford-algorithm-explained-with-walkthrough-be5810e8ed93/
-
-
+Our tree visualisation is arranged using the Reingold-Tilford algorithm [^tidier-drawings]. A detailed explanation of the algorithm was provided by Kay Jan Wong [^rt-walkthrough], but a special mention must be given to Rachel Lim [^rt-rachel], whose implementation was used as the basis of the implementation in this project.
 
 ## Challenges
 
-
 ### WebView2 History
 
-No access to history
-- Would be better with full access
-- GitHub issue
-- Could replace state to manage history based on current branch, meaning any site could be visited, not just the active path.
-- Work around is “active path”
+`WebView2` does not provide programmatic access to the travellog, other than being able to navigate backwards or forwards. It also does not allow for manipulation of the travellog, or the ability to change entries that are in the stack.
 
-### Airspace issue
+At the time of this project, the only way to access the full travellog is using the Chrome DevTools Protocol [^devtools-protocol], which provides a way of obtaining the entire history and which entry the user is currently on. [^navigation-history] There is still no way to manipulate the history however, although it is a requested feature. [^travellog-api]
 
-Visual integration with webview2 - airspace issue
-- Made harder to visually integrate
-- Could use composition version but lose possible performance and drm
-Cannot overlay webview2, so had to switch to/from image seamlessly
+Without the ability to manipulate the history for a browser session, our design has to change to accomodate what we can achieve. Previously, the concept was that the user could click on any node in the browsing tree and navigate to the respective page. As part of that navigation, we would replace the travellog within the browser to reflect the users current page.
 
-### Memory usage
+However, although we could still navigate to any page the user clicks in the tree, we are unable to control how that navigation would appear in the travellog - any page in the tree that was navigated to that wasn't currently in the browser travellog would appear as a new navigation, and therefore as a new child node of the current page, rather than changing the current page to an existing node.
 
-- Bigger history means more images
-- Average image size is xxx
-- Maybe cull older images, or lower res of older images? 
+Our design therefore adapts to accomodate this technical restriction as follows:
 
-Couldn’t resize browser, so used screenshot
+- All nodes that are within the browsers travellog will be referred to as the _active path._
+
+- Navigating to any node within the _active path_ will work as expected, with the current page changing to the selected node.
+
+- All nodes that are not in the _active path_ will be referred to as _archived_.
+
+- Navigating to any _archived_ node will open that page in a new tab.
+
+### Airspace Issues
+
+Airspace problems have been generally present in WPF for a long time [^airspace], and `WebView2` had an issue opened for airspace problems in 2020 [^airspace-wpf], although the issue was recently closed with the introduction of `WebView2CompositionControl` [^webview2compositioncontrol]. 
+
+The airspace problems make visually integrating the wrapped `WebView2` control harder - we cannot overlay elements on the top of the control, or fade/transition to/from the control as easily. This impacts the visual appearance of our implementation, and how we can seamlessly transition from the browser view to the **Journey** view.
+
+Although wrapping a `WebView2CompositionControl` would make visual integration easier, it does come with limitations:
+
+> "Note that the WebView2CompositionControl uses a GraphicsCaptureSession to capture the screen content from the underlying browser processes. As such, you may experience lower framerates compared to the standard WebView2 control, and DRM protected content will fail to play or display properly." [^webview2compositioncontrol]
+
+By wrapping a `WebView2CompositionControl` we would possibly incur lower framerates when browsing web pages, and restrict access to content protected by DRM. This violates our goals regarding performance and seamless integration, and prevents **Journey** from being a drop-in `WebView2` replacement.
+
+Instead we will continue to wrap the standard `WebView2` control, and modify our implementation to work around the airspace problem. This restricts us from implementing effects such as fading the browsing area into the **Journey** view, but by switching from the wrapped `WebView2` control to an image snapshot quickly, we should be able to achieve very similar visual fidelity.
 
 ## Feedback
 
-The implementation could then be used to gather feedback from users and evaluate both the design against the goals, and whether the tool was a useful addition to the users browsing experience.
+The completed implementation of **Journey** was used to gather feedback from users and evaluate both the design against the goals, and whether the tool was a useful addition to the users browsing experience.
 
-## Improvements
-- Future steps
-- Dynamic "step" sizes
-- WebView2 composition?
+A selection of feedback is given below:
+
+
+## Future Work
+
+### History Access
+
+Although the restrictions around travellog access have been mitigated, the tool would be improved with full access to the travellog, and the ability for users to navigate to any page within the **Journey** tree. If the open issue [^travellog-api] is ever resolved, the tool could be updated accordingly.
+
 ### Tree Manipulation
 
-### Full History
+The current implementation does not allow the **Journey** travellog tree to be modified. A future improvement could allow for nodes to be removed from the tree, also removing all child nodes.
 
-### Right-hand alignment
+### Right-hand Alignment
 
-### Image resizing
+The _active path_ within the **Journey** tree will always be the right-most nodes. To make this easier for the user to see, we could update the tree layout algorithm to "right-align" the tree, so the active path was a series of nodes all within a single column, with all branches appearing as nodes to the left.
+
+### Memory Pressure
+
+Although there is no empirical data to validate, there are concerns that a very large number of pages in the history could consume a large amount of memory, as full-size image snapshots are capture for each page.
+
+There are two mitigations that could be implemented to relieve memory pressure
+
+- For all nodes in the tree that are classed as _archived_, the snapshots could be reduced in both size and quality to reduce their memory consumption. Only nodes in the _active path_ will be animated back to "full screen", so only these nodes need full size images.
+
+- Page snapshots could be offloaded to disk, and retrieved whenever **Journey** is shown. The snapshot for the current page is always generated whenever the tool is invoked, and the remaining snapshots could be pulled from disk, loading and appearing asynchronously so as not to impact the performance of the tool.
 
 ## Conclusion
 
-Hopefully proves interesting
-
-Video
+Though only a proof-of-concept, I hope that this project was interesting, and I would love to hear any feedback!
 
 ## Acknowledgements
 
-Icons provided by [Google Fonts](https://fonts.google.com/icons)
+Reingold-Tilford implementation adapted from the work of [Rachel Lim](https://rachel53461.wordpress.com/2014/04/20/algorithm-for-drawing-trees/).
+
+Icons provided by [Google Fonts](https://fonts.google.com/icons).
+
 
 [^better-history]: [BetterHistory.io](https://betterhistory.io)
 
@@ -398,3 +423,19 @@ Icons provided by [Google Fonts](https://fonts.google.com/icons)
 [^moscow]: [MoSCow Methods](https://en.wikipedia.org/wiki/MoSCoW_method)
 
 [^webview]: [WebView2](https://learn.microsoft.com/en-us/microsoft-edge/webview2/)
+
+[^rt-walkthrough]: [Reingold Tilford Algorithm Explained With Walkthrough](https://towardsdatascience.com/reingold-tilford-algorithm-explained-with-walkthrough-be5810e8ed93/)
+
+[^rt-rachel]: [Algorithm for Drawing Trees](https://rachel53461.wordpress.com/2014/04/20/algorithm-for-drawing-trees/)
+
+[^devtools-protocol]: [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/tot/)
+
+[^navigation-history]: [Page.getNavigationHistory](https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-getNavigationHistory)
+
+[^travellog-api]: [Expose programmatic access to the travellog](https://github.com/MicrosoftEdge/WebView2Feedback/issues/1093)
+
+[^airspace]: [Mitigating Airspace Issues In WPF Applications](https://dwayneneed.github.io/wpf/2013/02/26/mitigating-airspace-issues-in-wpf-applications.html)
+
+[^airspace-wpf]: [When using Webview2 in WPF, unable to overlay WPF controls on the Webview](https://github.com/MicrosoftEdge/WebView2Feedback/issues/286)
+
+[^webview2compositioncontrol]: [WebView2CompositionControl Class](https://learn.microsoft.com/en-us/dotnet/api/microsoft.web.webview2.wpf.webview2compositioncontrol)
