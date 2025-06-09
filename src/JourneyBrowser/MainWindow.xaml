@@ -31,6 +31,23 @@
                 <ResourceDictionary Source="pack://application:,,,/Resources/Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
+            <Style TargetType="Grid"
+                   x:Key="WindowStyle">
+
+                <Setter Property="Margin"
+                        Value="0" />
+
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ElementName=WindowRoot, Path=WindowState}"
+                                 Value="Maximized">
+
+                        <Setter Property="Margin"
+                                Value="7,2,7,0" />
+
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
             <Style TargetType="Button">
 
                 <Setter Property="Background"
@@ -233,8 +250,7 @@
                                 </DockPanel>
 
                                 <ContentPresenter x:Name="TabControlContent"
-                                                  Grid.Row="1"
-                                                  ContentSource="Content" />
+                                                  Grid.Row="1" />
 
                             </Grid>
                         </ControlTemplate>
@@ -247,7 +263,7 @@
 
     </Window.Resources>
 
-    <Grid>
+    <Grid Style="{StaticResource WindowStyle}">
 
         <TabControl x:Name="BrowserTabControl"
                     IsSynchronizedWithCurrentItem="True"

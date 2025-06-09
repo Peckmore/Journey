@@ -2,7 +2,7 @@
 
 namespace JourneyBrowser.Models
 {
-    public class BrowserTab : INotifyPropertyChanged
+    public sealed class BrowserTab : INotifyPropertyChanged
     {
         #region Fields
 
@@ -38,7 +38,7 @@ namespace JourneyBrowser.Models
 
         #region Methods
 
-        protected void OnPropertyChanged(string propertyName)
+        private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
