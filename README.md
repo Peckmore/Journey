@@ -164,7 +164,7 @@ They also meet our requirement of effectively conveying information, with a natu
 
 ## Tree Layout
 
-When creating a tree diagram there are challenges around how to arrange nodes in a performant manner that is both visually pleasing, and without any node collisions or overlaps. Thankfully, this is a field that has been well studied with numerous algorithms [^tree-drawing-algorithms] having been created for drawing tree diagrams.
+When creating a tree diagram there are challenges around how to arrange nodes in a performant manner that is both visually pleasing, and without any node collisions or overlaps. Thankfully this is a field that has been well studied, with numerous algorithms [^tree-drawing-algorithms] having been created for drawing tree diagrams.
 
 For this project we will be working with a _layered_ tree, whereby all nodes of the same depth are visually drawn on the same horizontal line. This is a common way of drawing trees, often referred to as _tidy trees_, and Wetherell and Shannon [^tidy-drawings] presented the first O(n) algorithm to draw them in 1979, along with formalising three aesthetic rules for tree layout. Reingold and Tilford [^tidier-drawings] then continued this work, and in 1981 improved the algorithm and added a fourth aesthetic rule.
 
@@ -212,7 +212,7 @@ Our expectation is that if we maintain internal consistency with the _browser_ w
 
 ## Design
 
-The initial project goals were refined through the research taken, and both were used to inform the design of **Journey**. The final design requirements were generated using the MoSCow method [^moscow], and are as follows:
+The initial project goals can be refined through the research undertaken, and both can be used to inform the design of **Journey**. The final design requirements are generated using the _MoSCoW_ method [^moscow], and are as follows:
 
 ### Structured
 
@@ -284,50 +284,80 @@ The initial project goals were refined through the research taken, and both were
 
 ## Implementation
 
-Due to familiarity with the development environment, and the ability to rapidly develop and iterate on the design, the tool was implemented as a **WPF** application using **C#**.
+Due to familiarity with the development environment, and the ability to rapidly develop and iterate on the design, the tool is implemented in **C#** and **WPF**.
 
-The tool uses a WebView2 control to display the travellog within the browsing area of the users current browser tab or window.
+The scope of the project is not to develop an entire _browser_, but rather to enhance the existing browsing experience, so our implementation is a user control that could conceptually be used within an existing _browser_ application. This allows us to focus solely on the implementation of the **Journey** concept, and not on the complexities of building a full _browser_ application.
 
-implementation of a tree structure
+### WebView2
 
-implementation of a tree layout algorithm
-This implementation could then be used to gather feedback from users and evaluate both the design against the goals, and whether the tool was a useful addition to the users browsing experience.
+We leverage work already done in the browser space and utilise a `WebView2` [^webview] control as the basis of our user control. In order to provide a seamless transition between a web page and the **Journey** view, we implement our user control as a custom control that wraps a `WebView2` instance. This allows us to display the users branching _travellog_ within the same visual space as the browsing area of the users current browser tab or window.
+
+By also implementing the `IWebView2` interface on our user control, it _should_ mean that the final implementation can be used as a drop-in replacement for a `WebView2` control.
+
+### Tree Structure
+
+We implement a simple generic tree structure in C#, representing a strongly typed collection of objects that can be traversed as a tree; each node contains a strongly type object, and can have 0 or more child nodes. Each nodes also provides methods and properties for traversal and information.
+
+In order to optimise traversal of the tree (in anticipation of node positioning) we calculate all node properties at the point of insertion of removal. Whenever a child node is added or removed, the parent node (and all cascading child nodes) have their properties updated to reflect the change. This allows us to quickly traverse the tree and access properties such as depth, height, and number of children without having to recalculate them each time, but at the expense of a small increase in memory usage, and a slightly longer insertion and removal time.
+
+### Reingold-Tilford Algorithm
+
+https://rachel53461.wordpress.com/2014/04/20/algorithm-for-drawing-trees/
+https://towardsdatascience.com/reingold-tilford-algorithm-explained-with-walkthrough-be5810e8ed93/
+
+
 
 ## Challenges
+
+
+### WebView2 History
+
 No access to history
 - Would be better with full access
 - GitHub issue
 - Could replace state to manage history based on current branch, meaning any site could be visited, not just the active path.
 - Work around is “active path”
 
+### Airspace issue
+
 Visual integration with webview2 - airspace issue
 - Made harder to visually integrate
 - Could use composition version but lose possible performance and drm
+Cannot overlay webview2, so had to switch to/from image seamlessly
 
-Memory usage
+### Memory usage
+
 - Bigger history means more images
 - Average image size is xxx
 - Maybe cull older images, or lower res of older images? 
 
 Couldn’t resize browser, so used screenshot
 
-Cannot overlay webview2, so had to switch to/from image seamlessly
+## Feedback
 
-Poor shadow performance
-
+The implementation could then be used to gather feedback from users and evaluate both the design against the goals, and whether the tool was a useful addition to the users browsing experience.
 
 ## Improvements
+- Future steps
+- Dynamic "step" sizes
+- WebView2 composition?
+### Tree Manipulation
+
+### Full History
+
+### Right-hand alignment
+
+### Image resizing
 
 ## Conclusion
 
-Thoughts
+Hopefully proves interesting
 
 Video
 
-Hopefully proves interesting
-
 ## Acknowledgements
 
+Icons provided by [Google Fonts](https://fonts.google.com/icons)
 
 [^better-history]: [BetterHistory.io](https://betterhistory.io)
 
@@ -366,3 +396,5 @@ Hopefully proves interesting
 [^consistency-and-standards]: [Maintain Consistency and Adhere to Standards (Usability Heuristic #4)](https://www.nngroup.com/articles/consistency-and-standards/)
 
 [^moscow]: [MoSCow Methods](https://en.wikipedia.org/wiki/MoSCoW_method)
+
+[^webview]: [WebView2](https://learn.microsoft.com/en-us/microsoft-edge/webview2/)
