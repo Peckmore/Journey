@@ -118,7 +118,7 @@
                         Value="24" />
 
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource AncestorType=Button}}"
+                    <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource AncestorType=ButtonBase}}"
                                  Value="False">
 
                         <Setter Property="Opacity"
