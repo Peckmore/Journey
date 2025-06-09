@@ -30,23 +30,23 @@ Project            | Description
 
 - _**browser:**_ a software application with a graphical user interface for displaying, and navigating between, web pages
 
-- _**browsing area:**_ the area of the _browser_ in which web content is displayed, typically the area below the address bar, and which does not include the _browser_ UI
+- _**browsing area:**_ the area of the browser in which web content is displayed, typically the area below the address bar, and which does not include the browser UI
 
-- _**history:**_ the typical _history_ feature presented to the user that displays a list of all pages visited, across all tabs and sessions, usually with a date and time stamp, and often with the ability to search for specific pages
+- _**history:**_ the typical history feature presented to the user that displays a list of all pages visited, across all tabs and sessions, usually with a date and time stamp, and often with the ability to search for specific pages
 
 - _**session:**_ the period of activity that starts when a user opens a browser window or tab, and ends when they close it
 
-- _**travellog:**_ the short-term history associated with a page or tab within a _browser_ that allows for navigation backwords and forwards, sometimes referred to internally within a _browser_ as the _session history_
+- _**travellog:**_ the short-term history associated with a page or tab within a browser that allows for navigation backwords and forwards, sometimes referred to internally within a browser as the session history
 
 ## Introduction
 
-A typical use case for a _browser_ is to use a search engine to find the solution to a problem, which a user will often do by initiating a search in their _browser_ and then clicking on links that appear in the search results. The user may click on several links, returning to the search results between each link, and repeat this for a number of iterations. In doing this, the user can end up in a situation whereby they have visited a number of pages, but are unable to remember which page contained the most helpful solution to their problem.
+A typical use case for a browser is to use a search engine to find the solution to a problem, which a user will often do by initiating a search in their browser and then clicking on links that appear in the search results. The user may click on several links, returning to the search results between each link, and repeat this for a number of iterations. In doing this, the user can end up in a situation whereby they have visited a number of pages, but are unable to remember which page contained the most helpful solution to their problem.
 
-The situation can be further compounded if several results lead to different answers on the same web site, resulting in many of the pages having similar URLs and titles. The user may be forced to return to the search results and click on each link again, or use the _history_ feature of their _browser_ to attempt to find the page they were looking for. This can be both time consuming and frustrating, especially if the user has visited a number of pages within a short period of time.
+The situation can be further compounded if several results lead to different answers on the same web site, resulting in many of the pages having similar URLs and titles. The user may be forced to return to the search results and click on each link again, or use the history feature of their browser to attempt to find the page they were looking for. This can be both time consuming and frustrating, especially if the user has visited a number of pages within a short period of time.
 
-This scenario naturally posits the question, _"could the travellog be more helpful in such scenarios?"_ Whilst there are already a number of tools and extensions to enhance the _history_ of a _browser_ [^better-history] [^browser-history-plus] [^history-plus], at the time of this project there appears to be no tool or extension that enhances the _travellog_.
+This scenario naturally posits the question, _"could the travellog be more helpful in such scenarios?"_ Whilst there are already a number of tools and extensions to enhance the history of a browser [^better-history] [^browser-history-plus] [^history-plus], at the time of this project there appears to be no tool or extension that enhances the travellog.
 
-As a result, this project proposes a way of enhancing the _travellog_, allowing users to see it in a more visual way, which shows the organic path they took when visting pages. This enhanced _travellog_ allows users to see all of the pages they have visited within their _session_, representing the "journey" they have taken from when the session started until the page they are presently on. Based on this idea, the proposed enhanced _travellog_ tool has been named **Journey**.
+As a result, this project proposes a way of enhancing the travellog, allowing users to see it in a more visual way, which shows the organic path they took when visting pages. This enhanced travellog allows users to see all of the pages they have visited within their _session_, representing the "journey" they have taken from when the session started until the page they are presently on. Based on this idea, the proposed enhanced travellog tool has been named **Journey**.
 
 ## Goals
 
@@ -54,7 +54,7 @@ The following goals were identified for **Journey**:
 
 - **Structured**
 
-  The tool should represent the users browsing _travellog_ as a visual structure, with each page visited represented as an item within the structure.
+  The tool should represent the users browsing travellog as a visual structure, with each page visited represented as an item within the structure.
 
 - **Visual**
 
@@ -70,11 +70,11 @@ The following goals were identified for **Journey**:
 
 - **Consistent**
 
-  The tool should follow the same interactivity principles as the _browser_; that is, elements such as mouse cursors, shortcut keys, and means of interacting with elements should be consistent between viewing a web page and viewing the travellog.
+  The tool should follow the same interactivity principles as the browser; that is, elements such as mouse cursors, shortcut keys, and means of interacting with elements should be consistent between viewing a web page and viewing the travellog.
 
 - **Seamless**
 
-  The tool should integrate seamlessly into the users _browser_ interface, and not require any additional steps to use, other than a way of invoking the tool.
+  The tool should integrate seamlessly into the users browser interface, and not require any additional steps to use, other than a way of invoking the tool.
 
 - **Performant**
 
@@ -84,7 +84,7 @@ The following goals were identified for **Journey**:
 
 ### Data Structure
 
-The data for the users **Journey** consists of a series of pages visited (_nodes_), each one linked to the page that came before it (_parent_) and to the pages that came after it (_children_). Each page can have multiple _children_, given that the user can navigate backwards and forwards through their _travellog_ at any time, resulting in branches in their navigation history. Therefore, **Journey** moves beyond storing data as a simple list, as existing _travellogs_ do.
+The data for the users **Journey** consists of a series of pages visited (_nodes_), each one linked to the page that came before it (_parent_) and to the pages that came after it (_children_). Each page can have multiple _children_, given that the user can navigate backwards and forwards through their travellog at any time, resulting in branches in their navigation history. Therefore, **Journey** moves beyond storing data as a simple list, as existing _travellogs_ do.
 
 According to _Adrian Rusu_: [^tree-drawing-algorithms]
 
@@ -174,7 +174,7 @@ Whilst much work has since been done in this area, such as by Walker [^walker], 
 
 ### Beautiful and Usable
 
-**Journey** was conceived as a UI/UX experiment, and from the very beginning both usability and aesthetics have been at the very core of the project. However, given that the goal of the project is to determine whether there is feasibility in enhancing the _travellog_ with a branching structure, should we focus or prioritise one of either usability or aesthetics over the other? If we focus on one area to the detriment of the other, will the perceived usefulness of the tool be diminished?
+**Journey** was conceived as a UI/UX experiment, and from the very beginning both usability and aesthetics have been at the very core of the project. However, given that the goal of the project is to determine whether there is feasibility in enhancing the travellog with a branching structure, should we focus or prioritise one of either usability or aesthetics over the other? If we focus on one area to the detriment of the other, will the perceived usefulness of the tool be diminished?
 
 In the study by Tractinsky et al, they found that a more visually appealing interface was perceived as more usable, even when the interface was not actually more usable.
 
@@ -206,11 +206,11 @@ This is expanded upon by Rachel Krause (from Jakob Nielsen's Nielsen Norman Grou
 
 > "To be easy to learn and use, systems should adhere to both internal and external consistency — they should use the same patterns everywhere inside the system and should also follow web-, platform-, and domain-specific conventions." [^consistency-and-standards]
 
-We see that consistency is key to a positive user experience, and that it is important to follow both internal and external conventions. Within the scope of this project our main focus will be on internal consistency, as conceptually the completed tool would be used within a _browser_.
+We see that consistency is key to a positive user experience, and that it is important to follow both internal and external conventions. Within the scope of this project our main focus will be on internal consistency, as conceptually the completed tool would be used within a browser.
 
 > "Internal consistency relates to consistency within a product or a family of products, either within a single application or across a family or suite of applications." [^consistency-and-standards]
 
-Our expectation is that if we maintain internal consistency with the _browser_ we are within, external consistency _should_ be provided for us, as the _browser_ should already follow external conventions.
+Our expectation is that if we maintain internal consistency with the browser we are within, external consistency _should_ be provided for us, as the browser should already follow external conventions.
 
 ## Design
 
@@ -288,11 +288,11 @@ The initial project goals can be refined through the research undertaken, and bo
 
 Due to familiarity with the development environment, and the ability to rapidly develop and iterate on the design, the tool is implemented in **C#** and **WPF**.
 
-The scope of the project is not to develop an entire _browser_, but rather to enhance the existing browsing experience, so our implementation is a user control that could conceptually be used within an existing _browser_ application. This allows us to focus solely on the implementation of the **Journey** concept, and not on the complexities of building a full _browser_ application.
+The scope of the project is not to develop an entire browser, but rather to enhance the existing browsing experience, so our implementation is a user control that could conceptually be used within an existing browser application. This allows us to focus solely on the implementation of the **Journey** concept, and not on the complexities of building a full browser application.
 
 ### WebView2
 
-We leverage work already done in the browser space and utilise a `WebView2` [^webview] control as the basis of our user control. In order to provide a seamless transition between a web page and the **Journey** view, we implement our user control as a custom control that wraps a `WebView2` instance. This allows us to display the users branching _travellog_ within the same visual space as the browsing area of the users current _browser_ tab or window.
+We leverage work already done in the browser space and utilise a `WebView2` [^webview] control as the basis of our user control. In order to provide a seamless transition between a web page and the **Journey** view, we implement our user control as a custom control that wraps a `WebView2` instance. This allows us to display the users branching travellog within the same visual space as the browsing area of the users current browser tab or window.
 
 By also implementing the `IWebView2` interface on our user control, it _should_ mean that the final implementation can be used as a drop-in replacement for a `WebView2` control.
 
