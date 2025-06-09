@@ -340,7 +340,7 @@ Although wrapping a `WebView2CompositionControl` would make visual integration e
 
 By wrapping a `WebView2CompositionControl` we would possibly incur lower framerates when browsing web pages, and restrict access to content protected by DRM. This violates our goals regarding performance and seamless integration, and prevents **Journey** from being a drop-in `WebView2` replacement.
 
-Instead we will continue to wrap the standard `WebView2` control, and modify our implementation to work around the airspace problem. This restricts us from implementing effects such as fading the browsing area into the **Journey** view, but by switching from the wrapped `WebView2` control to an image snapshot quickly, we should be able to achieve very similar visual fidelity.
+Instead we continue to wrap the standard `WebView2` control, and modify our implementation to work around the airspace problem. This restricts us from implementing effects such as fading the browsing area into the **Journey** view, but by quickly switching from the wrapped `WebView2` control to an image snapshot we achieve very similar visual fidelity.
 
 ## Feedback
 
