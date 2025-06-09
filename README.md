@@ -1,5 +1,6 @@
 <div align="center">
 
+![Journey](res/images/journey.png)
 # Journey
 
 A UI/UX experiment in visual, branching browser history.
@@ -379,9 +380,11 @@ Though only a proof-of-concept, I hope that this project was interesting, and I 
 
 ## Acknowledgements
 
-Reingold-Tilford implementation adapted from the work of [Rachel Lim](https://rachel53461.wordpress.com/2014/04/20/algorithm-for-drawing-trees/).
+Journey icon created by [Freepik - Flaticon](https://www.flaticon.com/free-icon/customer-journey_4598796)
 
-Icons provided by [Google Fonts](https://fonts.google.com/icons).
+Other icons created by [Google Fonts](https://fonts.google.com/icons)
+
+Reingold-Tilford implementation adapted from the work of [Rachel Lim](https://rachel53461.wordpress.com/2014/04/20/algorithm-for-drawing-trees/)
 
 
 [^better-history]: [BetterHistory.io](https://betterhistory.io)
