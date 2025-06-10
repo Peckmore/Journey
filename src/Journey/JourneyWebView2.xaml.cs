@@ -724,12 +724,12 @@ namespace Journey
                 Panel.SetZIndex(lineEnd, ActivePathLineZIndex);
             }
         }
-        private async void ExecuteHideJourneyCommand(object sender, RoutedEventArgs e)
+        private async void ExecutedHideJourneyCommand(object sender, RoutedEventArgs e)
         {
             // Hide journey.
             await HideJourney();
         }
-        private void ExecuteResetViewCommand(object sender, RoutedEventArgs e)
+        private void ExecutedResetViewCommand(object sender, RoutedEventArgs e)
         {
             if (_selectedStep != null)
             {
@@ -741,19 +741,19 @@ namespace Journey
                 JourneyCanvasTranslateTransform.Y = _canvasHome.Y;
             }
         }
-        private void ExecuteResetZoomCommand(object sender, RoutedEventArgs e)
+        private void ExecutedResetZoomCommand(object sender, RoutedEventArgs e)
         {
             // Reset our zoom factor back to 1, zooming based around the center of the visible canvas.
             var canvasCenter = GetCanvasCenter();
             ZoomCanvas(canvasCenter, false, 1);
         }
-        private void ExecuteZoomInCommand(object sender, ExecutedRoutedEventArgs e)
+        private void ExecutedZoomInCommand(object sender, ExecutedRoutedEventArgs e)
         {
             // Initiate a zoom in of one step.
             var canvasCenter = GetCanvasCenter();
             ZoomCanvas(canvasCenter, false);
         }
-        private void ExecuteZoomOutCommand(object sender, ExecutedRoutedEventArgs e)
+        private void ExecutedZoomOutCommand(object sender, ExecutedRoutedEventArgs e)
         {
             // Initiate a zoom out of one step.
             var canvasCenter = GetCanvasCenter();

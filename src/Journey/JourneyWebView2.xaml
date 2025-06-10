@@ -108,20 +108,20 @@
     <UserControl.CommandBindings>
 
         <CommandBinding Command="{x:Static local:JourneyWebView2.HideJourneyCommand}"
-                        Executed="ExecuteHideJourneyCommand" />
+                        Executed="ExecutedHideJourneyCommand" />
 
         <CommandBinding Command="{x:Static local:JourneyWebView2.ResetJourneyViewCommand}"
-                        Executed="ExecuteResetViewCommand" />
+                        Executed="ExecutedResetViewCommand" />
 
         <CommandBinding Command="{x:Static local:JourneyWebView2.ResetJourneyZoomCommand}"
-                        Executed="ExecuteResetZoomCommand" />
+                        Executed="ExecutedResetZoomCommand" />
 
         <CommandBinding Command="{x:Static local:JourneyWebView2.ZoomInJourneyCommand}"
-                        Executed="ExecuteZoomInCommand"
+                        Executed="ExecutedZoomInCommand"
                         CanExecute="CanExecuteZoomInCommand" />
 
         <CommandBinding Command="{x:Static local:JourneyWebView2.ZoomOutJourneyCommand}"
-                        Executed="ExecuteZoomOutCommand"
+                        Executed="ExecutedZoomOutCommand"
                         CanExecute="CanExecuteZoomOutCommand" />
 
     </UserControl.CommandBindings>
