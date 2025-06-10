@@ -41,37 +41,40 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Remove="Resources\Fonts\**\*" />
-		<None Remove="Resources\Images\**\*" />
+		<None Remove="Resources\**\*" />
 	</ItemGroup>
 
+	<!-- Fonts -->
 	<ItemGroup>
 		<Resource Include="Resources\Fonts\**\*">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</Resource>
+	</ItemGroup>
+
+	<!-- Images -->
+	<ItemGroup>
 		<Resource Include="Resources\Images\**\*">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</Resource>
 	</ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3240.44" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-	</ItemGroup>
-
+	<!-- Strings -->
 	<ItemGroup>
 		<Compile Update="Resources\Strings.Designer.cs">
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>
 			<DependentUpon>Strings.resx</DependentUpon>
 		</Compile>
-	</ItemGroup>
-
-	<ItemGroup>
 		<EmbeddedResource Update="Resources\Strings.resx">
 			<Generator>PublicResXFileCodeGenerator</Generator>
 			<LastGenOutput>Strings.Designer.cs</LastGenOutput>
 		</EmbeddedResource>
+	</ItemGroup>
+
+	<!-- Packages -->
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3240.44" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 
 </Project>
