@@ -12,12 +12,33 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using Journey;
+using System.Windows.Input;
 
 
 namespace JourneyBrowser
 {
     public partial class MainWindow : Window
     {
+        /// <summary>
+        /// Command to zoom in on the Journey view.
+        /// </summary>
+        public static readonly ICommand HomeCommand = new RoutedCommand();
+        /// <summary>
+        /// Command to zoom out on the Journey view.
+        /// </summary>
+        public static readonly ICommand BackCommand = new RoutedCommand();
+        public static readonly ICommand ForwardCommand = new RoutedCommand();
+        public static readonly ICommand RefreshCommand = new RoutedCommand();
+        public static readonly ICommand JourneyCommand = new RoutedCommand();
+
+        private void ExecutedRefreshCommand(object sender, RoutedEventArgs e)
+        {
+            if (sender is JourneyWebView2 webView2Control)
+            {
+                webView2Control.Reload();
+            }
+        }
+
         #region Constants
 
         private const string HomePage = @"https://start.duckduckgo.com";
@@ -28,6 +49,7 @@ namespace JourneyBrowser
 
         private CoreWebView2PreferredColorScheme _colorScheme;
         private int _selectedIndex;
+        private BrowserTab? _selectedTab;
 
         #endregion
 
@@ -48,6 +70,8 @@ namespace JourneyBrowser
             // Initialize window.
             InitializeComponent();
 
+            CreateTab(HomePage);
+
             // Merge in the appropriate resource dictionary dependent upon whether the OS is in light or dark mode.
             ApplyTheme();
 
@@ -64,6 +88,15 @@ namespace JourneyBrowser
             set
             {
                 _selectedIndex = value;
+                OnPropertyChanged();
+            }
+        }
+        public BrowserTab? SelectedTab
+        {
+            get => _selectedTab;
+            set
+            {
+                _selectedTab = value;
                 OnPropertyChanged();
             }
         }
@@ -91,7 +124,6 @@ namespace JourneyBrowser
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             RefreshFrame();
-            CreateTab(HomePage);
         }
 
         #endregion
@@ -157,7 +189,7 @@ namespace JourneyBrowser
 
         private async void ButtonJourney_Click(object sender, RoutedEventArgs e)
         {
-            //var view = ((JourneyWebView2)_webView2Tabs[SelectedIndex].Content);
+            //var view = ((JourneyWebView2)BrowserTabControl[SelectedIndex].Content);
             //DoubleAnimation fadeAnimation;
             //if (view.IsJourneyVisible)
             //{

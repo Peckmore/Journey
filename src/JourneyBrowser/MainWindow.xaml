@@ -2,8 +2,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        xmlns:resources="clr-namespace:JourneyBrowser.Resources.Strings"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        xmlns:wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        xmlns:local="clr-namespace:JourneyBrowser"
         mc:Ignorable="d"
         x:Class="JourneyBrowser.MainWindow"
         x:Name="WindowRoot"
@@ -23,6 +25,52 @@
                       GlassFrameThickness="-1"/>
     </WindowChrome.WindowChrome>
 
+    <Window.CommandBindings>
+
+        <CommandBinding Command="{x:Static local:MainWindow.BackCommand}" />
+                        <!--Executed="ExecutedBackCommand"
+                        CanExecute="CanExecuteBackCommand" />-->
+
+        <CommandBinding Command="{x:Static local:MainWindow.ForwardCommand}" />
+                        <!--Executed="ExecutedForwardCommand"
+                        CanExecute="CanExecuteForwardCommand" />-->
+
+        <CommandBinding Command="{x:Static local:MainWindow.HomeCommand}" />
+                        <!--Executed="ExecutedHomeCommand" />-->
+
+        <CommandBinding Command="{x:Static local:MainWindow.JourneyCommand}" />
+                        <!--Executed="ExecutedJourneyCommand"
+                        CanExecute="CanExecuteJourneyCommand" />-->
+
+        <CommandBinding Command="{x:Static local:MainWindow.RefreshCommand}"
+                        Executed="ExecutedRefreshCommand" />
+
+    </Window.CommandBindings>
+
+    <Window.InputBindings>
+
+        <KeyBinding Key="Left"
+                    Modifiers="Alt"
+                    Command="{x:Static local:MainWindow.BackCommand}" />
+
+        <KeyBinding Key="Right"
+                    Modifiers="Alt"
+                    Command="{x:Static local:MainWindow.ForwardCommand}" />
+
+        <KeyBinding Key="Home"
+                    Modifiers="Alt"
+                    Command="{x:Static local:MainWindow.HomeCommand}" />
+
+        <KeyBinding Key="J"
+                    Modifiers="Alt"
+                    Command="{x:Static local:MainWindow.JourneyCommand}" />
+
+        <KeyBinding Key="R"
+                    Modifiers="Control"
+                    Command="{x:Static local:MainWindow.RefreshCommand}" />
+
+    </Window.InputBindings>
+
     <Window.Resources>
 
         <ResourceDictionary>
@@ -31,6 +79,8 @@
                 <ResourceDictionary Source="pack://application:,,,/Resources/Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
+            <!-- Root Grid Style -->
+            <!-- Used to set our margin when the window maximises, as we have extended into the window chrome. -->
             <Style TargetType="Grid"
                    x:Key="WindowStyle">
 
@@ -42,12 +92,14 @@
                                  Value="Maximized">
 
                         <Setter Property="Margin"
-                                Value="7,2,7,0" />
+                                Value="7,2,7,7" />
 
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
 
+            <!-- Button Style -->
+            <!-- Implicit style for all buttons. -->
             <Style TargetType="Button">
 
                 <Setter Property="Background"
@@ -106,7 +158,9 @@
 
             </Style>
 
-            <Style TargetType="Image" x:Key="ButtonBarButtonStyle">
+            <!-- Image Style -->
+            <!-- Explicit style for images within buttons. -->
+            <Style TargetType="Image" x:Key="ButtonStyle">
 
                 <Setter Property="Height"
                         Value="24" />
@@ -118,7 +172,7 @@
                         Value="24" />
 
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource AncestorType=ButtonBase}}"
+                    <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource AncestorType=Button}}"
                                  Value="False">
 
                         <Setter Property="Opacity"
@@ -129,9 +183,218 @@
 
             </Style>
 
+            <!-- TabControl Style -->
+            <!-- Implicit style for our browser tab control. -->
+            <Style TargetType="TabControl">
+
+                <Setter Property="OverridesDefaultStyle"
+                        Value="True" />
+
+                <Setter Property="SnapsToDevicePixels"
+                        Value="True" />
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TabControl">
+                            <Grid>
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Tabs -->
+                                <DockPanel Grid.Row="0"
+                                           LastChildFill="False"
+                                           Margin="12,7,150,0">
+
+                                    <!-- Tab Panel -->
+                                    <TabPanel x:Name="TabPanel"
+                                              Background="Transparent"
+                                              IsItemsHost="True"
+                                              Margin="0"
+                                              Panel.ZIndex="1"/>
+
+                                    <!-- New Tab Button -->
+                                    <Button x:Name="NewTabButton"
+                                            Click="NewTabButton_Click"
+                                            Content="+"
+                                            Height="28"
+                                            Margin="2,0,0,0"
+                                            VerticalAlignment="Center"
+                                            Width="28"/>
+
+                                </DockPanel>
+
+                                <!-- Button Bar -->
+                                <Border x:Name="ButtonBar"
+                                        Grid.Row="1"
+                                        Background="White"
+                                        BorderBrush="LightGray"
+                                        BorderThickness="0,0,0,1"
+                                        Padding="10">
+
+                                    <Grid>
+
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition MinWidth="176" MaxWidth="230" />
+                                            <ColumnDefinition Width="*" MinWidth="300" />
+                                            <ColumnDefinition MaxWidth="230" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Navigation Buttons -->
+                                        <Grid Grid.Column="0">
+
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="5"/>
+                                                <ColumnDefinition Width="1"/>
+                                                <ColumnDefinition Width="5"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="5"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="5"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="5"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Home Button -->
+                                            <Button x:Name="HomeButton"
+                                                    Grid.Column="0"
+                                                    Command="{x:Static local:MainWindow.HomeCommand}"
+                                                    CommandParameter="{Binding ElementName=WebView}">
+                                                <!-- ToolTip="{x:Static resources:Strings.Home}"> -->
+
+                                                <Image Source="{DynamicResource HomeImage}"
+                                                       Style="{StaticResource ButtonStyle}" />
+
+                                            </Button>
+
+                                            <!-- Separator -->
+                                            <Line Grid.Column="2"
+                                                  SnapsToDevicePixels="True"
+                                                  Stroke="{DynamicResource SeparatorBrush}"
+                                                  StrokeThickness="1"
+                                                  X1="0"
+                                                  X2="0"
+                                                  Y1="5"
+                                                  Y2="25" />
+
+                                            <!-- Back Button -->
+                                            <Button x:Name="BackButton"
+                                                    Grid.Column="4"
+                                                    Command="{x:Static local:MainWindow.BackCommand}">
+
+                                                <Image Source="{DynamicResource BackImage}"
+                                                       Style="{StaticResource ButtonStyle}" />
+
+                                            </Button>
+
+                                            <!-- Journey Button -->
+                                            <Button x:Name="JourneyButton"
+                                                    Grid.Column="6"
+                                                    Command="{x:Static local:MainWindow.JourneyCommand}">
+
+                                                <Image Source="{DynamicResource JourneyImage}"
+                                                       Style="{StaticResource ButtonStyle}" />
+
+                                            </Button>
+
+                                            <!-- Forward Button -->
+                                            <Button x:Name="ForwardButton"
+                                                    Grid.Column="8"
+                                                    Command="{x:Static local:MainWindow.ForwardCommand}">
+
+                                                <Image Source="{DynamicResource ForwardImage}"
+                                                       Style="{StaticResource ButtonStyle}" />
+
+                                            </Button>
+
+                                            <!-- Refresh Button -->
+                                            <Button x:Name="RefreshButton"
+                                                    Grid.Column="10"
+                                                    Command="{x:Static local:MainWindow.RefreshCommand}">
+
+                                                <Image Source="{DynamicResource RefreshImage}"
+                                                       Style="{StaticResource ButtonStyle}" />
+
+                                            </Button>
+
+                                        </Grid>
+
+                                        <!-- Address Bar -->
+                                        <TextBox Name="AddressBar"
+                                                 HorizontalAlignment="Stretch"
+                                                 Grid.Column="1"
+                                                 MinWidth="300"
+                                                 MaxWidth="950"
+                                                 Text="{Binding ElementName=WindowRoot, Path=SelectedTab.Address, Mode=TwoWay}" />
+
+                                        <!-- Settings Button -->
+                                        <Button x:Name="SettingsButton"
+                                                Grid.Column="2"
+                                                HorizontalAlignment="Right">
+
+                                            <Button.ContextMenu>
+                                                <ContextMenu Name="SettingsButtonMenu">
+
+                                                    <MenuItem Header="Auto"/>
+
+                                                    <Separator />
+
+                                                    <MenuItem Header="Light"/>
+
+                                                    <MenuItem Header="Dark"/>
+
+                                                </ContextMenu>
+                                            </Button.ContextMenu>
+
+                                            <Button.Triggers>
+                                                <EventTrigger SourceName="SettingsButton"
+                                                              RoutedEvent="Button.Click">
+
+                                                    <BeginStoryboard>
+                                                        <Storyboard>
+                                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="SettingsButtonMenu"
+                                                                                           Storyboard.TargetProperty="IsOpen">
+
+                                                                <DiscreteObjectKeyFrame KeyTime="0:0:0">
+                                                                    <DiscreteObjectKeyFrame.Value>
+                                                                        <system:Boolean>True</system:Boolean>
+                                                                    </DiscreteObjectKeyFrame.Value>
+                                                                </DiscreteObjectKeyFrame>
+
+                                                            </ObjectAnimationUsingKeyFrames>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+
+                                                </EventTrigger>
+                                            </Button.Triggers>
+
+                                            <Image Source="{DynamicResource DarkModeImage}"
+                                                   Style="{StaticResource ButtonStyle}" />
+
+                                        </Button>
+
+                                    </Grid>
+                                </Border>
+
+                                <ContentPresenter x:Name="SelectedContent"
+                                                  Grid.Row="2"
+                                                  ContentSource="SelectedContent" />
+
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+            </Style>
+
             <!-- TabItem Style -->
-            <Style TargetType="TabItem"
-                   x:Key="JourneyBrowserTabItemStyle">
+            <!-- Implicit style for our browser tabs. -->
+            <Style TargetType="TabItem">
 
                 <Setter Property="Background"
                         Value="{DynamicResource TabInactiveBrush}"/>
@@ -143,7 +406,7 @@
                         Value="0"/>
 
                 <Setter Property="MaxWidth"
-                        Value="150"/>
+                        Value="200"/>
 
                 <Setter Property="MinWidth"
                         Value="50"/>
@@ -203,62 +466,6 @@
                 </Setter>
             </Style>
 
-            <!-- TabControl Style -->
-            <Style TargetType="TabControl"
-                   x:Key="JourneyBrowserTabControlStyle">
-
-                <Setter Property="ItemContainerStyle"
-                    Value="{StaticResource JourneyBrowserTabItemStyle}"/>
-
-                <Setter Property="OverridesDefaultStyle"
-                    Value="True" />
-
-                <Setter Property="SnapsToDevicePixels"
-                    Value="True" />
-
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="TabControl">
-                            <Grid>
-
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-
-                                <!-- Tabs -->
-                                <DockPanel Grid.Row="0"
-                                           LastChildFill="False"
-                                           Margin="12,7,150,0">
-
-                                    <!-- Tab Panel -->
-                                    <TabPanel x:Name="TabPanel"
-                                              Background="Transparent"
-                                              IsItemsHost="True"
-                                              Margin="0"
-                                              Panel.ZIndex="1"/>
-
-                                    <!-- New Tab Button -->
-                                    <Button x:Name="NewTabButton"
-                                            Click="NewTabButton_Click"
-                                            Content="+"
-                                            Height="28"
-                                            Margin="2,0,0,0"
-                                            VerticalAlignment="Center"
-                                            Width="28"/>
-
-                                </DockPanel>
-
-                                <ContentPresenter x:Name="TabControlContent"
-                                                  Grid.Row="1" />
-
-                            </Grid>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-
-            </Style>
-
         </ResourceDictionary>
 
     </Window.Resources>
@@ -268,8 +475,8 @@
         <TabControl x:Name="BrowserTabControl"
                     IsSynchronizedWithCurrentItem="True"
                     ItemsSource="{Binding ElementName=WindowRoot, Path=Tabs}"
+                    SelectedItem="{Binding ElementName=WindowRoot, Path=SelectedTab, Mode=TwoWay}"
                     SelectedIndex="{Binding ElementName=WindowRoot, Path=SelectedIndex, Mode=TwoWay}"
-                    Style="{StaticResource JourneyBrowserTabControlStyle}"
                     WindowChrome.IsHitTestVisibleInChrome="True">
 
             <TabControl.ItemTemplate>
@@ -322,10 +529,13 @@
 
                                     <!-- Home Button -->
                                     <Button x:Name="HomeButton"
-                                            Grid.Column="0">
+                                            Grid.Column="0"
+                                            Command="{x:Static local:MainWindow.HomeCommand}"
+                                            CommandParameter="{Binding ElementName=WebView}">
+                                        <!-- ToolTip="{x:Static resources:Strings.Home}"> -->
 
                                         <Image Source="{DynamicResource HomeImage}"
-                                               Style="{StaticResource ButtonBarButtonStyle}" />
+                                               Style="{StaticResource ButtonStyle}" />
 
                                     </Button>
 
@@ -341,37 +551,41 @@
 
                                     <!-- Back Button -->
                                     <Button x:Name="BackButton"
-                                            Grid.Column="4">
+                                            Grid.Column="4"
+                                            Command="{x:Static local:MainWindow.BackCommand}">
 
                                         <Image Source="{DynamicResource BackImage}"
-                                               Style="{StaticResource ButtonBarButtonStyle}" />
+                                               Style="{StaticResource ButtonStyle}" />
 
                                     </Button>
 
                                     <!-- Journey Button -->
                                     <Button x:Name="JourneyButton"
-                                            Grid.Column="6">
+                                            Grid.Column="6"
+                                            Command="{x:Static local:MainWindow.JourneyCommand}">
 
                                         <Image Source="{DynamicResource JourneyImage}"
-                                               Style="{StaticResource ButtonBarButtonStyle}" />
+                                               Style="{StaticResource ButtonStyle}" />
 
                                     </Button>
 
                                     <!-- Forward Button -->
                                     <Button x:Name="ForwardButton"
-                                            Grid.Column="8">
+                                            Grid.Column="8"
+                                            Command="{x:Static local:MainWindow.ForwardCommand}">
 
                                         <Image Source="{DynamicResource ForwardImage}"
-                                               Style="{StaticResource ButtonBarButtonStyle}" />
+                                               Style="{StaticResource ButtonStyle}" />
 
                                     </Button>
 
                                     <!-- Refresh Button -->
                                     <Button x:Name="RefreshButton"
-                                            Grid.Column="10">
+                                            Grid.Column="10"
+                                            Command="{x:Static local:MainWindow.RefreshCommand}">
 
                                         <Image Source="{DynamicResource RefreshImage}"
-                                               Style="{StaticResource ButtonBarButtonStyle}" />
+                                               Style="{StaticResource ButtonStyle}" />
 
                                     </Button>
 
@@ -383,14 +597,14 @@
                                          Grid.Column="1"
                                          MinWidth="300"
                                          MaxWidth="950"
-                                         Text="{Binding Path=., ElementName=Address}" />
+                                         Text="{Binding Address, Mode=TwoWay}" />
 
                                 <!-- Settings Button -->
-                                <ToggleButton x:Name="SettingsButton"
+                                <Button x:Name="SettingsButton"
                                                Grid.Column="2"
                                                HorizontalAlignment="Right">
 
-                                    <ToggleButton.ContextMenu>
+                                    <Button.ContextMenu>
                                         <ContextMenu Name="SettingsButtonMenu">
 
                                             <MenuItem Header="Auto"/>
@@ -402,9 +616,9 @@
                                             <MenuItem Header="Dark"/>
 
                                         </ContextMenu>
-                                    </ToggleButton.ContextMenu>
+                                    </Button.ContextMenu>
 
-                                    <ToggleButton.Triggers>
+                                    <Button.Triggers>
                                         <EventTrigger SourceName="SettingsButton"
                                                       RoutedEvent="Button.Click">
 
@@ -424,39 +638,19 @@
                                             </BeginStoryboard>
 
                                         </EventTrigger>
-
-                                        <EventTrigger SourceName="SettingsButton"
-                                                      RoutedEvent="Button.ContextMenuClosing">
-
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="SettingsButton"
-                                                        Storyboard.TargetProperty="IsChecked">
-
-                                                        <DiscreteObjectKeyFrame KeyTime="0:0:0">
-                                                            <DiscreteObjectKeyFrame.Value>
-                                                                <system:Boolean>False</system:Boolean>
-                                                            </DiscreteObjectKeyFrame.Value>
-                                                        </DiscreteObjectKeyFrame>
-
-                                                    </ObjectAnimationUsingKeyFrames>
-                                                </Storyboard>
-                                            </BeginStoryboard>
-
-                                        </EventTrigger>
-
-                                    </ToggleButton.Triggers>
+                                    </Button.Triggers>
 
                                     <Image Source="{DynamicResource DarkModeImage}"
-                                           Style="{StaticResource ButtonBarButtonStyle}" />
+                                           Style="{StaticResource ButtonStyle}" />
 
-                                </ToggleButton>
+                                </Button>
 
                             </Grid>
                         </Border>
 
-                        <wpf:WebView2 Grid.Row="1"
-                                      Source="{Binding Address}" />
+                        <wpf:WebView2 x:Name="WebView"
+                                      Grid.Row="1"
+                                      Source="{Binding Address, Mode=TwoWay}" />
 
                     </Grid>
                 </DataTemplate>
