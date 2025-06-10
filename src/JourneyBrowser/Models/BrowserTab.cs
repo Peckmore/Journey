@@ -31,7 +31,11 @@ namespace JourneyBrowser.Models
         public string Address
         {
             get => _address;
-            set { _address = value; OnPropertyChanged(nameof(Address)); }
+            set
+            {
+                _address = value;
+                OnPropertyChanged(nameof(Address));
+            }
         }
 
         #endregion
