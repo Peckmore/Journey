@@ -8,9 +8,9 @@
 		<UseWPF>true</UseWPF>
 		<RootNamespace>JourneyBrowser</RootNamespace>
 		<AssemblyName>JourneyBrowser</AssemblyName>
-		<AssemblyTitle>JourneyBrowser</AssemblyTitle>
+		<AssemblyTitle>Journey Browser</AssemblyTitle>
 		<StartupObject>Journey.App</StartupObject>
-		<ApplicationIcon>journey.ico</ApplicationIcon>
+		<ApplicationIcon>Resources\Icons\journey.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -7,6 +7,7 @@ namespace JourneyBrowser.Models
         #region Fields
 
         private string _address;
+        private string _title;
 
         #endregion
 
@@ -21,7 +22,7 @@ namespace JourneyBrowser.Models
         public BrowserTab(string address)
         {
             _address = address;
-            OnPropertyChanged(nameof(Address));
+            _title = address;
         }
 
         #endregion
@@ -33,8 +34,25 @@ namespace JourneyBrowser.Models
             get => _address;
             set
             {
-                _address = value;
-                OnPropertyChanged(nameof(Address));
+                if (_address != value)
+                {
+                    _address = value;
+                    OnPropertyChanged(nameof(Address));
+
+                    Title = value;
+                }
+            }
+        }
+        public string Title
+        {
+            get => _title;
+            set
+            {
+                if (_title != value)
+                {
+                    _title = value;
+                    OnPropertyChanged(nameof(Title));
+                }
             }
         }
 

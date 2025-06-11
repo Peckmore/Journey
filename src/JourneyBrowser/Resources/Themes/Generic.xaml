@@ -1,14 +1,12 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <!-- Brushes -->
+    <SolidColorBrush x:Key="HighlightBrush" Color="#FF557FF3" />
+
     <!-- Fonts -->
     <FontFamily x:Key="RobotoRegular">
         pack://application:,,,/Journey;component/Resources/Fonts/Roboto-Regular.ttf#Roboto
     </FontFamily>
-
-    <!-- Styles -->
-    <Style TargetType="Label">
-        <Setter Property="FontFamily" Value="{StaticResource RobotoRegular}" />
-    </Style>
 
 </ResourceDictionary>
