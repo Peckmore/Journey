@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!-- Colors -->
+    <!-- Brushes -->
     <SolidColorBrush x:Key="ActiveBorderBrush" Color="#FFCCCCCC" />
     <SolidColorBrush x:Key="LineBrush" Color="#FF777777" />
     <SolidColorBrush x:Key="PressedBrush" Color="#FFE0E0E0" />
