@@ -12,6 +12,7 @@
         Background="Transparent"
         Closing="Window_Closing"
         Height="720"
+        Icon="/Resources/Icons/journey.ico"
         Loaded="Window_Loaded"
         MinHeight="295"
         MinWidth="640"

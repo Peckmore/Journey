@@ -9,42 +9,54 @@
 		<RootNamespace>JourneyBrowser</RootNamespace>
 		<AssemblyName>JourneyBrowser</AssemblyName>
 		<AssemblyTitle>JourneyBrowser</AssemblyTitle>
+		<StartupObject>Journey.App</StartupObject>
+		<ApplicationIcon>journey.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<None Remove="Resources\**\*" />
 	</ItemGroup>
 
+	<!-- Fonts -->
 	<ItemGroup>
 		<Resource Include="Resources\Fonts\**\*">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</Resource>
+	</ItemGroup>
+
+	<!-- Icons -->
+	<ItemGroup>
+		<Content Include="Resources\Icons\journey.ico" />
+	</ItemGroup>
+
+	<!-- Images -->
+	<ItemGroup>
 		<Resource Include="Resources\Images\**\*">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</Resource>
 	</ItemGroup>
 
+	<!-- Strings -->
 	<ItemGroup>
-		<PackageReference Include="ModernWpfUI" Version="0.9.5" />
+		<Compile Update="Resources\Strings\Strings.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Strings.resx</DependentUpon>
+		</Compile>
+		<EmbeddedResource Update="Resources\Strings\Strings.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Strings.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
 	</ItemGroup>
 
+	<!-- Projects -->
 	<ItemGroup>
 		<ProjectReference Include="..\Journey\Journey.csproj" />
 	</ItemGroup>
 
+	<!-- Packages -->
 	<ItemGroup>
-	  <Compile Update="Resources\Strings\Strings.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>Strings.resx</DependentUpon>
-	  </Compile>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <EmbeddedResource Update="Resources\Strings\Strings.resx">
-	    <Generator>ResXFileCodeGenerator</Generator>
-	    <LastGenOutput>Strings.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
+		<PackageReference Include="ModernWpfUI" Version="0.9.5" />
 	</ItemGroup>
 
 </Project>
