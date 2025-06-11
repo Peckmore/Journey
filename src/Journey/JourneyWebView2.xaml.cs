@@ -21,7 +21,7 @@ namespace Journey
     /// <summary>
     /// An implementation of a WebView2 control that provides a Journey view, allowing users to visualize their navigation history as a tree diagram.
     /// </summary>
-    public sealed partial class JourneyWebView2 : IWebView2, INotifyPropertyChanged, IDisposable
+    public sealed partial class JourneyWebView2 : IWebView2, INotifyPropertyChanged
     {
         #region Constants
 
@@ -278,8 +278,8 @@ namespace Journey
         [Category("Common")]
         public Brush JourneyActiveStepBackground
         {
-            get => (Brush)Resources["JourneyActiveStepBackground"];
-            set => Resources["JourneyActiveStepBackground"] = value;
+            get => (Brush)Resources["JourneyActiveStepBackgroundBrush"];
+            set => Resources["JourneyActiveStepBackgroundBrush"] = value;
         }
         /// <summary>
         /// The foreground color for the active step (the users current page) in the Journey view.
@@ -287,8 +287,8 @@ namespace Journey
         [Category("Common")]
         public Brush JourneyActiveStepForeground
         {
-            get => (Brush)Resources["JourneyActiveStepForeground"];
-            set => Resources["JourneyActiveStepForeground"] = value;
+            get => (Brush)Resources["JourneyActiveStepForegroundBrush"];
+            set => Resources["JourneyActiveStepForegroundBrush"] = value;
         }
         /// <summary>
         /// The default background color for the Journey view.
@@ -296,8 +296,8 @@ namespace Journey
         [Category("Common")]
         public Brush JourneyBackground
         {
-            get => (Brush)Resources["JourneyBackground"];
-            set => Resources["JourneyBackground"] = value;
+            get => (Brush)Resources["JourneyBackgroundBrush"];
+            set => Resources["JourneyBackgroundBrush"] = value;
         }
         /// <summary>
         /// The "highlight" color, used for mouseover effects in the Journey view.
@@ -305,8 +305,8 @@ namespace Journey
         [Category("Common")]
         public Brush JourneyHighlightBackground
         {
-            get => (Brush)Resources["JourneyHighlightBackground"];
-            set => Resources["JourneyHighlightBackground"] = value;
+            get => (Brush)Resources["JourneyHighlightBackgroundBrush"];
+            set => Resources["JourneyHighlightBackgroundBrush"] = value;
         }
         /// <summary>
         /// The "highlight" foreground color, used for text displayed on top of highlighted elements in the Journey view.
@@ -314,8 +314,8 @@ namespace Journey
         [Category("Common")]
         public Brush JourneyHighlightForeground
         {
-            get => (Brush)Resources["JourneyHighlightForeground"];
-            set => Resources["JourneyHighlightForeground"] = value;
+            get => (Brush)Resources["JourneyHighlightForegroundBrush"];
+            set => Resources["JourneyHighlightForegroundBrush"] = value;
         }
         /// <summary>
         /// The zoom factor for Journey.
@@ -332,13 +332,10 @@ namespace Journey
         [Category("Common")]
         public CoreWebView2PreferredColorScheme PreferredColorScheme
         {
-            get => CoreWebView2?.Profile.PreferredColorScheme ?? CoreWebView2PreferredColorScheme.Light;
+            get => CoreWebView2.Profile.PreferredColorScheme;
             set
             {
-                if (CoreWebView2 != null)
-                {
-                    CoreWebView2.Profile.PreferredColorScheme = value;
-                }
+                CoreWebView2.Profile.PreferredColorScheme = value;
                 ApplyTheme();
             }
         }
@@ -513,12 +510,12 @@ namespace Journey
         {
             // Set a flag to indicate whether we should use dark mode.
             var isDark = false;
-            if (CoreWebView2?.Profile.PreferredColorScheme == CoreWebView2PreferredColorScheme.Dark)
+            if (CoreWebView2.Profile.PreferredColorScheme == CoreWebView2PreferredColorScheme.Dark)
             {
                 // If the WebView2 profile is set to dark mode, we'll use that.
                 isDark = true;
             }
-            else if (CoreWebView2?.Profile.PreferredColorScheme == CoreWebView2PreferredColorScheme.Auto)
+            else if (CoreWebView2.Profile.PreferredColorScheme == CoreWebView2PreferredColorScheme.Auto)
             {
                 // If the WebView2 profile is set to auto, we'll check the registry to see whether the app should be in light or dark mode.
                 using (var themeRegistryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
@@ -606,8 +603,8 @@ namespace Journey
                     Height = _journeyStepSize.Height + (8 * borderThickness),
                     Width = _journeyStepSize.Width + (2 * borderThickness)
                 };
-                border.SetResourceReference(Control.BackgroundProperty, "JourneyActiveStepBackground");
-                border.SetResourceReference(Control.BorderBrushProperty, "JourneyActiveStepBackground");
+                border.SetResourceReference(Control.BackgroundProperty, "JourneyActiveStepBackgroundBrush");
+                border.SetResourceReference(Control.BorderBrushProperty, "JourneyActiveStepBackgroundBrush");
 
                 Canvas.SetLeft(border, nodeRectX - borderThickness);
                 Canvas.SetTop(border, nodeRectY - borderThickness);
@@ -621,7 +618,7 @@ namespace Journey
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Bottom
                 };
-                label.SetResourceReference(Control.ForegroundProperty, "JourneyActiveStepForeground");
+                label.SetResourceReference(Control.ForegroundProperty, "JourneyActiveStepForegroundBrush");
                 border.Child = label;
             }
 
@@ -676,7 +673,7 @@ namespace Journey
             // Draw a line on the Journey canvas between two points, with an optional "active path" style, and rounded ends.
 
             // Determine the brush name and width based on whether this is an active path line or not.
-            var brushName = activePath ? "JourneyHighlightBackground" : "LineBrush";
+            var brushName = activePath ? "JourneyHighlightBackgroundBrush" : "LineBrush";
             var width = activePath ? 8 : 4;
 
             // Create our line and add it to the Journey canvas.
@@ -688,7 +685,7 @@ namespace Journey
                 X2 = p2.X,
                 Y2 = p2.Y
             };
-            line.SetResourceReference(Line.StrokeProperty, brushName);
+            line.SetResourceReference(Shape.StrokeProperty, brushName);
             JourneyCanvas.Children.Add(line);
 
             // Create our start and end circles to give the line rounded ends, and add them to the Journey canvas.
@@ -699,10 +696,10 @@ namespace Journey
                 Height = width,
                 Width = width,
             };
-            lineStart.SetResourceReference(Ellipse.FillProperty, brushName);
+            lineStart.SetResourceReference(Shape.FillProperty, brushName);
             JourneyCanvas.Children.Add(lineStart);
-            Canvas.SetLeft(lineStart, p1.X - (width / 2));
-            Canvas.SetTop(lineStart, p1.Y - (width / 2));
+            Canvas.SetLeft(lineStart, p1.X - (width / 2d));
+            Canvas.SetTop(lineStart, p1.Y - (width / 2d));
 
             // Create and add our end circle.
             var lineEnd = new Ellipse
@@ -710,10 +707,10 @@ namespace Journey
                 Height = width,
                 Width = width,
             };
-            lineEnd.SetResourceReference(Ellipse.FillProperty, brushName);
+            lineEnd.SetResourceReference(Shape.FillProperty, brushName);
             JourneyCanvas.Children.Add(lineEnd);
-            Canvas.SetLeft(lineEnd, p2.X - (width / 2));
-            Canvas.SetTop(lineEnd, p2.Y - (width / 2));
+            Canvas.SetLeft(lineEnd, p2.X - (width / 2d));
+            Canvas.SetTop(lineEnd, p2.Y - (width / 2d));
 
             // Lines will overlap, which doesn't matter for lines of the same color as they all blend in together. But for the active path
             // we want to ensure the lines appear on top of other lines, so we'll bump their Z-Index.
@@ -850,7 +847,7 @@ namespace Journey
             return WebView.EnsureCoreWebView2Async(environment);
         }
         /// <inheritdoc/>
-        public Task EnsureCoreWebView2Async(CoreWebView2Environment environment = null, CoreWebView2ControllerOptions controllerOptions = null)
+        public Task EnsureCoreWebView2Async(CoreWebView2Environment? environment, CoreWebView2ControllerOptions? controllerOptions)
         {
             return WebView.EnsureCoreWebView2Async(environment, controllerOptions);
         }

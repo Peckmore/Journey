@@ -71,7 +71,7 @@
                                    Width="384"/>
 
                         <!-- Step Page URL -->
-                        <TextBlock Grid.Row="2"
+                        <TextBlock Grid.Row="1"
                                    FontSize="12"
                                    Foreground="{DynamicResource TextLightBrush}"
                                    Height="25"
@@ -134,7 +134,7 @@
                         <Style TargetType="Grid">
 
                             <Setter Property="Background"
-                                    Value="{DynamicResource JourneyHighlightBackground}"/>
+                                    Value="{DynamicResource JourneyHighlightBackgroundBrush}"/>
 
                             <Style.Triggers>
 
@@ -165,7 +165,7 @@
                                BasedOn="{StaticResource {x:Type Label}}">
 
                             <Setter Property="Foreground"
-                                    Value="{DynamicResource JourneyHighlightForeground}"/>
+                                    Value="{DynamicResource JourneyHighlightForegroundBrush}"/>
 
                             <Style.Triggers>
 
