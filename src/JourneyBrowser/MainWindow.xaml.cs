@@ -1,11 +1,11 @@
 ﻿using JourneyBrowser.Interop;
 using JourneyBrowser.Models;
 using Microsoft.Web.WebView2.Core;
+using Microsoft.Web.WebView2.Wpf;
 using Microsoft.Win32;
 using ModernWpf;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -28,6 +28,7 @@ namespace JourneyBrowser
         #region Private
 
         private CoreWebView2PreferredColorScheme _colorScheme;
+        private bool _isDarkMode;
         private int _selectedIndex;
         private BrowserTab? _selectedTab;
 
@@ -88,7 +89,7 @@ namespace JourneyBrowser
             // Merge in the appropriate resource dictionary dependent upon whether the OS is in light or dark mode.
             ApplyTheme();
 
-            //SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
+            SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
         }
 
         #endregion
@@ -121,22 +122,31 @@ namespace JourneyBrowser
 
         #region Event Handlers
 
-        //private void NewTabButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //}
-        //private void WebView2_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
-        //{
-        //    if (sender is IWebView2 webView2)
-        //    {
-        //        webView2.CoreWebView2InitializationCompleted -= WebView2_CoreWebView2InitializationCompleted;
-        //        webView2.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
-        //    }
-        //}
+        private void WebView2_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
+        {
+            if (sender is IWebView2 webView2)
+            {
+                webView2.CoreWebView2InitializationCompleted -= WebView2_CoreWebView2InitializationCompleted;
+                webView2.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
+            }
+        }
         private void AddressBar_OnGotFocus(object sender, RoutedEventArgs e)
         {
             if (sender is TextBox textBox)
             {
                 textBox.SelectAll();
+            }
+        }
+        private void CoreWebView2_NewWindowRequested(object? sender, CoreWebView2NewWindowRequestedEventArgs e)
+        {
+            e.Handled = true;
+            CreateTab(e.Uri);
+        }
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            for (var i = Tabs.Count - 1; i >= 0; i--)
+            {
+                CloseTab(Tabs[i]);
             }
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -167,23 +177,28 @@ namespace JourneyBrowser
                 }
             }
 
-            // Remove any previously merged dictionary and merge in the appropriate dictionary based on the current light/dark mode.
-            var themeDictionary = new ResourceDictionary
+            if (_isDarkMode != isDark)
             {
-                Source = new Uri(isDark ? "pack://application:,,,/Resources/Themes/Theme.Dark.xaml"
-                                        : "pack://application:,,,/Resources/Themes/Theme.Light.xaml", UriKind.Absolute)
-            };
+                _isDarkMode = isDark;
 
-            var dictionariesToRemove = Resources.MergedDictionaries
-                                       .Where(d => d.Source != null && (d.Source.OriginalString.Contains("Theme.Dark.xaml")
-                                                                        || d.Source.OriginalString.Contains("Theme.Light.xaml"))).ToList();
+                // Remove any previously merged dictionary and merge in the appropriate dictionary based on the current light/dark mode.
+                var themeDictionary = new ResourceDictionary
+                {
+                    Source = new Uri(isDark ? "pack://application:,,,/Resources/Themes/Theme.Dark.xaml"
+                                            : "pack://application:,,,/Resources/Themes/Theme.Light.xaml", UriKind.Absolute)
+                };
 
-            foreach (var dict in dictionariesToRemove)
-            {
-                Resources.MergedDictionaries.Remove(dict);
+                var dictionariesToRemove = Resources.MergedDictionaries
+                                                                         .Where(d => d.Source != null && (d.Source.OriginalString.Contains("Theme.Dark.xaml")
+                                                                             || d.Source.OriginalString.Contains("Theme.Light.xaml"))).ToList();
+
+                foreach (var dict in dictionariesToRemove)
+                {
+                    Resources.MergedDictionaries.Remove(dict);
+                }
+
+                Resources.MergedDictionaries.Add(themeDictionary);
             }
-
-            Resources.MergedDictionaries.Add(themeDictionary);
         }
         private void CanExecuteBackCommand(object sender, CanExecuteRoutedEventArgs e)
         { }
@@ -191,104 +206,22 @@ namespace JourneyBrowser
         { }
         private void CanExecuteJourneyCommand(object sender, CanExecuteRoutedEventArgs e)
         { }
-        private BrowserTab CreateTab(string address)
+        private void CloseTab(BrowserTab tab)
         {
-            var tab = new BrowserTab(address);
-            Tabs.Add(tab);
-            return tab;
-        }
-        private void ExecutedBackCommand(object sender, ExecutedRoutedEventArgs e)
-        { }
-        private void ExecutedCloseTabCommand(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (e.Parameter is BrowserTab tab)
+            if (Tabs.Contains(tab))
             {
-                if (Tabs.Contains(tab))
+                if (SelectedIndex > 0)
                 {
-                    if (SelectedIndex > 0)
-                    {
-                        SelectedIndex--;
-                    }
-                    else if (SelectedIndex == 0 && Tabs.Count > 1)
-                    {
-                        SelectedIndex++;
-                    }
-
-                    //Tabs.Remove(tab);
+                    SelectedIndex--;
                 }
+                else if (SelectedIndex == 0 && Tabs.Count > 1)
+                {
+                    SelectedIndex++;
+                }
+
+                Tabs.Remove(tab);
             }
-        }
-        private void ExecutedForwardCommand(object sender, ExecutedRoutedEventArgs e)
-        { }
-        private void ExecutedHomeCommand(object sender, ExecutedRoutedEventArgs e)
-        { }
-        private void ExecutedJourneyCommand(object sender, ExecutedRoutedEventArgs e)
-        { }
-        private void ExecutedNewTabCommand(object sender, ExecutedRoutedEventArgs e)
-        {
-            var newTab = CreateTab(HomePage);
-            BrowserTabControl.SelectedItem = newTab;
-        }
-        private void ExecutedRefreshCommand(object sender, ExecutedRoutedEventArgs e)
-        { }
-        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
 
-        #endregion
-
-        #endregion
-
-
-
-
-
-
-
-        private async void ButtonJourney_Click(object sender, RoutedEventArgs e)
-        {
-            //var view = ((JourneyWebView2)BrowserTabControl[SelectedIndex].Content);
-            //DoubleAnimation fadeAnimation;
-            //if (view.IsJourneyVisible)
-            //{
-            //    fadeAnimation = new DoubleAnimation
-            //    {
-            //        From = 0.55,
-            //        To = 0,
-            //        Duration = TimeSpan.FromSeconds(2)
-            //    };
-            //}
-            //else
-            //{
-            //    fadeAnimation = new DoubleAnimation
-            //    {
-            //        From = 0,
-            //        To = 0.55,
-            //        Duration = TimeSpan.FromSeconds(2)
-            //    };
-            //}
-
-            //var c = (_webView2Tabs[SelectedIndex].FindDescendantByName("ButtonBar") as Border);
-            //c?.BeginAnimation(DropShadowEffect.OpacityProperty, fadeAnimation);
-
-            //await view.ToggleJourney();
-        }
-
-
-
-        private void LogMsg(string msg, bool includeTimestamp = true)
-        {
-            if (includeTimestamp)
-                msg = $"{DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff")} - {msg}";
-
-            Debug.WriteLine(msg);
-        }
-
-
-
-        private void RemoveTab(int index)
-        {
             //if (index >= 0 && index < _webView2Tabs.Count)
             //{
             //    JourneyWebView2 wv = (JourneyWebView2)_webView2Tabs[index].Content;
@@ -327,10 +260,12 @@ namespace JourneyBrowser
             //    LogMsg($"Invalid index: {index}; _webView2Tabs.Count: {_webView2Tabs.Count}");
             //}
         }
-
-
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private BrowserTab CreateTab(string address)
         {
+            var tab = new BrowserTab(address);
+            Tabs.Add(tab);
+            return tab;
+
             //if (_webView2Tabs.Count > 0)
             //{
             //    //get instance of WebView2 from last tab
@@ -347,62 +282,62 @@ namespace JourneyBrowser
             //    CreateTab(HomePage);
             //}
         }
-
-
-        private async void CoreWebView2_NewWindowRequested(object? sender, CoreWebView2NewWindowRequestedEventArgs e)
+        private void ExecutedBackCommand(object sender, ExecutedRoutedEventArgs e)
+        { }
+        private void ExecutedCloseTabCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            e.Handled = true;
-
-            CreateTab(e.Uri);
+            if (e.Parameter is BrowserTab tab)
+            {
+                CloseTab(tab);
+            }
         }
-
-        private void Hyperlink_Click(object sender, RoutedEventArgs e)
+        private void ExecutedForwardCommand(object sender, ExecutedRoutedEventArgs e)
+        { }
+        private void ExecutedHomeCommand(object sender, ExecutedRoutedEventArgs e)
+        { }
+        private void ExecutedJourneyCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            //Hyperlink hyperlink = (Hyperlink)sender;
-
-            //LogMsg($"Hyperlink_Click - name: {hyperlink.Name}");
-
-            //string hyperLinkNumStr = hyperlink.Name.Substring(hyperlink.Name.IndexOf("_") + 1);
-            //int hyperLinkNum = 0;
-
-            ////try to convert to int
-            //Int32.TryParse(hyperLinkNumStr, out hyperLinkNum);
-
-            //int index = 0;
-
-            ////it's possible that an 'X' was clicked on a tab that wasn't selected
-            ////since both the tab name and hyperlink name end with the same number,
-            ////get the number from the hyperlink name and use that to find the matching 
-            ////tab name
-            //for (int i = 0; i < _webView2Tabs.Count; i++)
+            //var view = ((JourneyWebView2)BrowserTabControl[SelectedIndex].Content);
+            //DoubleAnimation fadeAnimation;
+            //if (view.IsJourneyVisible)
             //{
-            //    TabItem item = _webView2Tabs[i];
-
-            //    if (item.Name == $"tab_{hyperLinkNum}")
+            //    fadeAnimation = new DoubleAnimation
             //    {
-            //        index = i;
-            //        break;
-            //    }
+            //        From = 0.55,
+            //        To = 0,
+            //        Duration = TimeSpan.FromSeconds(2)
+            //    };
+            //}
+            //else
+            //{
+            //    fadeAnimation = new DoubleAnimation
+            //    {
+            //        From = 0,
+            //        To = 0.55,
+            //        Duration = TimeSpan.FromSeconds(2)
+            //    };
             //}
 
-            ////set selected index
-            ////BrowserTabs.SelectedIndex = index;
+            //var c = (_webView2Tabs[SelectedIndex].FindDescendantByName("ButtonBar") as Border);
+            //c?.BeginAnimation(DropShadowEffect.OpacityProperty, fadeAnimation);
 
-            //RemoveTab(index);
+            //await view.ToggleJourney();
         }
-
-        private void Window_Closing(object sender, CancelEventArgs e)
+        private void ExecutedNewTabCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            //if (_webView2Tabs != null && _webView2Tabs.Count > 0)
-            //{
-            //    for (int i = 0; i < _webView2Tabs.Count - 1; i++)
-            //    {
-            //        //remove all tabs which will dispose of each WebView2
-            //        RemoveTab(i);
-            //    }
-            //}
+            var newTab = CreateTab(HomePage);
+            BrowserTabControl.SelectedItem = newTab;
+        }
+        private void ExecutedRefreshCommand(object sender, ExecutedRoutedEventArgs e)
+        { }
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        #endregion
+
+        #endregion
 
 
         void OnLoaded(object sender, RoutedEventArgs e)
@@ -442,23 +377,6 @@ namespace JourneyBrowser
             {
                 RefreshDarkMode();
             }
-        }
-
-        private void ButtonDarkMode_Click(object sender, RoutedEventArgs e)
-        {
-            //var view = ((JourneyWebView2)_webView2Tabs[SelectedIndex].Content);
-            //switch (view.PreferredColorScheme)
-            //{
-            //    case CoreWebView2PreferredColorScheme.Auto:
-            //        view.PreferredColorScheme = CoreWebView2PreferredColorScheme.Light;
-            //        break;
-            //    case CoreWebView2PreferredColorScheme.Light:
-            //        view.PreferredColorScheme = CoreWebView2PreferredColorScheme.Dark;
-            //        break;
-            //    case CoreWebView2PreferredColorScheme.Dark:
-            //        view.PreferredColorScheme = CoreWebView2PreferredColorScheme.Auto;
-            //        break;
-            //}
         }
     }
 }
