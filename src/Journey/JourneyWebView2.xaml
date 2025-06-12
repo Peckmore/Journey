@@ -169,7 +169,8 @@
             <!-- This is where "Journey Steps" are presented -->
             <Canvas x:Name="JourneyCanvas"
                     Background="Transparent"
-                    Focusable="True">
+                    Focusable="True"
+                    FocusVisualStyle="{x:Null}">
 
                 <Canvas.RenderTransform>
                     <TransformGroup>
