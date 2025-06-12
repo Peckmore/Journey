@@ -278,7 +278,7 @@
                      DefaultBackgroundColor="{Binding DefaultBackgroundColor, RelativeSource={RelativeSource AncestorType=local:JourneyWebView2}, Mode=TwoWay}"
                      DesignModeForegroundColor="{Binding DesignModeForegroundColor, RelativeSource={RelativeSource AncestorType=local:JourneyWebView2}, Mode=TwoWay}"
                      Source="{Binding Source, RelativeSource={RelativeSource AncestorType=local:JourneyWebView2}, Mode=TwoWay}"
-                     ZoomFactor="{Binding ZoomFactor, RelativeSource={RelativeSource AncestorType=local:JourneyWebView2}, Mode=TwoWay}"/>
+                     ZoomFactor="{Binding ZoomFactor, RelativeSource={RelativeSource AncestorType=local:JourneyWebView2}, Mode=TwoWay}" />
 
     </Grid>
 

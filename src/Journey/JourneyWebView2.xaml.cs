@@ -63,6 +63,7 @@ namespace Journey
 
         private static readonly DependencyPropertyKey CanGoBackPropertyKey = DependencyProperty.RegisterReadOnly(nameof(CanGoBack), typeof(bool), typeof(JourneyWebView2), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.None));
         private static readonly DependencyPropertyKey CanGoForwardPropertyKey = DependencyProperty.RegisterReadOnly(nameof(CanGoForward), typeof(bool), typeof(JourneyWebView2), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.None));
+        private static readonly DependencyPropertyKey CanShowJourneyPropertyKey = DependencyProperty.RegisterReadOnly(nameof(CanShowJourney), typeof(bool), typeof(JourneyWebView2), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.None));
 
         #endregion
 
@@ -80,6 +81,10 @@ namespace Journey
         /// The WPF <see cref="DependencyProperty" /> which backs the <see cref="CanGoForward" /> property.
         /// </summary>
         public static readonly DependencyProperty CanGoForwardProperty = CanGoForwardPropertyKey.DependencyProperty;
+        /// <summary>
+        /// The WPF <see cref="DependencyProperty" /> which backs the <see cref="CanShowJourney" /> property.
+        /// </summary>
+        public static readonly DependencyProperty CanShowJourneyProperty = CanShowJourneyPropertyKey.DependencyProperty;
         /// <summary>
         /// The WPF <see cref="DependencyProperty" /> which backs the <see cref="CreationProperties" /> property.
         /// </summary>
@@ -172,6 +177,11 @@ namespace Journey
             _lastMouseDownPosition = new(0, 0);
             _lastMousePosition = new(0, 0);
 
+            // Subscribe to the WebView2 events for our own purposes. We register our events first, then the "pass-through" events.
+            WebView.CoreWebView2InitializationCompleted += WebView_CoreWebView2InitializationCompleted;
+            WebView.NavigationCompleted += WebView_NavigationCompleted;
+            WebView.NavigationStarting += WebView_NavigationStarting;
+
             // Wire up our WebView2 events to "pass-through".
             WebView.ContentLoading += (_, args) => { ContentLoading?.Invoke(this, args); };
             WebView.CoreWebView2InitializationCompleted += (_, args) => { CoreWebView2InitializationCompleted?.Invoke(this, args); };
@@ -180,9 +190,6 @@ namespace Journey
             WebView.SourceChanged += (_, args) => { SourceChanged?.Invoke(this, args); };
             WebView.WebMessageReceived += (_, args) => { WebMessageReceived?.Invoke(this, args); };
             WebView.ZoomFactorChanged += (_, args) => { ZoomFactorChanged?.Invoke(this, args); };
-
-            // Subscribe to the initialization completed event.
-            WebView.CoreWebView2InitializationCompleted += WebView_CoreWebView2InitializationCompleted;
 
             // The size of Journey "steps" is calculated as a division of the primary monitor resolution. We're keeping this simple for
             // now and just covering the scenarios of either a single monitor, or multiple monitors of the same resolution. Monitors with
@@ -231,6 +238,16 @@ namespace Journey
         {
             get => (bool)GetValue(CanGoForwardProperty);
             private set => SetValue(CanGoForwardPropertyKey, value);
+        }
+        /// <summary>
+        /// Indicates whether the <see cref="JourneyWebView2"/> instance is able to show Journey.
+        /// </summary>
+        /// <returns><see langword="true"/> if Journey can be shown; otherwise <see langword="false"/></returns>
+        [Browsable(false)]
+        public bool CanShowJourney
+        {
+            get => (bool)GetValue(CanShowJourneyProperty);
+            private set => SetValue(CanShowJourneyPropertyKey, value);
         }
         /// <inheritdoc />
         [Browsable(false)]
@@ -501,6 +518,14 @@ namespace Journey
             WebView.CoreWebView2InitializationCompleted -= WebView_CoreWebView2InitializationCompleted;
             WebView.CoreWebView2.HistoryChanged += CoreWebView2_HistoryChanged;
         }
+        private void WebView_NavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
+        {
+            CanShowJourney = true;
+        }
+        private void WebView_NavigationStarting(object? sender, CoreWebView2NavigationStartingEventArgs e)
+        {
+            CanShowJourney = false;
+        }
 
         #endregion
 
@@ -510,12 +535,12 @@ namespace Journey
         {
             // Set a flag to indicate whether we should use dark mode.
             var isDark = false;
-            if (CoreWebView2.Profile.PreferredColorScheme == CoreWebView2PreferredColorScheme.Dark)
+            if (CoreWebView2?.Profile.PreferredColorScheme == CoreWebView2PreferredColorScheme.Dark)
             {
                 // If the WebView2 profile is set to dark mode, we'll use that.
                 isDark = true;
             }
-            else if (CoreWebView2.Profile.PreferredColorScheme == CoreWebView2PreferredColorScheme.Auto)
+            else if (CoreWebView2?.Profile.PreferredColorScheme == CoreWebView2PreferredColorScheme.Auto)
             {
                 // If the WebView2 profile is set to auto, we'll check the registry to see whether the app should be in light or dark mode.
                 using (var themeRegistryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
