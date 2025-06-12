@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace JourneyBrowser.Resources.Strings {
+namespace JourneyBrowser.Resources {
     using System;
     
     
@@ -22,7 +22,7 @@ namespace JourneyBrowser.Resources.Strings {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Strings {
+    public class Strings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,10 +36,10 @@ namespace JourneyBrowser.Resources.Strings {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("JourneyBrowser.Resources.Strings.Strings", typeof(Strings).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("JourneyBrowser.Resources.Strings", typeof(Strings).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +51,7 @@ namespace JourneyBrowser.Resources.Strings {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,16 +63,25 @@ namespace JourneyBrowser.Resources.Strings {
         /// <summary>
         ///   Looks up a localized string similar to Show the previous page (Alt+Left Arrow).
         /// </summary>
-        internal static string Back {
+        public static string Back {
             get {
                 return ResourceManager.GetString("Back", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Close Tab (Ctrl+F4).
+        /// </summary>
+        public static string CloseTab {
+            get {
+                return ResourceManager.GetString("CloseTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show the next page (Alt+Right Arrow).
         /// </summary>
-        internal static string Forward {
+        public static string Forward {
             get {
                 return ResourceManager.GetString("Forward", resourceCulture);
             }
@@ -81,18 +90,36 @@ namespace JourneyBrowser.Resources.Strings {
         /// <summary>
         ///   Looks up a localized string similar to Home (Alt+Home).
         /// </summary>
-        internal static string Home {
+        public static string Home {
             get {
                 return ResourceManager.GetString("Home", resourceCulture);
             }
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show the current journey (Alt+J).
+        /// </summary>
+        public static string Journey {
+            get {
+                return ResourceManager.GetString("Journey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reload the page (Ctrl+R).
         /// </summary>
-        internal static string Refresh {
+        public static string Refresh {
             get {
                 return ResourceManager.GetString("Refresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open application menu.
+        /// </summary>
+        public static string Settings {
+            get {
+                return ResourceManager.GetString("Settings", resourceCulture);
             }
         }
     }

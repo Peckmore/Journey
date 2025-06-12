@@ -120,13 +120,22 @@
   <data name="Back" xml:space="preserve">
     <value>Show the previous page (Alt+Left Arrow)</value>
   </data>
+  <data name="CloseTab" xml:space="preserve">
+    <value>Close Tab (Ctrl+F4)</value>
+  </data>
   <data name="Forward" xml:space="preserve">
     <value>Show the next page (Alt+Right Arrow)</value>
   </data>
   <data name="Home" xml:space="preserve">
     <value>Home (Alt+Home)</value>
   </data>
+  <data name="Journey" xml:space="preserve">
+    <value>Show the current journey (Alt+J)</value>
+  </data>
   <data name="Refresh" xml:space="preserve">
     <value>Reload the page (Ctrl+R)</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Open application menu</value>
   </data>
 </root>

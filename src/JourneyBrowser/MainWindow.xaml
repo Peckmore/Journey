@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:JourneyBrowser"
         xmlns:converters="clr-namespace:JourneyBrowser.Converters"
         xmlns:models="clr-namespace:JourneyBrowser.Models"
+        xmlns:resources="clr-namespace:JourneyBrowser.Resources"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
         x:Class="JourneyBrowser.MainWindow"
@@ -407,8 +408,8 @@
                                             <Button x:Name="HomeButton"
                                                     Grid.Column="0"
                                                     Command="{x:Static local:MainWindow.HomeCommand}"
-                                                    Style="{StaticResource ButtonStyle}" >
-                                                <!-- ToolTip="{x:Static resources:Strings.Home}"> -->
+                                                    Style="{StaticResource ButtonStyle}"
+                                                    ToolTip="{x:Static resources:Strings.Home}">
 
                                                 <Image Source="{DynamicResource HomeImage}"
                                                        Style="{StaticResource ButtonImageStyle}" />
@@ -429,7 +430,8 @@
                                             <Button x:Name="BackButton"
                                                     Grid.Column="4"
                                                     Command="{Binding BackCommand}"
-                                                    Style="{StaticResource ButtonStyle}" >
+                                                    Style="{StaticResource ButtonStyle}"
+                                                    ToolTip="{x:Static resources:Strings.Back}">
 
                                                 <Image Source="{DynamicResource BackImage}"
                                                        Style="{StaticResource ButtonImageStyle}" />
@@ -440,7 +442,8 @@
                                             <Button x:Name="JourneyButton"
                                                     Grid.Column="6"
                                                     Command="{Binding ElementName=WindowRoot, Path=JourneyCommand}"
-                                                    Style="{StaticResource ButtonStyle}" >
+                                                    Style="{StaticResource ButtonStyle}"
+                                                    ToolTip="{x:Static resources:Strings.Journey}">
 
                                                 <Image Source="{DynamicResource JourneyImage}"
                                                        Style="{StaticResource ButtonImageStyle}" />
@@ -451,7 +454,8 @@
                                             <Button x:Name="ForwardButton"
                                                     Grid.Column="8"
                                                     Command="{Binding ForwardCommand}"
-                                                    Style="{StaticResource ButtonStyle}" >
+                                                    Style="{StaticResource ButtonStyle}"
+                                                    ToolTip="{x:Static resources:Strings.Forward}">
 
                                                 <Image Source="{DynamicResource ForwardImage}"
                                                        Style="{StaticResource ButtonImageStyle}" />
@@ -462,7 +466,8 @@
                                             <Button x:Name="RefreshButton"
                                                     Grid.Column="10"
                                                     Command="{x:Static local:MainWindow.RefreshCommand}"
-                                                    Style="{StaticResource ButtonStyle}" >
+                                                    Style="{StaticResource ButtonStyle}"
+                                                    ToolTip="{x:Static resources:Strings.Refresh}">
 
                                                 <Image Source="{DynamicResource RefreshImage}"
                                                        Style="{StaticResource ButtonImageStyle}" />
@@ -485,7 +490,8 @@
                                         <Button x:Name="SettingsButton"
                                                 Grid.Column="2"
                                                 HorizontalAlignment="Right"
-                                                Style="{StaticResource ButtonStyle}" >
+                                                Style="{StaticResource ButtonStyle}"
+                                                ToolTip="{x:Static resources:Strings.Settings}">
 
                                             <Button.ContextMenu>
                                                 <ContextMenu Name="SettingsButtonMenu">
@@ -644,7 +650,7 @@
                                 Margin="3,0,0,0"
                                 Padding="0"
                                 Style="{StaticResource ButtonStyle}"
-                                ToolTip="Close Tab"
+                                ToolTip="{x:Static resources:Strings.CloseTab}"
                                 VerticalAlignment="Center"
                                 Width="16" />
 
