@@ -1,4 +1,6 @@
-﻿using JourneyBrowser.Interop;
+﻿using CommunityToolkit.Mvvm.Input;
+using Journey;
+using JourneyBrowser.Interop;
 using JourneyBrowser.Models;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
@@ -15,7 +17,7 @@ using System.Windows.Media;
 
 namespace JourneyBrowser
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         #region Constants
 
@@ -29,7 +31,6 @@ namespace JourneyBrowser
 
         private CoreWebView2PreferredColorScheme _colorScheme;
         private bool _isDarkMode;
-        private int _selectedIndex;
         private BrowserTab? _selectedTab;
 
         #endregion
@@ -37,25 +38,13 @@ namespace JourneyBrowser
         #region Public Static
 
         /// <summary>
-        /// Command to navigate the current tab back one step in it's session history.
-        /// </summary>
-        public static readonly ICommand BackCommand = new RoutedCommand();
-        /// <summary>
         /// Command to close a browsing tab.
         /// </summary>
         public static readonly ICommand CloseTabCommand = new RoutedCommand();
         /// <summary>
-        /// Command to navigate the current tab forward one step in it's session history.
-        /// </summary>
-        public static readonly ICommand ForwardCommand = new RoutedCommand();
-        /// <summary>
         /// Command to navigate the current tab to the Home page.
         /// </summary>
         public static readonly ICommand HomeCommand = new RoutedCommand();
-        /// <summary>
-        /// Command to open the Journey view for the current tab.
-        /// </summary>
-        public static readonly ICommand JourneyCommand = new RoutedCommand();
         /// <summary>
         /// Command to create a new browsing tab.
         /// </summary>
@@ -71,6 +60,7 @@ namespace JourneyBrowser
 
         #region Events
 
+        /// <inheritdoc />
         public event PropertyChangedEventHandler? PropertyChanged;
 
         #endregion
@@ -82,6 +72,11 @@ namespace JourneyBrowser
             // Set fields and properties
             _colorScheme = CoreWebView2PreferredColorScheme.Auto;
             Tabs = new();
+
+            // Wire up our commands
+            BackCommand = new RelayCommand(ExecutedBackCommand, CanExecuteBackCommand);
+            ForwardCommand = new RelayCommand(ExecutedForwardCommand, CanExecuteForwardCommand);
+            JourneyCommand = new RelayCommand(ExecutedJourneyCommand, CanExecuteJourneyCommand);
 
             // Initialize window.
             InitializeComponent();
@@ -96,22 +91,28 @@ namespace JourneyBrowser
 
         #region Properties
 
-        public int SelectedIndex
-        {
-            get => _selectedIndex;
-            set
-            {
-                _selectedIndex = value;
-                OnPropertyChanged();
-            }
-        }
+        /// <summary>
+        /// Command to navigate the current tab back one step in it's session history.
+        /// </summary>
+        public IRelayCommand BackCommand { get; }
+        /// <summary>
+        /// Command to navigate the current tab forward one step in it's session history.
+        /// </summary>
+        public IRelayCommand ForwardCommand { get; }
+        /// <summary>
+        /// Command to open the Journey view for the current tab.
+        /// </summary>
+        public IRelayCommand JourneyCommand { get; }
         public BrowserTab? SelectedTab
         {
             get => _selectedTab;
             set
             {
-                _selectedTab = value;
-                OnPropertyChanged();
+                if (_selectedTab != value)
+                {
+                    _selectedTab = value;
+                    OnPropertyChanged();
+                }
             }
         }
         public ObservableCollection<BrowserTab> Tabs { get; }
@@ -122,32 +123,53 @@ namespace JourneyBrowser
 
         #region Event Handlers
 
-        private void WebView2_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
-        {
-            if (sender is IWebView2 webView2)
-            {
-                webView2.CoreWebView2InitializationCompleted -= WebView2_CoreWebView2InitializationCompleted;
-                webView2.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
-            }
-        }
-        private void AddressBar_OnGotFocus(object sender, RoutedEventArgs e)
+        private void AddressBar_GotFocus(object sender, RoutedEventArgs e)
         {
             if (sender is TextBox textBox)
             {
                 textBox.SelectAll();
             }
         }
-        private void CoreWebView2_NewWindowRequested(object? sender, CoreWebView2NewWindowRequestedEventArgs e)
+        private void AddressBar_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                if (sender is TextBox textBox)
+                {
+                    var binding = textBox.GetBindingExpression(TextBox.TextProperty);
+                    if (binding != null)
+                    {
+                        binding.UpdateSource();
+                    }
+                    BrowserTabControl.Focus();
+                }
+            }
+        }
+        private void WebView_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
+        {
+            if (sender is IWebView2 webView2)
+            {
+                webView2.CoreWebView2InitializationCompleted -= WebView_CoreWebView2InitializationCompleted;
+                webView2.CoreWebView2.NewWindowRequested += WebView_NewWindowRequested;
+            }
+        }
+        private void WebView_Navigation(object? sender, EventArgs e)
+        {
+            if (sender is JourneyWebView2 { DataContext: BrowserTab tabViewModel } webView)
+            {
+                tabViewModel.CanGoBack = webView.CanGoBack;
+                tabViewModel.CanGoForward = webView.CanGoForward;
+                tabViewModel.CanShowJourney = webView.CanShowJourney;
+                tabViewModel.Title = webView.CoreWebView2.DocumentTitle;
+                BackCommand.NotifyCanExecuteChanged();
+                ForwardCommand.NotifyCanExecuteChanged();
+                JourneyCommand.NotifyCanExecuteChanged();
+            }
+        }
+        private void WebView_NewWindowRequested(object? sender, CoreWebView2NewWindowRequestedEventArgs e)
         {
             e.Handled = true;
             CreateTab(e.Uri);
-        }
-        private void Window_Closing(object sender, CancelEventArgs e)
-        {
-            for (var i = Tabs.Count - 1; i >= 0; i--)
-            {
-                CloseTab(Tabs[i]);
-            }
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -200,90 +222,45 @@ namespace JourneyBrowser
                 Resources.MergedDictionaries.Add(themeDictionary);
             }
         }
-        private void CanExecuteBackCommand(object sender, CanExecuteRoutedEventArgs e)
-        { }
-        private void CanExecuteForwardCommand(object sender, CanExecuteRoutedEventArgs e)
-        { }
-        private void CanExecuteJourneyCommand(object sender, CanExecuteRoutedEventArgs e)
-        { }
+        private bool CanExecuteBackCommand()
+        {
+            return SelectedTab?.CanGoBack ?? false;
+        }
+        private bool CanExecuteForwardCommand()
+        {
+            return SelectedTab?.CanGoForward ?? false;
+        }
+        private bool CanExecuteJourneyCommand()
+        {
+            return SelectedTab?.CanShowJourney ?? false;
+        }
         private void CloseTab(BrowserTab tab)
         {
             if (Tabs.Contains(tab))
             {
-                if (SelectedIndex > 0)
+                var selectedIndex = Tabs.IndexOf(tab);
+                if (selectedIndex > 0)
                 {
-                    SelectedIndex--;
+                    SelectedTab = Tabs[selectedIndex- 1];
                 }
-                else if (SelectedIndex == 0 && Tabs.Count > 1)
+                else if (selectedIndex == 0 && Tabs.Count > 1)
                 {
-                    SelectedIndex++;
+                    SelectedTab = Tabs[selectedIndex + 1];
                 }
 
                 Tabs.Remove(tab);
             }
-
-            //if (index >= 0 && index < _webView2Tabs.Count)
-            //{
-            //    JourneyWebView2 wv = (JourneyWebView2)_webView2Tabs[index].Content;
-
-            //    //get userDataFolder location
-            //    string userDataFolder = wv.CoreWebView2.Environment.UserDataFolder;
-            //    //string userDataFolder = wv.WebView2.CreationProperties.UserDataFolder;
-
-            //    //unsubscribe from event(s)
-            //    wv.CoreWebView2.NewWindowRequested -= CoreWebView2_NewWindowRequested;
-
-            //    //get process
-            //    var wvProcess = Process.GetProcessById((int)wv.CoreWebView2.BrowserProcessId);
-
-            //    //dispose
-            //    wv.Dispose();
-
-            //    //TabItem item = _webView2Tabs[index];
-            //    LogMsg($"Removing {_webView2Tabs[index].Name}");
-
-            //    //remove
-            //    _webView2Tabs.RemoveAt(index);
-
-            //    //wait for WebView2 process to exit
-            //    //wvProcess.WaitForExit();
-
-            //    ////for security purposes, delete userDataFolder
-            //    //if (!String.IsNullOrEmpty(userDataFolder) && System.IO.Directory.Exists(userDataFolder))
-            //    //{
-            //    //    System.IO.Directory.Delete(userDataFolder, true);
-            //    //    LogMsg($"UserDataFolder '{userDataFolder}' deleted.");
-            //    //}
-            //}
-            //else
-            //{
-            //    LogMsg($"Invalid index: {index}; _webView2Tabs.Count: {_webView2Tabs.Count}");
-            //}
         }
-        private BrowserTab CreateTab(string address)
+        private void CreateTab(string address)
         {
-            var tab = new BrowserTab(address);
-            Tabs.Add(tab);
-            return tab;
-
-            //if (_webView2Tabs.Count > 0)
-            //{
-            //    //get instance of WebView2 from last tab
-            //    JourneyWebView2 wv = (JourneyWebView2)_webView2Tabs[_webView2Tabs.Count - 1].Content;
-
-            //    //if CoreWebView2 hasn't finished initializing, it will be null
-            //    if (wv.CoreWebView2?.BrowserProcessId > 0)
-            //    {
-            //        await wv.CoreWebView2.ExecuteScriptAsync($@"window.open('{HomePage}', '_blank');");
-            //    }
-            //}
-            //else
-            //{
-            //    CreateTab(HomePage);
-            //}
+            var newTab = new BrowserTab(address);
+            Tabs.Add(newTab);
+            BrowserTabControl.SelectedItem = newTab;
         }
-        private void ExecutedBackCommand(object sender, ExecutedRoutedEventArgs e)
-        { }
+        private void ExecutedBackCommand()
+        {
+            GetCurrentWebView()?.GoBack();
+        }
         private void ExecutedCloseTabCommand(object sender, ExecutedRoutedEventArgs e)
         {
             if (e.Parameter is BrowserTab tab)
@@ -291,45 +268,61 @@ namespace JourneyBrowser
                 CloseTab(tab);
             }
         }
-        private void ExecutedForwardCommand(object sender, ExecutedRoutedEventArgs e)
-        { }
-        private void ExecutedHomeCommand(object sender, ExecutedRoutedEventArgs e)
-        { }
-        private void ExecutedJourneyCommand(object sender, ExecutedRoutedEventArgs e)
+        private void ExecutedForwardCommand()
         {
-            //var view = ((JourneyWebView2)BrowserTabControl[SelectedIndex].Content);
-            //DoubleAnimation fadeAnimation;
-            //if (view.IsJourneyVisible)
-            //{
-            //    fadeAnimation = new DoubleAnimation
-            //    {
-            //        From = 0.55,
-            //        To = 0,
-            //        Duration = TimeSpan.FromSeconds(2)
-            //    };
-            //}
-            //else
-            //{
-            //    fadeAnimation = new DoubleAnimation
-            //    {
-            //        From = 0,
-            //        To = 0.55,
-            //        Duration = TimeSpan.FromSeconds(2)
-            //    };
-            //}
-
-            //var c = (_webView2Tabs[SelectedIndex].FindDescendantByName("ButtonBar") as Border);
-            //c?.BeginAnimation(DropShadowEffect.OpacityProperty, fadeAnimation);
-
-            //await view.ToggleJourney();
+            GetCurrentWebView()?.GoForward();
+        }
+        private void ExecutedHomeCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (GetCurrentWebView() is { } webView)
+            {
+                webView.Source = new(HomePage);
+            }
+        }
+        private async void ExecutedJourneyCommand()
+        {
+            if (GetCurrentWebView() is JourneyWebView2 webView)
+            {
+                await webView.ToggleJourney();
+            }
         }
         private void ExecutedNewTabCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            var newTab = CreateTab(HomePage);
-            BrowserTabControl.SelectedItem = newTab;
+            CreateTab(HomePage);
         }
         private void ExecutedRefreshCommand(object sender, ExecutedRoutedEventArgs e)
-        { }
+        {
+            GetCurrentWebView()?.Reload();
+        }
+        private T? FindVisualChild<T>(DependencyObject obj)
+            where T : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(obj, i);
+                if (child != null && child is T)
+                {
+                    return (T)child;
+                }
+                else
+                {
+                    T childOfChild = FindVisualChild<T>(child);
+                    if (childOfChild != null)
+                        return childOfChild;
+                }
+            }
+            return null;
+        }
+        private IWebView2? GetCurrentWebView()
+        {
+            if (BrowserTabControl.ItemContainerGenerator.ContainerFromItem(BrowserTabControl.SelectedItem) is { } tabItem)
+            {
+                var webView = FindVisualChild<JourneyWebView2>(BrowserTabControl);
+                return webView;
+            }
+
+            return null;
+        }
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -378,5 +371,6 @@ namespace JourneyBrowser
                 RefreshDarkMode();
             }
         }
+
     }
 }

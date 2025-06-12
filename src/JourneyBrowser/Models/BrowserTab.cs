@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace JourneyBrowser.Models
 {
@@ -7,6 +8,9 @@ namespace JourneyBrowser.Models
         #region Fields
 
         private string _address;
+        private bool _canGoBack;
+        private bool _canGoForward;
+        private bool _canShowJourney;
         private string _title;
 
         #endregion
@@ -37,9 +41,43 @@ namespace JourneyBrowser.Models
                 if (_address != value)
                 {
                     _address = value;
-                    OnPropertyChanged(nameof(Address));
-
-                    Title = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public bool CanGoBack
+        {
+            get => _canGoBack;
+            set
+            {
+                if (_canGoBack != value)
+                {
+                    _canGoBack = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public bool CanGoForward
+        {
+            get => _canGoForward;
+            set
+            {
+                if (_canGoForward != value)
+                {
+                    _canGoForward = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public bool CanShowJourney
+        {
+            get => _canShowJourney;
+            set
+            {
+                if (_canShowJourney != value)
+                {
+                    _canShowJourney = value;
+                    OnPropertyChanged();
                 }
             }
         }
@@ -51,7 +89,7 @@ namespace JourneyBrowser.Models
                 if (_title != value)
                 {
                     _title = value;
-                    OnPropertyChanged(nameof(Title));
+                    OnPropertyChanged();
                 }
             }
         }
@@ -60,10 +98,14 @@ namespace JourneyBrowser.Models
 
         #region Methods
 
-        private void OnPropertyChanged(string propertyName)
+        #region Private
+
+        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        #endregion
 
         #endregion
     }

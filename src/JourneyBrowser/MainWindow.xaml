@@ -2,16 +2,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:journey="clr-namespace:Journey;assembly=Journey"
         xmlns:local="clr-namespace:JourneyBrowser"
         xmlns:converters="clr-namespace:JourneyBrowser.Converters"
         xmlns:models="clr-namespace:JourneyBrowser.Models"
-        xmlns:wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
         x:Class="JourneyBrowser.MainWindow"
         x:Name="WindowRoot"
         Background="Transparent"
-        Closing="Window_Closing"
         Height="720"
         Loaded="Window_Loaded"
         MinHeight="295"
@@ -28,23 +27,11 @@
 
     <Window.CommandBindings>
 
-        <CommandBinding Command="{x:Static local:MainWindow.BackCommand}"
-                        Executed="ExecutedBackCommand"
-                        CanExecute="CanExecuteBackCommand" />
-
         <CommandBinding Command="{x:Static local:MainWindow.CloseTabCommand}"
                         Executed="ExecutedCloseTabCommand" />
 
-        <CommandBinding Command="{x:Static local:MainWindow.ForwardCommand}"
-                        Executed="ExecutedForwardCommand"
-                        CanExecute="CanExecuteForwardCommand" />
-
         <CommandBinding Command="{x:Static local:MainWindow.HomeCommand}"
                         Executed="ExecutedHomeCommand" />
-
-        <CommandBinding Command="{x:Static local:MainWindow.JourneyCommand}"
-                        Executed="ExecutedJourneyCommand"
-                        CanExecute="CanExecuteJourneyCommand" />
 
         <CommandBinding Command="{x:Static local:MainWindow.NewTabCommand}"
                         Executed="ExecutedNewTabCommand" />
@@ -58,7 +45,7 @@
 
         <KeyBinding Key="Left"
                     Modifiers="Alt"
-                    Command="{x:Static local:MainWindow.BackCommand}" />
+                    Command="{Binding ElementName=WindowRoot, Path=BackCommand}" />
 
         <KeyBinding Key="F4"
                     Modifiers="Control"
@@ -66,7 +53,7 @@
 
         <KeyBinding Key="Right"
                     Modifiers="Alt"
-                    Command="{x:Static local:MainWindow.ForwardCommand}" />
+                    Command="{Binding ElementName=WindowRoot, Path=ForwardCommand}" />
 
         <KeyBinding Key="Home"
                     Modifiers="Alt"
@@ -74,7 +61,7 @@
 
         <KeyBinding Key="J"
                     Modifiers="Alt"
-                    Command="{x:Static local:MainWindow.JourneyCommand}" />
+                    Command="{Binding ElementName=WindowRoot, Path=JourneyCommand}" />
 
         <KeyBinding Key="T"
                     Modifiers="Control"
@@ -100,6 +87,7 @@
 
             <!-- Converters -->
             <converters:FriendlyUrlConverter x:Key="FriendlyUrlConverter"/>
+            <converters:UrlSearchConverter x:Key="UrlSearchConverter"/>
 
             <!-- Root Grid Style -->
             <!-- Used to set our margin when the window maximises, as we have extended into the window chrome. -->
@@ -118,6 +106,7 @@
 
                     </DataTrigger>
                 </Style.Triggers>
+
             </Style>
 
             <!-- Button Style -->
@@ -207,6 +196,8 @@
 
             </Style>
 
+            <!-- TextBox -->
+            <!-- Explicit style for the address bar. -->
             <Style TargetType="TextBox"
                    x:Key="AddressBarStyle">
 
@@ -324,15 +315,13 @@
                 </Setter>
 
                 <Style.Triggers>
-
                     <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Border}}}"
-                                       Value="True">
+                                 Value="True">
 
                         <Setter Property="Cursor"
                                 Value="IBeam"/>
 
                     </DataTrigger>
-
                 </Style.Triggers>
 
             </Style>
@@ -389,7 +378,7 @@
                                         BorderThickness="0,0,0,1"
                                         Padding="10,6">
 
-                                    <Grid>
+                                    <Grid DataContext="{Binding ElementName=WindowRoot}">
 
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition MinWidth="180" MaxWidth="230" />
@@ -439,7 +428,7 @@
                                             <!-- Back Button -->
                                             <Button x:Name="BackButton"
                                                     Grid.Column="4"
-                                                    Command="{x:Static local:MainWindow.BackCommand}"
+                                                    Command="{Binding BackCommand}"
                                                     Style="{StaticResource ButtonStyle}" >
 
                                                 <Image Source="{DynamicResource BackImage}"
@@ -450,7 +439,7 @@
                                             <!-- Journey Button -->
                                             <Button x:Name="JourneyButton"
                                                     Grid.Column="6"
-                                                    Command="{x:Static local:MainWindow.JourneyCommand}"
+                                                    Command="{Binding ElementName=WindowRoot, Path=JourneyCommand}"
                                                     Style="{StaticResource ButtonStyle}" >
 
                                                 <Image Source="{DynamicResource JourneyImage}"
@@ -461,7 +450,7 @@
                                             <!-- Forward Button -->
                                             <Button x:Name="ForwardButton"
                                                     Grid.Column="8"
-                                                    Command="{x:Static local:MainWindow.ForwardCommand}"
+                                                    Command="{Binding ForwardCommand}"
                                                     Style="{StaticResource ButtonStyle}" >
 
                                                 <Image Source="{DynamicResource ForwardImage}"
@@ -484,10 +473,13 @@
 
                                         <!-- Address Bar -->
                                         <TextBox Name="AddressBar"
-                                                 GotFocus="AddressBar_OnGotFocus"
+                                                 DataContext="{Binding ElementName=WindowRoot}"
+                                                 GotFocus="AddressBar_GotFocus"
                                                  Grid.Column="1"
+                                                 KeyDown="AddressBar_KeyDown"
+                                                 GotKeyboardFocus="AddressBar_GotFocus"
                                                  Style="{StaticResource AddressBarStyle}"
-                                                 Text="{Binding ElementName=WindowRoot, Path=SelectedTab.Address, Mode=TwoWay}" />
+                                                 Text="{Binding SelectedTab.Address, Mode=TwoWay, UpdateSourceTrigger=Explicit, FallbackValue='New Tab'}" />
 
                                         <!-- Settings Button -->
                                         <Button x:Name="SettingsButton"
@@ -632,10 +624,10 @@
     <Grid Style="{StaticResource WindowStyle}">
 
         <TabControl x:Name="BrowserTabControl"
+                    DataContext="{Binding ElementName=WindowRoot}"
                     IsSynchronizedWithCurrentItem="True"
-                    ItemsSource="{Binding ElementName=WindowRoot, Path=Tabs}"
-                    SelectedItem="{Binding ElementName=WindowRoot, Path=SelectedTab, Mode=TwoWay}"
-                    SelectedIndex="{Binding ElementName=WindowRoot, Path=SelectedIndex, Mode=TwoWay}"
+                    ItemsSource="{Binding Tabs}"
+                    SelectedItem="{Binding SelectedTab, Mode=TwoWay}"
                     WindowChrome.IsHitTestVisibleInChrome="True">
 
             <TabControl.ItemTemplate>
@@ -663,8 +655,11 @@
             <TabControl.ContentTemplate>
                 <DataTemplate DataType="{x:Type models:BrowserTab}">
 
-                    <wpf:WebView2 x:Name="WebView"
-                                  Source="{Binding Address, Mode=TwoWay}" />
+                    <journey:JourneyWebView2 x:Name="WebView"
+                                             CoreWebView2InitializationCompleted="WebView_CoreWebView2InitializationCompleted"
+                                             NavigationCompleted="WebView_Navigation"
+                                             NavigationStarting="WebView_Navigation"
+                                             Source="{Binding Address, Mode=TwoWay, FallbackValue=about:blank}" />
 
                 </DataTemplate>
             </TabControl.ContentTemplate>
