@@ -2,7 +2,32 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- Brushes -->
+    <SolidColorBrush x:Key="AddressBarBackgroundNormalBrush" Color="{DynamicResource AddressBarBackgroundNormalColor}" />
+    <SolidColorBrush x:Key="AddressBarBackgroundFocusedBrush" Color="{DynamicResource AddressBarBackgroundFocusedColor}" />
+    
+    <SolidColorBrush x:Key="ButtonCheckedBrush" Color="{DynamicResource ControlCheckedColor}" />
+    <SolidColorBrush x:Key="ButtonHoverBrush" Color="{DynamicResource ControlHoverColor}" />
+    <SolidColorBrush x:Key="ButtonNormalBrush" Color="{DynamicResource ControlNormalColor}" />
+    <SolidColorBrush x:Key="ButtonPressedBrush" Color="{DynamicResource ControlPressedColor}" />
+
     <SolidColorBrush x:Key="HighlightBrush" Color="#FF557FF3" />
+
+    <SolidColorBrush x:Key="MenuItemHoverBrush" Color="{DynamicResource ControlHoverColor}" />
+    <SolidColorBrush x:Key="MenuItemNormalBrush" Color="{DynamicResource ControlNormalColor}" />
+    <SolidColorBrush x:Key="MenuItemPressedBrush" Color="{DynamicResource ControlPressedColor}" />
+
+    <SolidColorBrush x:Key="SeparatorBrush" Color="{DynamicResource SeparatorColor}" />
+
+    <SolidColorBrush x:Key="ShellBrush" Color="{DynamicResource ShellColor}" />
+    
+    <SolidColorBrush x:Key="ShellBorderBrush" Color="{DynamicResource ControlHoverColor}" />
+
+    <SolidColorBrush x:Key="TabActiveBrush" Color="{DynamicResource ShellColor}" />
+    <SolidColorBrush x:Key="TabHoverBrush" Color="{DynamicResource TabHoverColor}" />
+    <SolidColorBrush x:Key="TabInactiveBrush" Color="{DynamicResource TabInactiveColor}" />
+
+    <!-- Colors -->
+    <Color x:Key="ShadowColor">#FFCCCCCC</Color>
 
     <!-- Fonts -->
     <FontFamily x:Key="RobotoRegular">

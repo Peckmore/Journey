@@ -1,19 +1,21 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!-- Brushes -->
-    <SolidColorBrush x:Key="AddressBarBackgroundNormalBrush" Color="#FFF0F0F0" />
-    <SolidColorBrush x:Key="AddressBarBackgroundFocusedBrush" Color="#FFFFFFFF" />
+    <!-- Colors -->
+    <Color x:Key="AddressBarBackgroundNormalColor">#FFF0F0F0</Color>
+    <Color x:Key="AddressBarBackgroundFocusedColor">#FFFFFFFF</Color>
 
-    <SolidColorBrush x:Key="ButtonHoverBrush" Color="#FFE0E0E0" />
-    <SolidColorBrush x:Key="ButtonNormalBrush" Color="Transparent" />
-    <SolidColorBrush x:Key="ButtonPressedBrush" Color="#FFD1D1D1" />
+    <Color x:Key="ControlCheckedColor">#FFBBBBBB</Color>
+    <Color x:Key="ControlHoverColor">#FFE0E0E0</Color>
+    <Color x:Key="ControlNormalColor">Transparent</Color>
+    <Color x:Key="ControlPressedColor">#FFD1D1D1</Color>
 
-    <SolidColorBrush x:Key="SeparatorBrush" Color="#FFDDDDDD" />
+    <Color x:Key="SeparatorColor">#FFDDDDDD</Color>
 
-    <SolidColorBrush x:Key="TabActiveBrush" Color="#FFFFFFFF" />
-    <SolidColorBrush x:Key="TabHoverBrush" Color="#FFCCCCCC" />
-    <SolidColorBrush x:Key="TabInactiveBrush" Color="Transparent" />
+    <Color x:Key="ShellColor">#FFFFFFFF</Color>
+
+    <Color x:Key="TabHoverColor">#FFCCCCCC</Color>
+    <Color x:Key="TabInactiveColor">Transparent</Color>
 
     <!-- Images -->
     <BitmapImage x:Key="BackImage" UriSource="pack://application:,,,/Resources/Images/Light/back.png" />

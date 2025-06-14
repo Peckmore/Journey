@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -143,6 +144,38 @@ namespace JourneyBrowser
                     }
                     BrowserTabControl.Focus();
                 }
+            }
+        }
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is ToggleButton settingsButton)
+            {
+                // Get the context menu for the button.
+                var menu = settingsButton.ContextMenu;
+
+                // Update the positioning for the context menu.
+                menu.PlacementTarget = settingsButton;
+                menu.Placement = PlacementMode.Bottom;
+
+                // Open the context menu.
+                menu.IsOpen = true;
+            }
+        }
+        private void SettingsMenu_Closed(object sender, RoutedEventArgs e)
+        {
+            if (sender is ContextMenu menu && menu.PlacementTarget is ToggleButton button)
+            {
+                // Set our button to not be checked when the menu is closed.
+                button.IsChecked = false;
+            }
+        }
+        private void SettingsMenu_Opened(object sender, RoutedEventArgs e)
+        {
+            if (sender is ContextMenu menu && menu.PlacementTarget is ToggleButton button)
+            {
+                // Align right edge of the menu to the right edge of the button.
+                menu.HorizontalOffset = button.ActualWidth - menu.ActualWidth + 10;
+                menu.VerticalOffset = -10;
             }
         }
         private void WebView_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
@@ -371,6 +404,5 @@ namespace JourneyBrowser
                 RefreshDarkMode();
             }
         }
-
     }
 }

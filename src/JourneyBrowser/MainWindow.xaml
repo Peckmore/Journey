@@ -90,10 +90,10 @@
             <converters:FriendlyUrlConverter x:Key="FriendlyUrlConverter"/>
             <converters:UrlSearchConverter x:Key="UrlSearchConverter"/>
 
-            <!-- Root Grid Style -->
-            <!-- Used to set our margin when the window maximises, as we have extended into the window chrome. -->
-            <Style TargetType="Grid"
-                   x:Key="WindowStyle">
+            <!-- Window Style -->
+            <!-- Used to set the margin when the window maximises, as we have extended into the window chrome. -->
+            <Style x:Key="WindowStyle"
+                   TargetType="Grid">
 
                 <Setter Property="Margin"
                         Value="0" />
@@ -110,13 +110,161 @@
 
             </Style>
 
-            <!-- Button Style -->
-            <!-- Explicit style for all buttons. -->
-            <Style TargetType="Button"
-                   x:Key="ButtonStyle">
+            <!-- Settings Menu Style -->
+            <!-- Explicit style for the settings context menu. -->
+            <Style x:Key="SettingsMenuStyle"
+                   TargetType="ContextMenu">
 
                 <Setter Property="Background"
-                        Value="{DynamicResource ButtonNormalBrush}" />
+                        Value="{StaticResource ShellBrush}"/>
+
+                <Setter Property="BorderBrush"
+                        Value="{StaticResource ShellBorderBrush}"/>
+
+                <Setter Property="BorderThickness"
+                        Value="1"/>
+
+                <Setter Property="OverridesDefaultStyle"
+                        Value="True"/>
+
+                <Setter Property="Padding"
+                        Value="4"/>
+
+                <Setter Property="SnapsToDevicePixels"
+                        Value="True"/>
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ContextMenu">
+
+                            <Border Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="8"
+                                    Margin="10"
+                                    SnapsToDevicePixels="True">
+
+                                <Border.Effect>
+
+                                    <DropShadowEffect BlurRadius="12"
+                                                      Color="{StaticResource ShadowColor}"
+                                                      Direction="315"
+                                                      ShadowDepth="3"/>
+
+                                </Border.Effect>
+
+                                <StackPanel Margin="3"
+                                            IsItemsHost="True"/>
+
+                            </Border>
+
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+            </Style>
+
+            <!-- Settings Menu Item Style -->
+            <!-- Explicit style for the items on the settings context menu. -->
+            <Style x:Key="SettingsMenuItemStyle"
+                   TargetType="MenuItem">
+
+                <Setter Property="Background"
+                        Value="{StaticResource MenuItemNormalBrush}" />
+
+                <Setter Property="BorderThickness"
+                        Value="0"/>
+
+                <Setter Property="FontFamily"
+                        Value="{StaticResource RobotoRegular}" />
+
+                <Setter Property="FontSize"
+                        Value="14"/>
+
+                <Setter Property="MinWidth"
+                        Value="150"/>
+
+                <Setter Property="Padding"
+                        Value="12,6"/>
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="MenuItem">
+
+                            <Border x:Name="Border"
+                                    Background="{TemplateBinding Background}"
+                                    CornerRadius="4">
+
+                                <ContentPresenter ContentSource="Header"
+                                                    Margin="{TemplateBinding Padding}"
+                                                    RecognizesAccessKey="True"
+                                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+
+                            </Border>
+
+                            <ControlTemplate.Triggers>
+
+                                <Trigger Property="IsHighlighted"
+                                         Value="True">
+
+                                    <Setter Property="Control.Background"
+                                            Value="{StaticResource MenuItemHoverBrush}" />
+
+                                </Trigger>
+
+                                <Trigger Property="IsPressed"
+                                         Value="True">
+
+                                    <Setter Property="Control.Background"
+                                            Value="{StaticResource MenuItemPressedBrush}" />
+
+                                </Trigger>
+
+                            </ControlTemplate.Triggers>
+
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- Settings Menu Separator Style -->
+            <!-- Explicit style for the separators on the settings context menu. -->
+            <Style x:Key="SettingsMenuSeparatorStyle"
+                   TargetType="Separator">
+
+                <Setter Property="Margin"
+                        Value="0,2"/>
+
+                <Setter Property="SnapsToDevicePixels"
+                        Value="True"/>
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Separator">
+
+                            <Grid Margin="{TemplateBinding Margin}">
+
+                                <Rectangle Height="1"
+                                           HorizontalAlignment="Stretch"
+                                           Fill="{StaticResource SeparatorBrush}"
+                                           RadiusX="0.5"
+                                           RadiusY="0.5" />
+
+                            </Grid>
+
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+            </Style>
+
+            <!-- Button Bar Button Style -->
+            <!-- Explicit style for buttons on the button bar. -->
+            <Style x:Key="ButtonBarButtonStyle"
+                   TargetType="ButtonBase">
+
+                <Setter Property="Background"
+                        Value="{StaticResource ButtonNormalBrush}" />
 
                 <Setter Property="Height"
                         Value="30" />
@@ -126,17 +274,15 @@
 
                 <Setter Property="Template">
                     <Setter.Value>
-                        <ControlTemplate TargetType="Button">
+                        <ControlTemplate TargetType="ButtonBase">
 
-                            <Border x:Name="ButtonBorder"
-                                    Background="{TemplateBinding Background}"
+                            <Border Background="{TemplateBinding Background}"
                                     BorderBrush="Transparent"
                                     BorderThickness="0"
                                     CornerRadius="3"
                                     SnapsToDevicePixels="true">
 
-                                <ContentPresenter x:Name="contentPresenter"
-                                                  Focusable="False"
+                                <ContentPresenter Focusable="False"
                                                   HorizontalAlignment="Center"
                                                   Margin="0"
                                                   RecognizesAccessKey="True"
@@ -148,18 +294,16 @@
                                 <Trigger Property="IsMouseOver"
                                          Value="true">
 
-                                    <Setter Property="Background"
-                                            TargetName="ButtonBorder"
-                                            Value="{DynamicResource ButtonHoverBrush}" />
+                                    <Setter Property="Control.Background"
+                                            Value="{StaticResource ButtonHoverBrush}" />
 
                                 </Trigger>
 
                                 <Trigger Property="IsPressed"
                                          Value="true">
 
-                                    <Setter Property="Background"
-                                            TargetName="ButtonBorder"
-                                            Value="{DynamicResource ButtonPressedBrush}" />
+                                    <Setter Property="Control.Background"
+                                            Value="{StaticResource ButtonPressedBrush}" />
 
                                 </Trigger>
 
@@ -171,10 +315,30 @@
 
             </Style>
 
-            <!-- Image Style -->
-            <!-- Explicit style for images within buttons. -->
-            <Style TargetType="Image"
-                   x:Key="ButtonImageStyle">
+            <!-- Button Bar ToggleButton Style -->
+            <!-- Explicit style for toggle buttons on the button bar. -->
+            <Style x:Key="ButtonBarToggleButtonStyle"
+                   TargetType="ToggleButton"
+                   BasedOn="{StaticResource ButtonBarButtonStyle}">
+
+                <Style.Triggers>
+
+                    <Trigger Property="IsChecked"
+                             Value="True">
+
+                        <Setter Property="Control.Background"
+                                Value="{StaticResource ButtonCheckedBrush}" />
+
+                    </Trigger>
+
+                </Style.Triggers>
+
+            </Style>
+
+            <!-- Button Bar Button Image Style -->
+            <!-- Explicit style for images within buttons on the button bar. -->
+            <Style x:Key="ButtonBarButtonImageStyle"
+                   TargetType="Image">
 
                 <Setter Property="Height"
                         Value="24" />
@@ -197,10 +361,10 @@
 
             </Style>
 
-            <!-- TextBox -->
+            <!-- Address Bar TextBox -->
             <!-- Explicit style for the address bar. -->
-            <Style TargetType="TextBox"
-                   x:Key="AddressBarStyle">
+            <Style x:Key="AddressBarStyle"
+                   TargetType="TextBox">
 
                 <Setter Property="AllowDrop"
                         Value="true" />
@@ -237,7 +401,7 @@
                         <ControlTemplate TargetType="TextBox">
 
                             <Border Name="TextBoxBorder"
-                                    Background="{DynamicResource AddressBarBackgroundNormalBrush}"
+                                    Background="{StaticResource AddressBarBackgroundNormalBrush}"
                                     BorderBrush="Transparent"
                                     BorderThickness="2"
                                     CornerRadius="6">
@@ -255,7 +419,7 @@
                                                                                Storyboard.TargetProperty="Background">
 
                                                     <DiscreteObjectKeyFrame KeyTime="0"
-                                                                            Value="{DynamicResource AddressBarBackgroundFocusedBrush}" />
+                                                                            Value="{StaticResource AddressBarBackgroundFocusedBrush}" />
 
                                                 </ObjectAnimationUsingKeyFrames>
 
@@ -328,7 +492,7 @@
             </Style>
 
             <!-- TabControl Style -->
-            <!-- Implicit style for our browser tab control. -->
+            <!-- Implicit style for the browser tab control. -->
             <Style TargetType="TabControl">
 
                 <Setter Property="OverridesDefaultStyle"
@@ -374,8 +538,8 @@
                                 <!-- Button Bar -->
                                 <Border x:Name="ButtonBar"
                                         Grid.Row="1"
-                                        Background="White"
-                                        BorderBrush="LightGray"
+                                        Background="{StaticResource ShellBrush}"
+                                        BorderBrush="{StaticResource ShellBorderBrush}"
                                         BorderThickness="0,0,0,1"
                                         Padding="10,6">
 
@@ -408,33 +572,33 @@
                                             <Button x:Name="HomeButton"
                                                     Grid.Column="0"
                                                     Command="{x:Static local:MainWindow.HomeCommand}"
-                                                    Style="{StaticResource ButtonStyle}"
+                                                    Style="{StaticResource ButtonBarButtonStyle}"
                                                     ToolTip="{x:Static resources:Strings.Home}">
 
                                                 <Image Source="{DynamicResource HomeImage}"
-                                                       Style="{StaticResource ButtonImageStyle}" />
+                                                       Style="{StaticResource ButtonBarButtonImageStyle}" />
 
                                             </Button>
 
                                             <!-- Separator -->
                                             <Line Grid.Column="2"
                                                   SnapsToDevicePixels="True"
-                                                  Stroke="{DynamicResource SeparatorBrush}"
+                                                  Stroke="{StaticResource SeparatorBrush}"
                                                   StrokeThickness="1"
                                                   X1="0"
                                                   X2="0"
                                                   Y1="5"
-                                                  Y2="25" />
+                                                  Y2="30" />
 
                                             <!-- Back Button -->
                                             <Button x:Name="BackButton"
                                                     Grid.Column="4"
                                                     Command="{Binding BackCommand}"
-                                                    Style="{StaticResource ButtonStyle}"
+                                                    Style="{StaticResource ButtonBarButtonStyle}"
                                                     ToolTip="{x:Static resources:Strings.Back}">
 
                                                 <Image Source="{DynamicResource BackImage}"
-                                                       Style="{StaticResource ButtonImageStyle}" />
+                                                       Style="{StaticResource ButtonBarButtonImageStyle}" />
 
                                             </Button>
 
@@ -442,11 +606,11 @@
                                             <Button x:Name="JourneyButton"
                                                     Grid.Column="6"
                                                     Command="{Binding ElementName=WindowRoot, Path=JourneyCommand}"
-                                                    Style="{StaticResource ButtonStyle}"
+                                                    Style="{StaticResource ButtonBarButtonStyle}"
                                                     ToolTip="{x:Static resources:Strings.Journey}">
 
                                                 <Image Source="{DynamicResource JourneyImage}"
-                                                       Style="{StaticResource ButtonImageStyle}" />
+                                                       Style="{StaticResource ButtonBarButtonImageStyle}" />
 
                                             </Button>
 
@@ -454,11 +618,11 @@
                                             <Button x:Name="ForwardButton"
                                                     Grid.Column="8"
                                                     Command="{Binding ForwardCommand}"
-                                                    Style="{StaticResource ButtonStyle}"
+                                                    Style="{StaticResource ButtonBarButtonStyle}"
                                                     ToolTip="{x:Static resources:Strings.Forward}">
 
                                                 <Image Source="{DynamicResource ForwardImage}"
-                                                       Style="{StaticResource ButtonImageStyle}" />
+                                                       Style="{StaticResource ButtonBarButtonImageStyle}" />
 
                                             </Button>
 
@@ -466,11 +630,11 @@
                                             <Button x:Name="RefreshButton"
                                                     Grid.Column="10"
                                                     Command="{x:Static local:MainWindow.RefreshCommand}"
-                                                    Style="{StaticResource ButtonStyle}"
+                                                    Style="{StaticResource ButtonBarButtonStyle}"
                                                     ToolTip="{x:Static resources:Strings.Refresh}">
 
                                                 <Image Source="{DynamicResource RefreshImage}"
-                                                       Style="{StaticResource ButtonImageStyle}" />
+                                                       Style="{StaticResource ButtonBarButtonImageStyle}" />
 
                                             </Button>
 
@@ -487,52 +651,37 @@
                                                  Text="{Binding SelectedTab.Address, Mode=TwoWay, UpdateSourceTrigger=Explicit, FallbackValue='New Tab'}" />
 
                                         <!-- Settings Button -->
-                                        <Button x:Name="SettingsButton"
-                                                Grid.Column="2"
-                                                HorizontalAlignment="Right"
-                                                Style="{StaticResource ButtonStyle}"
-                                                ToolTip="{x:Static resources:Strings.Settings}">
+                                        <ToggleButton x:Name="SettingsButton"
+                                                      Click="SettingsButton_Click"
+                                                      Grid.Column="2"
+                                                      HorizontalAlignment="Right"
+                                                      Style="{StaticResource ButtonBarToggleButtonStyle}"
+                                                      ToolTip="{x:Static resources:Strings.Settings}">
 
-                                            <Button.ContextMenu>
-                                                <ContextMenu Name="SettingsButtonMenu">
+                                            <ToggleButton.ContextMenu>
+                                                <ContextMenu Name="SettingsMenu"
+                                                             Closed="SettingsMenu_Closed"
+                                                             Opened="SettingsMenu_Opened"
+                                                             Style="{StaticResource SettingsMenuStyle}">
 
-                                                    <MenuItem Header="Auto"/>
+                                                    <MenuItem Header="Auto"
+                                                              Style="{StaticResource SettingsMenuItemStyle}"/>
 
-                                                    <Separator />
+                                                    <Separator Style="{StaticResource SettingsMenuSeparatorStyle}" />
 
-                                                    <MenuItem Header="Light"/>
+                                                    <MenuItem Header="Light"
+                                                              Style="{StaticResource SettingsMenuItemStyle}"/>
 
-                                                    <MenuItem Header="Dark"/>
+                                                    <MenuItem Header="Dark"
+                                                              Style="{StaticResource SettingsMenuItemStyle}"/>
 
                                                 </ContextMenu>
-                                            </Button.ContextMenu>
-
-                                            <Button.Triggers>
-                                                <EventTrigger SourceName="SettingsButton"
-                                                              RoutedEvent="Button.Click">
-
-                                                    <BeginStoryboard>
-                                                        <Storyboard>
-                                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="SettingsButtonMenu"
-                                                                                           Storyboard.TargetProperty="IsOpen">
-
-                                                                <DiscreteObjectKeyFrame KeyTime="0:0:0">
-                                                                    <DiscreteObjectKeyFrame.Value>
-                                                                        <system:Boolean>True</system:Boolean>
-                                                                    </DiscreteObjectKeyFrame.Value>
-                                                                </DiscreteObjectKeyFrame>
-
-                                                            </ObjectAnimationUsingKeyFrames>
-                                                        </Storyboard>
-                                                    </BeginStoryboard>
-
-                                                </EventTrigger>
-                                            </Button.Triggers>
+                                            </ToggleButton.ContextMenu>
 
                                             <Image Source="{DynamicResource DarkModeImage}"
-                                                   Style="{StaticResource ButtonImageStyle}" />
+                                                   Style="{StaticResource ButtonBarButtonImageStyle}" />
 
-                                        </Button>
+                                        </ToggleButton>
 
                                     </Grid>
                                 </Border>
@@ -549,11 +698,11 @@
             </Style>
 
             <!-- TabItem Style -->
-            <!-- Implicit style for our browser tabs. -->
+            <!-- Implicit style for the browser tabs. -->
             <Style TargetType="TabItem">
 
                 <Setter Property="Background"
-                        Value="{DynamicResource TabInactiveBrush}"/>
+                        Value="{StaticResource TabInactiveBrush}"/>
 
                 <Setter Property="HorizontalAlignment"
                         Value="Left" />
@@ -594,7 +743,7 @@
 
                                     <Setter TargetName="TabItemBorder"
                                             Property="Background"
-                                            Value="{DynamicResource TabActiveBrush}" />
+                                            Value="{StaticResource TabActiveBrush}" />
 
                                 </Trigger>
 
@@ -612,7 +761,7 @@
 
                                     <Setter TargetName="TabItemBorder"
                                             Property="Background"
-                                            Value="{DynamicResource TabHoverBrush}" />
+                                            Value="{StaticResource TabHoverBrush}" />
 
                                 </MultiTrigger>
 
@@ -649,7 +798,7 @@
                                 Height="16"
                                 Margin="3,0,0,0"
                                 Padding="0"
-                                Style="{StaticResource ButtonStyle}"
+                                Style="{StaticResource ButtonBarButtonStyle}"
                                 ToolTip="{x:Static resources:Strings.CloseTab}"
                                 VerticalAlignment="Center"
                                 Width="16" />
