@@ -2,21 +2,23 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- Colors -->
-    <Color x:Key="AddressBarBackgroundNormalColor">#FFF0F0F0</Color>
-    <Color x:Key="AddressBarBackgroundFocusedColor">#FFFFFFFF</Color>
+    <Color x:Key="AddressBarNormalColor">#FF3F3F3F</Color>
+    <Color x:Key="AddressBarNormalTextColor">#FFEEEEEE</Color>
+    <Color x:Key="AddressBarFocusedColor">#FF444444</Color>
+    <Color x:Key="AddressBarFocusedTextColor">#FFEEEEEE</Color>
 
-    <Color x:Key="ControlCheckedColor">#FF555555</Color>
+    <Color x:Key="ControlCheckedColor">#FF4C4C4C</Color>
     <Color x:Key="ControlCheckedTextColor">#FFEEEEEE</Color>
-    <Color x:Key="ControlHoverColor">#FF777777</Color>
+    <Color x:Key="ControlHoverColor">#FF4C4C4C</Color>
     <Color x:Key="ControlHoverTextColor">#FFEEEEEE</Color>
     <Color x:Key="ControlNormalColor">Transparent</Color>
     <Color x:Key="ControlNormalTextColor">#FFCCCCCC</Color>
-    <Color x:Key="ControlPressedColor">#FF666666</Color>
+    <Color x:Key="ControlPressedColor">#FF585858</Color>
     <Color x:Key="ControlPressedTextColor">#FFEEEEEE</Color>
 
     <Color x:Key="SeparatorColor">#FFCCCCCC</Color>
 
-    <Color x:Key="ShellColor">#FF444444</Color>
+    <Color x:Key="ShellColor">#FF333333</Color>
 
     <Color x:Key="TabHoverColor">#FF666666</Color>
 

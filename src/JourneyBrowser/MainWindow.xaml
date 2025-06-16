@@ -377,8 +377,8 @@
                 <Setter Property="AllowDrop"
                         Value="true" />
 
-                <Setter Property="KeyboardNavigation.TabNavigation"
-                        Value="None" />
+                <Setter Property="Background"
+                        Value="{StaticResource AddressBarNormalBrush}" />
 
                 <Setter Property="Border.BorderBrush"
                         Value="Transparent" />
@@ -388,6 +388,9 @@
 
                 <Setter Property="FontSize"
                         Value="14" />
+
+                <Setter Property="Foreground"
+                        Value="{StaticResource AddressBarFocusedTextBrush}" />
 
                 <Setter Property="Height"
                         Value="36" />
@@ -409,7 +412,7 @@
                         <ControlTemplate TargetType="TextBox">
 
                             <Border Name="TextBoxBorder"
-                                    Background="{StaticResource AddressBarBackgroundNormalBrush}"
+                                    Background="{TemplateBinding Background}"
                                     BorderBrush="Transparent"
                                     BorderThickness="2"
                                     CornerRadius="6">
@@ -427,7 +430,7 @@
                                                                                Storyboard.TargetProperty="Background">
 
                                                     <DiscreteObjectKeyFrame KeyTime="0"
-                                                                            Value="{StaticResource AddressBarBackgroundFocusedBrush}" />
+                                                                            Value="{StaticResource AddressBarFocusedBrush}" />
 
                                                 </ObjectAnimationUsingKeyFrames>
 
@@ -471,7 +474,7 @@
 
                                     <TextBlock x:Name="ShortUrlLabel"
                                                Background="Transparent"
-                                               Foreground="{Binding ElementName=PART_ContentHost, Path=Foreground}"
+                                               Foreground="{StaticResource AddressBarNormalTextBrush}"
                                                HorizontalAlignment="Center"
                                                IsHitTestVisible="False"
                                                Margin="{Binding ElementName=PART_ContentHost, Path=Margin}"

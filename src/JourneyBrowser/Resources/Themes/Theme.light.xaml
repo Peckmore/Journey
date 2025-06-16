@@ -2,8 +2,10 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- Colors -->
-    <Color x:Key="AddressBarBackgroundNormalColor">#FFF0F0F0</Color>
-    <Color x:Key="AddressBarBackgroundFocusedColor">#FFFFFFFF</Color>
+    <Color x:Key="AddressBarNormalColor">#FFF0F0F0</Color>
+    <Color x:Key="AddressBarNormalTextColor">#FF222222</Color>
+    <Color x:Key="AddressBarFocusedColor">#FFFFFFFF</Color>
+    <Color x:Key="AddressBarFocusedTextColor">#FF222222</Color>
 
     <Color x:Key="ControlCheckedColor">#FFBBBBBB</Color>
     <Color x:Key="ControlCheckedTextColor">#FF222222</Color>

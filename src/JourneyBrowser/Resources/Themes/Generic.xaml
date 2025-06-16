@@ -2,8 +2,10 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- Brushes -->
-    <SolidColorBrush x:Key="AddressBarBackgroundNormalBrush" Color="{DynamicResource AddressBarBackgroundNormalColor}" />
-    <SolidColorBrush x:Key="AddressBarBackgroundFocusedBrush" Color="{DynamicResource AddressBarBackgroundFocusedColor}" />
+    <SolidColorBrush x:Key="AddressBarNormalBrush" Color="{DynamicResource AddressBarNormalColor}" />
+    <SolidColorBrush x:Key="AddressBarNormalTextBrush" Color="{DynamicResource AddressBarNormalTextColor}" />
+    <SolidColorBrush x:Key="AddressBarFocusedBrush" Color="{DynamicResource AddressBarFocusedColor}" />
+    <SolidColorBrush x:Key="AddressBarFocusedTextBrush" Color="{DynamicResource AddressBarFocusedTextColor}" />
 
     <SolidColorBrush x:Key="ButtonCheckedBrush" Color="{DynamicResource ControlCheckedColor}" />
     <SolidColorBrush x:Key="ButtonCheckedTextBrush" Color="{DynamicResource ControlCheckedTextColor}" />
