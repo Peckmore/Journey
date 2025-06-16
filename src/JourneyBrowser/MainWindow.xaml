@@ -510,6 +510,63 @@
 
             </Style>
 
+            <!-- Tab Bar Button Style -->
+            <!-- Explicit style for buttons on the tab bar. -->
+            <Style x:Key="TabBarButtonStyle"
+                   TargetType="ButtonBase">
+
+                <Setter Property="Background"
+                        Value="{StaticResource TabInactiveBrush}" />
+
+                <Setter Property="Height"
+                        Value="30" />
+
+                <Setter Property="Width"
+                        Value="30" />
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ButtonBase">
+
+                            <Border Background="{TemplateBinding Background}"
+                                    BorderBrush="Transparent"
+                                    BorderThickness="0"
+                                    CornerRadius="3"
+                                    SnapsToDevicePixels="true">
+
+                                <ContentPresenter Focusable="False"
+                                                  HorizontalAlignment="Center"
+                                                  Margin="0"
+                                                  RecognizesAccessKey="True"
+                                                  SnapsToDevicePixels="True"
+                                                  VerticalAlignment="Center"/>
+                            </Border>
+
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver"
+                                         Value="true">
+
+                                    <Setter Property="Control.Background"
+                                            Value="{StaticResource TabHoverBrush}" />
+
+                                </Trigger>
+
+                                <Trigger Property="IsPressed"
+                                         Value="true">
+
+                                    <Setter Property="Control.Background"
+                                            Value="{StaticResource ButtonPressedBrush}" />
+
+                                </Trigger>
+
+                            </ControlTemplate.Triggers>
+
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+            </Style>
+
             <!-- TabControl Style -->
             <!-- Implicit style for the browser tab control. -->
             <Style TargetType="TabControl">
@@ -799,6 +856,7 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
+
             </Style>
 
         </ResourceDictionary>
@@ -819,10 +877,10 @@
                     <StackPanel Orientation="Horizontal">
 
                         <TextBlock Text="{Binding Title}"
-                                   HorizontalAlignment="Stretch" />
+                                   Width="172"
+                                   TextTrimming="CharacterEllipsis"/>
 
-                        <Button Content="✕"
-                                Command="{x:Static local:MainWindow.CloseTabCommand}"
+                        <Button Command="{x:Static local:MainWindow.CloseTabCommand}"
                                 CommandParameter="{Binding}"
                                 Height="16"
                                 Margin="3,0,0,0"
@@ -830,7 +888,11 @@
                                 Style="{StaticResource ButtonBarButtonStyle}"
                                 ToolTip="{x:Static resources:Strings.CloseTab}"
                                 VerticalAlignment="Center"
-                                Width="16" />
+                                Width="16">
+
+                            <Image Source="{DynamicResource CloseImage}" />
+
+                        </Button>
 
                     </StackPanel>
                 </DataTemplate>

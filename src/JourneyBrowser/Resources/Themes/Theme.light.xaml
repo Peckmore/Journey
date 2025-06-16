@@ -23,7 +23,9 @@
     <Color x:Key="TabHoverColor">#FFCCCCCC</Color>
 
     <!-- Images -->
+    <BitmapImage x:Key="AddImage" UriSource="pack://application:,,,/Resources/Images/Light/add.png" />
     <BitmapImage x:Key="BackImage" UriSource="pack://application:,,,/Resources/Images/Light/back.png" />
+    <BitmapImage x:Key="CloseImage" UriSource="pack://application:,,,/Resources/Images/Light/close.png" />
     <BitmapImage x:Key="DarkModeImage" UriSource="pack://application:,,,/Resources/Images/Light/dark_mode.png"/>
     <BitmapImage x:Key="ForwardImage" UriSource="pack://application:,,,/Resources/Images/Light/forward.png" />
     <BitmapImage x:Key="HomeImage" UriSource="pack://application:,,,/Resources/Images/Light/home.png"/>
