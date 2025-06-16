@@ -71,7 +71,7 @@ namespace JourneyBrowser
         public MainWindow()
         {
             // Set fields and properties
-            _colorScheme = CoreWebView2PreferredColorScheme.Auto;
+            _colorScheme = CoreWebView2PreferredColorScheme.Dark;
             Tabs = new();
 
             // Wire up our commands
@@ -81,9 +81,6 @@ namespace JourneyBrowser
 
             // Initialize window.
             InitializeComponent();
-
-            // Merge in the appropriate resource dictionary dependent upon whether the OS is in light or dark mode.
-            ApplyTheme();
 
             SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
         }
@@ -207,6 +204,10 @@ namespace JourneyBrowser
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             RefreshFrame();
+
+            // Merge in the appropriate resource dictionary dependent upon whether the OS is in light or dark mode.
+            ApplyTheme();
+
             CreateTab(HomePage);
         }
 

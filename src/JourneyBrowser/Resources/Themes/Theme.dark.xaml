@@ -5,17 +5,20 @@
     <Color x:Key="AddressBarBackgroundNormalColor">#FFF0F0F0</Color>
     <Color x:Key="AddressBarBackgroundFocusedColor">#FFFFFFFF</Color>
 
-    <Color x:Key="ControlCheckedColor">#FFBBBBBB</Color>
-    <Color x:Key="ControlHoverColor">#FFE0E0E0</Color>
+    <Color x:Key="ControlCheckedColor">#FF555555</Color>
+    <Color x:Key="ControlCheckedTextColor">#FFEEEEEE</Color>
+    <Color x:Key="ControlHoverColor">#FF777777</Color>
+    <Color x:Key="ControlHoverTextColor">#FFEEEEEE</Color>
     <Color x:Key="ControlNormalColor">Transparent</Color>
-    <Color x:Key="ControlPressedColor">#FFD1D1D1</Color>
+    <Color x:Key="ControlNormalTextColor">#FFCCCCCC</Color>
+    <Color x:Key="ControlPressedColor">#FF666666</Color>
+    <Color x:Key="ControlPressedTextColor">#FFEEEEEE</Color>
 
-    <Color x:Key="SeparatorColor">#FFDDDDDD</Color>
+    <Color x:Key="SeparatorColor">#FFCCCCCC</Color>
 
-    <Color x:Key="ShellColor">#FFFFFFFF</Color>
+    <Color x:Key="ShellColor">#FF444444</Color>
 
-    <Color x:Key="TabHoverColor">#FFCCCCCC</Color>
-    <Color x:Key="TabInactiveColor">Transparent</Color>
+    <Color x:Key="TabHoverColor">#FF666666</Color>
 
     <!-- Images -->
     <BitmapImage x:Key="BackImage" UriSource="pack://application:,,,/Resources/Images/Dark/back.png" />

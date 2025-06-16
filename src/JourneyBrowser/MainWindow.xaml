@@ -83,7 +83,6 @@
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Resources/Themes/Generic.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Resources/Themes/Theme.light.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <!-- Converters -->
@@ -181,6 +180,9 @@
                 <Setter Property="FontSize"
                         Value="14"/>
 
+                <Setter Property="Foreground"
+                        Value="{StaticResource MenuItemNormalTextBrush}"/>
+
                 <Setter Property="MinWidth"
                         Value="150"/>
 
@@ -210,6 +212,9 @@
                                     <Setter Property="Control.Background"
                                             Value="{StaticResource MenuItemHoverBrush}" />
 
+                                    <Setter Property="Control.Foreground"
+                                            Value="{StaticResource MenuItemHoverTextBrush}"/>
+
                                 </Trigger>
 
                                 <Trigger Property="IsPressed"
@@ -217,6 +222,9 @@
 
                                     <Setter Property="Control.Background"
                                             Value="{StaticResource MenuItemPressedBrush}" />
+
+                                    <Setter Property="Control.Foreground"
+                                            Value="{StaticResource MenuItemPressedTextBrush}"/>
 
                                 </Trigger>
 
@@ -704,6 +712,9 @@
                 <Setter Property="Background"
                         Value="{StaticResource TabInactiveBrush}"/>
 
+                <Setter Property="Foreground"
+                        Value="{StaticResource TabInactiveTextBrush}"/>
+
                 <Setter Property="HorizontalAlignment"
                         Value="Left" />
 
@@ -741,9 +752,11 @@
                                 <Trigger Property="IsSelected"
                                          Value="True">
 
-                                    <Setter TargetName="TabItemBorder"
-                                            Property="Background"
+                                    <Setter Property="Control.Background"
                                             Value="{StaticResource TabActiveBrush}" />
+
+                                    <Setter Property="Control.Foreground"
+                                            Value="{StaticResource TabActiveTextBrush}"/>
 
                                 </Trigger>
 
@@ -759,9 +772,11 @@
 
                                     </MultiTrigger.Conditions>
 
-                                    <Setter TargetName="TabItemBorder"
-                                            Property="Background"
+                                    <Setter Property="Control.Background"
                                             Value="{StaticResource TabHoverBrush}" />
+
+                                    <Setter Property="Control.Foreground"
+                                            Value="{StaticResource TabHoverTextBrush}"/>
 
                                 </MultiTrigger>
 

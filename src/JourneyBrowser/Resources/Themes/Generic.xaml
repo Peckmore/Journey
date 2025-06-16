@@ -4,17 +4,24 @@
     <!-- Brushes -->
     <SolidColorBrush x:Key="AddressBarBackgroundNormalBrush" Color="{DynamicResource AddressBarBackgroundNormalColor}" />
     <SolidColorBrush x:Key="AddressBarBackgroundFocusedBrush" Color="{DynamicResource AddressBarBackgroundFocusedColor}" />
-    
+
     <SolidColorBrush x:Key="ButtonCheckedBrush" Color="{DynamicResource ControlCheckedColor}" />
+    <SolidColorBrush x:Key="ButtonCheckedTextBrush" Color="{DynamicResource ControlCheckedTextColor}" />
     <SolidColorBrush x:Key="ButtonHoverBrush" Color="{DynamicResource ControlHoverColor}" />
+    <SolidColorBrush x:Key="ButtonHoverTextBrush" Color="{DynamicResource ControlHoverTextColor}" />
     <SolidColorBrush x:Key="ButtonNormalBrush" Color="{DynamicResource ControlNormalColor}" />
+    <SolidColorBrush x:Key="ButtonNormalTextBrush" Color="{DynamicResource ControlNormalTextColor}" />
     <SolidColorBrush x:Key="ButtonPressedBrush" Color="{DynamicResource ControlPressedColor}" />
+    <SolidColorBrush x:Key="ButtonPressedTextBrush" Color="{DynamicResource ControlPressedTextColor}" />
 
     <SolidColorBrush x:Key="HighlightBrush" Color="#FF557FF3" />
 
     <SolidColorBrush x:Key="MenuItemHoverBrush" Color="{DynamicResource ControlHoverColor}" />
+    <SolidColorBrush x:Key="MenuItemHoverTextBrush" Color="{DynamicResource ControlHoverTextColor}" />
     <SolidColorBrush x:Key="MenuItemNormalBrush" Color="{DynamicResource ControlNormalColor}" />
+    <SolidColorBrush x:Key="MenuItemNormalTextBrush" Color="{DynamicResource ControlNormalTextColor}" />
     <SolidColorBrush x:Key="MenuItemPressedBrush" Color="{DynamicResource ControlPressedColor}" />
+    <SolidColorBrush x:Key="MenuItemPressedTextBrush" Color="{DynamicResource ControlPressedTextColor}" />
 
     <SolidColorBrush x:Key="SeparatorBrush" Color="{DynamicResource SeparatorColor}" />
 
@@ -23,8 +30,11 @@
     <SolidColorBrush x:Key="ShellBorderBrush" Color="{DynamicResource ControlHoverColor}" />
 
     <SolidColorBrush x:Key="TabActiveBrush" Color="{DynamicResource ShellColor}" />
+    <SolidColorBrush x:Key="TabActiveTextBrush" Color="{DynamicResource ControlPressedTextColor}" />
     <SolidColorBrush x:Key="TabHoverBrush" Color="{DynamicResource TabHoverColor}" />
-    <SolidColorBrush x:Key="TabInactiveBrush" Color="{DynamicResource TabInactiveColor}" />
+    <SolidColorBrush x:Key="TabHoverTextBrush" Color="{DynamicResource ControlHoverTextColor}" />
+    <SolidColorBrush x:Key="TabInactiveBrush" Color="Transparent" />
+    <SolidColorBrush x:Key="TabInactiveTextBrush" Color="{DynamicResource ControlPressedTextColor}" />
 
     <!-- Colors -->
     <Color x:Key="ShadowColor">#FFCCCCCC</Color>
