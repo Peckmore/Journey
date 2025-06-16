@@ -156,11 +156,9 @@ namespace JourneyBrowser
         }
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is ToggleButton settingsButton)
+            // Get the context menu for the button.
+            if (sender is ToggleButton { ContextMenu: { } menu } settingsButton)
             {
-                // Get the context menu for the button.
-                var menu = settingsButton.ContextMenu;
-
                 // Update the positioning for the context menu.
                 menu.PlacementTarget = settingsButton;
                 menu.Placement = PlacementMode.Bottom;
@@ -171,7 +169,7 @@ namespace JourneyBrowser
         }
         private void SettingsMenu_Closed(object sender, RoutedEventArgs e)
         {
-            if (sender is ContextMenu menu && menu.PlacementTarget is ToggleButton button)
+            if (sender is ContextMenu { PlacementTarget: ToggleButton button })
             {
                 // Set our button to not be checked when the menu is closed.
                 button.IsChecked = false;
@@ -179,7 +177,7 @@ namespace JourneyBrowser
         }
         private void SettingsMenu_Opened(object sender, RoutedEventArgs e)
         {
-            if (sender is ContextMenu menu && menu.PlacementTarget is ToggleButton button)
+            if (sender is ContextMenu { PlacementTarget: ToggleButton button } menu)
             {
                 // Align right edge of the menu to the right edge of the button.
                 menu.HorizontalOffset = button.ActualWidth - menu.ActualWidth + 10;
@@ -373,28 +371,28 @@ namespace JourneyBrowser
         {
             GetCurrentWebView()?.Reload();
         }
-        private T? FindVisualChild<T>(DependencyObject obj)
-            where T : DependencyObject
+        private T? FindVisualChild<T>(DependencyObject obj) where T : DependencyObject
         {
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            for (var i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
             {
                 var child = VisualTreeHelper.GetChild(obj, i);
-                if (child != null && child is T)
+                if (child is T typedChild)
                 {
-                    return (T)child;
+                    return typedChild;
                 }
-                else
+
+                var childOfChild = FindVisualChild<T>(child);
+                if (childOfChild != null)
                 {
-                    T childOfChild = FindVisualChild<T>(child);
-                    if (childOfChild != null)
-                        return childOfChild;
+                    return childOfChild;
                 }
             }
+
             return null;
         }
         private IWebView2? GetCurrentWebView()
         {
-            if (BrowserTabControl.ItemContainerGenerator.ContainerFromItem(BrowserTabControl.SelectedItem) is { } tabItem)
+            if (BrowserTabControl.ItemContainerGenerator.ContainerFromItem(BrowserTabControl.SelectedItem) is not null)
             {
                 var webView = FindVisualChild<JourneyWebView2>(BrowserTabControl);
                 return webView;
