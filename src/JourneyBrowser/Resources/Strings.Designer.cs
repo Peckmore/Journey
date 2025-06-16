@@ -122,5 +122,32 @@ namespace JourneyBrowser.Resources {
                 return ResourceManager.GetString("Settings", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Match System.
+        /// </summary>
+        public static string Settings_Auto {
+            get {
+                return ResourceManager.GetString("Settings_Auto", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dark Mode.
+        /// </summary>
+        public static string Settings_Dark {
+            get {
+                return ResourceManager.GetString("Settings_Dark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Light Mode.
+        /// </summary>
+        public static string Settings_Light {
+            get {
+                return ResourceManager.GetString("Settings_Light", resourceCulture);
+            }
+        }
     }
 }

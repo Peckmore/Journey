@@ -138,4 +138,13 @@
   <data name="Settings" xml:space="preserve">
     <value>Open application menu</value>
   </data>
+  <data name="Settings_Auto" xml:space="preserve">
+    <value>Match System</value>
+  </data>
+  <data name="Settings_Dark" xml:space="preserve">
+    <value>Dark Mode</value>
+  </data>
+  <data name="Settings_Light" xml:space="preserve">
+    <value>Light Mode</value>
+  </data>
 </root>

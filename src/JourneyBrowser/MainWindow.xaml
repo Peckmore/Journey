@@ -675,15 +675,15 @@
                                                              Opened="SettingsMenu_Opened"
                                                              Style="{StaticResource SettingsMenuStyle}">
 
-                                                    <MenuItem Header="Auto"
+                                                    <MenuItem Header="{x:Static resources:Strings.Settings_Auto}"
                                                               Style="{StaticResource SettingsMenuItemStyle}"/>
 
                                                     <Separator Style="{StaticResource SettingsMenuSeparatorStyle}" />
 
-                                                    <MenuItem Header="Light"
+                                                    <MenuItem Header="{x:Static resources:Strings.Settings_Light}"
                                                               Style="{StaticResource SettingsMenuItemStyle}"/>
 
-                                                    <MenuItem Header="Dark"
+                                                    <MenuItem Header="{x:Static resources:Strings.Settings_Dark}"
                                                               Style="{StaticResource SettingsMenuItemStyle}"/>
 
                                                 </ContextMenu>
