@@ -2,7 +2,7 @@
 
 namespace JourneyBrowser.Interop
 {
-    public class NativeMethods
+    internal static class NativeMethods
     {
         #region Methods
 
@@ -17,10 +17,6 @@ namespace JourneyBrowser.Interop
 
         #region Public Static
 
-        public static int ExtendFrame(IntPtr hwnd, MARGINS margins)
-        {
-            return DwmExtendFrameIntoClientArea(hwnd, ref margins);
-        }
         public static int SetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE attribute, int parameter)
         {
             return DwmSetWindowAttribute(hwnd, attribute, ref parameter, Marshal.SizeOf<int>());

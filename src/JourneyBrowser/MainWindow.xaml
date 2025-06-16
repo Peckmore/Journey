@@ -7,7 +7,6 @@
         xmlns:converters="clr-namespace:JourneyBrowser.Converters"
         xmlns:models="clr-namespace:JourneyBrowser.Models"
         xmlns:resources="clr-namespace:JourneyBrowser.Resources"
-        xmlns:system="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
         x:Class="JourneyBrowser.MainWindow"
         x:Name="WindowRoot"
@@ -28,11 +27,20 @@
 
     <Window.CommandBindings>
 
+        <CommandBinding Command="{x:Static local:MainWindow.AutoModeCommand}"
+                        Executed="ExecutedAutoModeCommand" />
+
         <CommandBinding Command="{x:Static local:MainWindow.CloseTabCommand}"
                         Executed="ExecutedCloseTabCommand" />
 
+        <CommandBinding Command="{x:Static local:MainWindow.DarkModeCommand}"
+                        Executed="ExecutedDarkModeCommand" />
+
         <CommandBinding Command="{x:Static local:MainWindow.HomeCommand}"
                         Executed="ExecutedHomeCommand" />
+
+        <CommandBinding Command="{x:Static local:MainWindow.LightModeCommand}"
+                        Executed="ExecutedLightModeCommand" />
 
         <CommandBinding Command="{x:Static local:MainWindow.NewTabCommand}"
                         Executed="ExecutedNewTabCommand" />
@@ -675,15 +683,18 @@
                                                              Opened="SettingsMenu_Opened"
                                                              Style="{StaticResource SettingsMenuStyle}">
 
-                                                    <MenuItem Header="{x:Static resources:Strings.Settings_Auto}"
+                                                    <MenuItem Command="{x:Static local:MainWindow.AutoModeCommand}"
+                                                              Header="{x:Static resources:Strings.Settings_Auto}"
                                                               Style="{StaticResource SettingsMenuItemStyle}"/>
 
                                                     <Separator Style="{StaticResource SettingsMenuSeparatorStyle}" />
 
-                                                    <MenuItem Header="{x:Static resources:Strings.Settings_Light}"
+                                                    <MenuItem Command="{x:Static local:MainWindow.LightModeCommand}"
+                                                              Header="{x:Static resources:Strings.Settings_Light}"
                                                               Style="{StaticResource SettingsMenuItemStyle}"/>
 
-                                                    <MenuItem Header="{x:Static resources:Strings.Settings_Dark}"
+                                                    <MenuItem Command="{x:Static local:MainWindow.DarkModeCommand}"
+                                                              Header="{x:Static resources:Strings.Settings_Dark}"
                                                               Style="{StaticResource SettingsMenuItemStyle}"/>
 
                                                 </ContextMenu>

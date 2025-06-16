@@ -5,7 +5,6 @@ using JourneyBrowser.Models;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 using Microsoft.Win32;
-using ModernWpf;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -30,8 +29,8 @@ namespace JourneyBrowser
 
         #region Private
 
-        private CoreWebView2PreferredColorScheme _colorScheme;
-        private bool _isDarkMode;
+        private CoreWebView2PreferredColorScheme _colorSchemeSetting;
+        private bool? _isDarkMode;
         private BrowserTab? _selectedTab;
 
         #endregion
@@ -39,13 +38,25 @@ namespace JourneyBrowser
         #region Public Static
 
         /// <summary>
+        /// Command to switch dark/light mode to match system.
+        /// </summary>
+        public static readonly ICommand AutoModeCommand = new RoutedCommand();
+        /// <summary>
         /// Command to close a browsing tab.
         /// </summary>
         public static readonly ICommand CloseTabCommand = new RoutedCommand();
         /// <summary>
+        /// Command to switch to dark mode.
+        /// </summary>
+        public static readonly ICommand DarkModeCommand = new RoutedCommand();
+        /// <summary>
         /// Command to navigate the current tab to the Home page.
         /// </summary>
         public static readonly ICommand HomeCommand = new RoutedCommand();
+        /// <summary>
+        /// Command to switch to light mode.
+        /// </summary>
+        public static readonly ICommand LightModeCommand = new RoutedCommand();
         /// <summary>
         /// Command to create a new browsing tab.
         /// </summary>
@@ -71,7 +82,7 @@ namespace JourneyBrowser
         public MainWindow()
         {
             // Set fields and properties
-            _colorScheme = CoreWebView2PreferredColorScheme.Dark;
+            _colorSchemeSetting = CoreWebView2PreferredColorScheme.Auto;
             Tabs = new();
 
             // Wire up our commands
@@ -175,6 +186,13 @@ namespace JourneyBrowser
                 menu.VerticalOffset = -10;
             }
         }
+        private void SystemEvents_UserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
+        {
+            if (e.Category == UserPreferenceCategory.General)
+            {
+                ApplyTheme();
+            }
+        }
         private void WebView_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
         {
             if (sender is IWebView2 webView2)
@@ -203,7 +221,17 @@ namespace JourneyBrowser
         }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            RefreshFrame();
+            // Set our window theming.
+            var windowHandle = new WindowInteropHelper(this).Handle;
+            var windowHandleSource = HwndSource.FromHwnd(windowHandle);
+            if (windowHandleSource is { CompositionTarget: not null })
+            {
+                // Set the window background to black, to allow the Acrylic/Mica effect to be applied.
+                windowHandleSource.CompositionTarget.BackgroundColor = Color.FromArgb(0, 0, 0, 0);
+
+                // Set the window attribute to Acrylic.
+                NativeMethods.SetWindowAttribute(windowHandle, DWMWINDOWATTRIBUTE.DWMWA_SYSTEMBACKDROP_TYPE, 3); // 3 => DWMSBT_TRANSIENTWINDOW = Acrylic
+            }
 
             // Merge in the appropriate resource dictionary dependent upon whether the OS is in light or dark mode.
             ApplyTheme();
@@ -218,29 +246,31 @@ namespace JourneyBrowser
         private void ApplyTheme()
         {
             // Set a flag to indicate whether we should use dark mode.
-            var isDark = false;
-            if (_colorScheme == CoreWebView2PreferredColorScheme.Dark)
+            var darkModeRequested = false;
+            if (_colorSchemeSetting == CoreWebView2PreferredColorScheme.Dark)
             {
                 // If the WebView2 profile is set to dark mode, we'll use that.
-                isDark = true;
+                darkModeRequested = true;
             }
-            else if (_colorScheme == CoreWebView2PreferredColorScheme.Auto)
+            else if (_colorSchemeSetting == CoreWebView2PreferredColorScheme.Auto)
             {
                 // If the WebView2 profile is set to auto, we'll check the registry to see whether the app should be in light or dark mode.
                 using (var themeRegistryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
                 {
-                    isDark = (themeRegistryKey?.GetValue("AppsUseLightTheme") as int? ?? 1) == 0;
+                    darkModeRequested = (themeRegistryKey?.GetValue("AppsUseLightTheme") as int? ?? 1) == 0;
                 }
             }
 
-            if (_isDarkMode != isDark)
+            if (_isDarkMode != darkModeRequested)
             {
-                _isDarkMode = isDark;
+                _isDarkMode = darkModeRequested;
+
+                NativeMethods.SetWindowAttribute(new WindowInteropHelper(this).Handle, DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, darkModeRequested ? 1 : 0);
 
                 // Remove any previously merged dictionary and merge in the appropriate dictionary based on the current light/dark mode.
                 var themeDictionary = new ResourceDictionary
                 {
-                    Source = new Uri(isDark ? "pack://application:,,,/Resources/Themes/Theme.Dark.xaml"
+                    Source = new Uri(darkModeRequested ? "pack://application:,,,/Resources/Themes/Theme.Dark.xaml"
                                             : "pack://application:,,,/Resources/Themes/Theme.Light.xaml", UriKind.Absolute)
                 };
 
@@ -291,6 +321,11 @@ namespace JourneyBrowser
             Tabs.Add(newTab);
             BrowserTabControl.SelectedItem = newTab;
         }
+        private void ExecutedAutoModeCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            _colorSchemeSetting = CoreWebView2PreferredColorScheme.Auto;
+            ApplyTheme();
+        }
         private void ExecutedBackCommand()
         {
             GetCurrentWebView()?.GoBack();
@@ -301,6 +336,11 @@ namespace JourneyBrowser
             {
                 CloseTab(tab);
             }
+        }
+        private void ExecutedDarkModeCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            _colorSchemeSetting = CoreWebView2PreferredColorScheme.Dark;
+            ApplyTheme();
         }
         private void ExecutedForwardCommand()
         {
@@ -319,6 +359,11 @@ namespace JourneyBrowser
             {
                 await webView.ToggleJourney();
             }
+        }
+        private void ExecutedLightModeCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            _colorSchemeSetting = CoreWebView2PreferredColorScheme.Light;
+            ApplyTheme();
         }
         private void ExecutedNewTabCommand(object sender, ExecutedRoutedEventArgs e)
         {
@@ -365,45 +410,5 @@ namespace JourneyBrowser
         #endregion
 
         #endregion
-
-
-        void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            RefreshDarkMode();
-            ThemeManager.Current.ActualApplicationThemeChanged += (_, _) => RefreshDarkMode();
-        }
-
-        private void RefreshFrame()
-        {
-            IntPtr mainWindowPtr = new WindowInteropHelper(this).Handle;
-            HwndSource mainWindowSrc = HwndSource.FromHwnd(mainWindowPtr);
-            mainWindowSrc.CompositionTarget.BackgroundColor = Color.FromArgb(0, 0, 0, 0);
-
-            NativeMethods.SetWindowAttribute(new WindowInteropHelper(this).Handle,
-                               DWMWINDOWATTRIBUTE.DWMWA_SYSTEMBACKDROP_TYPE,
-                               (int)DWM_SYSTEMBACKDROP_TYPE.DWMSBT_TRANSIENTWINDOW);
-        }
-
-        private void RefreshDarkMode()
-        {
-            using var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
-            var isDark = (key?.GetValue("AppsUseLightTheme") as int? ?? 1) == 0;
-            int flag = isDark ? 1 : 0;
-            NativeMethods.SetWindowAttribute(
-                new WindowInteropHelper(this).Handle,
-                DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE,
-                flag);
-            NativeMethods.SetWindowAttribute(
-                new WindowInteropHelper(this).Handle,
-                DWMWINDOWATTRIBUTE.DWMWA_SYSTEMBACKDROP_TYPE,
-                (int)DWM_SYSTEMBACKDROP_TYPE.DWMSBT_TRANSIENTWINDOW);
-        }
-        private void SystemEvents_UserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
-        {
-            if (e.Category == UserPreferenceCategory.General)
-            {
-                RefreshDarkMode();
-            }
-        }
     }
 }

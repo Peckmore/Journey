@@ -3,7 +3,7 @@
 namespace JourneyBrowser.Interop
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct MARGINS
+    internal struct MARGINS
     {
         public int cxLeftWidth;
         public int cxRightWidth;
