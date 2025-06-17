@@ -1155,15 +1155,18 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- FavIcon -->
-                        <Image Source="{Binding FavIcon}"
-                                   Height="16"
-                                   Margin="5,0,5,0"
-                                   VerticalAlignment="Center"
-                                   Width="16"/>
+                        <Image Grid.Column="0"
+                               Height="16"
+                               Margin="5,0,5,0"
+                               Source="{Binding FavIcon}"
+                               VerticalAlignment="Center"
+                               Width="16"/>
 
                         <!-- Document Title -->
-                        <TextBlock Grid.Column="1" Text="{Binding Title}"
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding Title}"
                                    TextTrimming="CharacterEllipsis"/>
+
                     </Grid>
 
                 </DataTemplate>
