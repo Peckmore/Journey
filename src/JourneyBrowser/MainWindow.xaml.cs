@@ -14,6 +14,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace JourneyBrowser
 {
@@ -202,7 +203,7 @@ namespace JourneyBrowser
                 webView2.CoreWebView2.NewWindowRequested += WebView_NewWindowRequested;
             }
         }
-        private void WebView_Navigation(object? sender, EventArgs e)
+        private async void WebView_Navigation(object? sender, EventArgs e)
         {
             if (sender is JourneyWebView2 { DataContext: BrowserTab tabViewModel } webView)
             {
@@ -210,6 +211,11 @@ namespace JourneyBrowser
                 tabViewModel.CanGoForward = webView.CanGoForward;
                 tabViewModel.CanShowJourney = webView.CanShowJourney;
                 tabViewModel.Title = webView.CoreWebView2.DocumentTitle;
+                using (var stream = await webView.CoreWebView2.GetFaviconAsync(CoreWebView2FaviconImageFormat.Png))
+                {
+                    tabViewModel.FavIcon = stream == null || stream.Length == 0 ? null : BitmapFrame.Create(stream);
+                }
+
                 BackCommand.NotifyCanExecuteChanged();
                 ForwardCommand.NotifyCanExecuteChanged();
                 JourneyCommand.NotifyCanExecuteChanged();

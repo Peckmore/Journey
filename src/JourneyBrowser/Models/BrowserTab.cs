@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Media.Imaging;
 
 namespace JourneyBrowser.Models
 {
@@ -11,6 +12,7 @@ namespace JourneyBrowser.Models
         private bool _canGoBack;
         private bool _canGoForward;
         private bool _canShowJourney;
+        private BitmapSource? _favIcon;
         private string _title;
 
         #endregion
@@ -77,6 +79,18 @@ namespace JourneyBrowser.Models
                 if (_canShowJourney != value)
                 {
                     _canShowJourney = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public BitmapSource? FavIcon
+        {
+            get => _favIcon;
+            set
+            {
+                if (_favIcon != value)
+                {
+                    _favIcon = value;
                     OnPropertyChanged();
                 }
             }
