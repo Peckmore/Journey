@@ -38,6 +38,8 @@
     <SolidColorBrush x:Key="TabInactiveBrush" Color="Transparent" />
     <SolidColorBrush x:Key="TabInactiveTextBrush" Color="{DynamicResource ControlPressedTextColor}" />
 
+    <SolidColorBrush x:Key="TabControlTabAreaBackgroundBrush" Color="Transparent" />
+
     <!-- Colors -->
     <Color x:Key="ShadowColor">#FFCCCCCC</Color>
 
