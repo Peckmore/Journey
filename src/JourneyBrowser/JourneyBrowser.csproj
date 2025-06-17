@@ -9,7 +9,7 @@
 		<RootNamespace>JourneyBrowser</RootNamespace>
 		<AssemblyName>JourneyBrowser</AssemblyName>
 		<AssemblyTitle>Journey Browser</AssemblyTitle>
-		<StartupObject>Journey.App</StartupObject>
+		<StartupObject>JourneyBrowser.App</StartupObject>
 		<ApplicationIcon>Resources\Icons\journey.ico</ApplicationIcon>
 	</PropertyGroup>
 
@@ -57,6 +57,7 @@
 	<!-- Packages -->
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+		<PackageReference Include="Dragablz" Version="0.0.3.234" />
 	</ItemGroup>
 
 </Project>

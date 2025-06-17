@@ -17,11 +17,11 @@ using System.Windows.Media;
 
 namespace JourneyBrowser
 {
-    public partial class MainWindow : Window, INotifyPropertyChanged
+    internal partial class MainWindow : Window, INotifyPropertyChanged
     {
         #region Constants
 
-        private const string HomePage = @"https://start.duckduckgo.com";
+        public const string HomePage = @"https://start.duckduckgo.com";
 
         #endregion
 
@@ -95,6 +95,11 @@ namespace JourneyBrowser
 
             SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
         }
+        public MainWindow(string url)
+            : this()
+        {
+            CreateTab(HomePage);
+        }
 
         #endregion
 
@@ -124,6 +129,7 @@ namespace JourneyBrowser
                 }
             }
         }
+        public Func<BrowserTab> TabFactory => () => new BrowserTab(HomePage);
         public ObservableCollection<BrowserTab> Tabs { get; }
 
         #endregion
@@ -146,10 +152,7 @@ namespace JourneyBrowser
                 if (sender is TextBox textBox)
                 {
                     var binding = textBox.GetBindingExpression(TextBox.TextProperty);
-                    if (binding != null)
-                    {
-                        binding.UpdateSource();
-                    }
+                    binding?.UpdateSource();
                     BrowserTabControl.Focus();
                 }
             }
@@ -233,8 +236,6 @@ namespace JourneyBrowser
 
             // Merge in the appropriate resource dictionary dependent upon whether the OS is in light or dark mode.
             ApplyTheme();
-
-            CreateTab(HomePage);
         }
 
         #endregion
@@ -296,14 +297,15 @@ namespace JourneyBrowser
         {
             return SelectedTab?.CanShowJourney ?? false;
         }
-        private void CloseTab(BrowserTab tab)
+        private void CloseTab()
         {
-            if (Tabs.Contains(tab))
+            var tab = SelectedTab;
+            if (tab != null)
             {
                 var selectedIndex = Tabs.IndexOf(tab);
                 if (selectedIndex > 0)
                 {
-                    SelectedTab = Tabs[selectedIndex- 1];
+                    SelectedTab = Tabs[selectedIndex - 1];
                 }
                 else if (selectedIndex == 0 && Tabs.Count > 1)
                 {
@@ -311,6 +313,11 @@ namespace JourneyBrowser
                 }
 
                 Tabs.Remove(tab);
+
+                if (Tabs.Count == 0)
+                {
+                    Close();
+                }
             }
         }
         private void CreateTab(string address)
@@ -330,10 +337,7 @@ namespace JourneyBrowser
         }
         private void ExecutedCloseTabCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            if (e.Parameter is BrowserTab tab)
-            {
-                CloseTab(tab);
-            }
+            CloseTab();
         }
         private void ExecutedDarkModeCommand(object sender, ExecutedRoutedEventArgs e)
         {
@@ -392,7 +396,7 @@ namespace JourneyBrowser
         }
         private IWebView2? GetCurrentWebView()
         {
-            if (BrowserTabControl.ItemContainerGenerator.ContainerFromItem(BrowserTabControl.SelectedItem) is not null)
+            //if (BrowserTabControl.ItemContainerGenerator.ContainerFromItem(BrowserTabControl.SelectedItem) is not null)
             {
                 var webView = FindVisualChild<JourneyWebView2>(BrowserTabControl);
                 return webView;
