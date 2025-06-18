@@ -17,6 +17,13 @@
 		<None Remove="Resources\**\*" />
 	</ItemGroup>
 
+	<!-- Animations -->
+	<ItemGroup>
+		<Resource Include="Resources\Animations\**\*">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+	</ItemGroup>
+
 	<!-- Fonts -->
 	<ItemGroup>
 		<Resource Include="Resources\Fonts\**\*">
@@ -58,6 +65,7 @@
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageReference Include="Dragablz" Version="0.0.3.234" />
+		<PackageReference Include="LottieSharp" Version="2.4.3" />
 	</ItemGroup>
 
 </Project>

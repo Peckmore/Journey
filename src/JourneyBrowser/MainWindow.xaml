@@ -14,6 +14,7 @@
         x:ClassModifier="internal"
         x:Name="WindowRoot"
         Background="Transparent"
+        ContentRendered="Window_ContentRendered"
         Height="720"
         Loaded="Window_Loaded"
         MinHeight="295"

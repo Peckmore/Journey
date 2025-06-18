@@ -31,6 +31,7 @@ namespace JourneyBrowser
         #region Private
 
         private bool? _isDarkMode;
+        private JourneyIntroToolTipWindow? _journeyIntroWindow;
         private CoreWebView2PreferredColorScheme _preferredColorScheme;
         private BrowserTab? _selectedTab;
 
@@ -171,6 +172,19 @@ namespace JourneyBrowser
                 }
             }
         }
+        private void JourneyIntroWindow_Closed(object? sender, EventArgs e)
+        {
+            if (_journeyIntroWindow != null)
+            {
+                _journeyIntroWindow.Closed -= JourneyIntroWindow_Closed;
+            }
+
+            LocationChanged -= Window_LocationChanged;
+            SizeChanged -= Window_SizeChanged;
+            StateChanged -= Window_StateChanged;
+
+            _journeyIntroWindow = null;
+        }
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
             // Get the context menu for the button.
@@ -239,6 +253,11 @@ namespace JourneyBrowser
             e.Handled = true;
             CreateTab(e.Uri);
         }
+        private void Window_ContentRendered(object? sender, EventArgs e)
+        {
+            // Once the window is on-screen, show the Journey intro tooltip.
+            ShowJourneyIntro();
+        }
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // Set our window theming.
@@ -256,11 +275,23 @@ namespace JourneyBrowser
             // Merge in the appropriate resource dictionary dependent upon whether the OS is in light or dark mode.
             ApplyTheme();
         }
-
+        private void Window_LocationChanged(object? sender, EventArgs e)
+        {
+            PositionJourneyIntroWindow();
+        }
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            PositionJourneyIntroWindow();
+        }
+        private void Window_StateChanged(object? sender, EventArgs e)
+        {
+            PositionJourneyIntroWindow();
+        }
+        
         #endregion
 
         #region Private
-        
+
         private void ApplyTheme()
         {
             // Set a flag to indicate whether we should use dark mode.
@@ -426,6 +457,46 @@ namespace JourneyBrowser
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        private void PositionJourneyIntroWindow()
+        {
+            if (_journeyIntroWindow != null)
+            {
+                // Grab the journey button, as we want to anchor the tooltip to this button.
+                var journeyButton = (Button)BrowserTabControl.Template.FindName("JourneyButton", BrowserTabControl);
+
+                // Get the bottom-left point of the button (relative to itself).
+                var bottomLeft = new Point(0, journeyButton.ActualHeight);
+
+                // Transform to window coordinates.
+                var bottomLeftInWindow = journeyButton.TransformToAncestor(Window.GetWindow(journeyButton)).Transform(bottomLeft);
+
+                // Translate the point from window coordinates to screen coordinates.
+                var mainPos = PointToScreen(bottomLeftInWindow);
+
+                // Now position the window onscreen in the correct location.
+                _journeyIntroWindow.Left = mainPos.X - 30;
+                _journeyIntroWindow.Top = mainPos.Y;
+            }
+        }
+        private void ShowJourneyIntro()
+        {
+            if (_journeyIntroWindow == null)
+            {
+                _journeyIntroWindow = new JourneyIntroToolTipWindow
+                {
+                    Owner = this
+                };
+
+                _journeyIntroWindow.Closed += JourneyIntroWindow_Closed;
+                LocationChanged += Window_LocationChanged;
+                SizeChanged += Window_SizeChanged;
+                StateChanged += Window_StateChanged;
+
+                PositionJourneyIntroWindow();
+
+                _journeyIntroWindow.Show();
+            }
         }
 
         #endregion
