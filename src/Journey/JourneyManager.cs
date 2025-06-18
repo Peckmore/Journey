@@ -159,6 +159,15 @@ namespace Journey
                 // Update the title.
                 _activeStep.Title = _webView.CoreWebView2.DocumentTitle;
 
+                // Update the FavIcon.
+                using (var stream = await _webView.CoreWebView2.GetFaviconAsync(CoreWebView2FaviconImageFormat.Png))
+                {
+                    if (stream is { Length: > 0 })
+                    {
+                        _activeStep.FavIcon = BitmapFrame.Create(stream);
+                    }
+                }
+
                 // Update the snapshot.
                 using (var snapshotStream = new MemoryStream())
                 {

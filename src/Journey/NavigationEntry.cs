@@ -23,12 +23,13 @@ namespace Journey
 
         #region Properties
 
-        public int Id { get; set; }
-        public BitmapFrame? Snapshot { get; set; }
+        public BitmapSource? FavIcon { get; set; }
+        public int Id { get; private set; }
+        public BitmapSource? Snapshot { get; set; }
         public string Title { get; set; }
         public string TransitionType { get; set; }
         public NavigationEntryType Type { get; set; }
-        public string Url { get; set; }
+        public string Url { get; private set; }
         public string UserTypedUrl { get; set; }
 
         #endregion
@@ -45,6 +46,12 @@ namespace Journey
             TransitionType = entry.TransitionType;
             Url = entry.Url;
             UserTypedUrl = entry.UserTypedUrl;
+
+            // Don't replace a valid FavIcon with a blank one.
+            if (entry.FavIcon != null)
+            {
+                FavIcon = entry.FavIcon;
+            }
 
             // Don't replace a valid snapshot with a blank one.
             if (entry.Snapshot != null)
