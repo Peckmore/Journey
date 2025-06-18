@@ -3,7 +3,7 @@ using System.Windows.Data;
 
 namespace JourneyBrowser.Converters
 {
-    public class FriendlyUrlConverter : IValueConverter
+    internal class FriendlyUrlConverter : IValueConverter
     {
         #region Methods
 
@@ -13,7 +13,10 @@ namespace JourneyBrowser.Converters
             {
                 try
                 {
+                    // Parse the address into a Uri object.
                     var uri = new Uri(valueString);
+
+                    // Return just the "host" segment of the parsed Uri, which is what we want to display for neatness.
                     return uri.Host;
                 }
                 catch

@@ -5,7 +5,7 @@ using System.Windows.Data;
 
 namespace JourneyBrowser.Converters
 {
-    public class UrlSearchConverter : IValueConverter
+    internal class UrlSearchConverter : IValueConverter
     {
         #region Methods
 

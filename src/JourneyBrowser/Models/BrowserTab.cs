@@ -4,7 +4,7 @@ using System.Windows.Media.Imaging;
 
 namespace JourneyBrowser.Models
 {
-    public sealed class BrowserTab : INotifyPropertyChanged
+    internal sealed class BrowserTab : INotifyPropertyChanged
     {
         #region Fields
 
