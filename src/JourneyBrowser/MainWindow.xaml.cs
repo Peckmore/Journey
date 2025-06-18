@@ -30,8 +30,8 @@ namespace JourneyBrowser
 
         #region Private
 
-        private CoreWebView2PreferredColorScheme _colorSchemeSetting;
         private bool? _isDarkMode;
+        private CoreWebView2PreferredColorScheme _preferredColorScheme;
         private BrowserTab? _selectedTab;
 
         #endregion
@@ -83,7 +83,7 @@ namespace JourneyBrowser
         public MainWindow()
         {
             // Set fields and properties
-            _colorSchemeSetting = CoreWebView2PreferredColorScheme.Auto;
+            PreferredColorScheme = CoreWebView2PreferredColorScheme.Auto;
             Tabs = new();
 
             // Wire up our commands
@@ -118,6 +118,19 @@ namespace JourneyBrowser
         /// Command to open the Journey view for the current tab.
         /// </summary>
         public IRelayCommand JourneyCommand { get; }
+        public CoreWebView2PreferredColorScheme PreferredColorScheme
+        {
+            get => _preferredColorScheme;
+            set
+            {
+                if (_preferredColorScheme != value)
+                {
+                    _preferredColorScheme = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public BrowserTab? SelectedTab
         {
             get => _selectedTab;
@@ -252,12 +265,12 @@ namespace JourneyBrowser
         {
             // Set a flag to indicate whether we should use dark mode.
             var darkModeRequested = false;
-            if (_colorSchemeSetting == CoreWebView2PreferredColorScheme.Dark)
+            if (_preferredColorScheme == CoreWebView2PreferredColorScheme.Dark)
             {
                 // If the WebView2 profile is set to dark mode, we'll use that.
                 darkModeRequested = true;
             }
-            else if (_colorSchemeSetting == CoreWebView2PreferredColorScheme.Auto)
+            else if (_preferredColorScheme == CoreWebView2PreferredColorScheme.Auto)
             {
                 // If the WebView2 profile is set to auto, we'll check the registry to see whether the app should be in light or dark mode.
                 using (var themeRegistryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
@@ -334,7 +347,7 @@ namespace JourneyBrowser
         }
         private void ExecutedAutoModeCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            _colorSchemeSetting = CoreWebView2PreferredColorScheme.Auto;
+            PreferredColorScheme = CoreWebView2PreferredColorScheme.Auto;
             ApplyTheme();
         }
         private void ExecutedBackCommand()
@@ -347,7 +360,7 @@ namespace JourneyBrowser
         }
         private void ExecutedDarkModeCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            _colorSchemeSetting = CoreWebView2PreferredColorScheme.Dark;
+            PreferredColorScheme = CoreWebView2PreferredColorScheme.Dark;
             ApplyTheme();
         }
         private void ExecutedForwardCommand()
@@ -370,7 +383,7 @@ namespace JourneyBrowser
         }
         private void ExecutedLightModeCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            _colorSchemeSetting = CoreWebView2PreferredColorScheme.Light;
+            PreferredColorScheme = CoreWebView2PreferredColorScheme.Light;
             ApplyTheme();
         }
         private void ExecutedNewTabCommand(object sender, ExecutedRoutedEventArgs e)

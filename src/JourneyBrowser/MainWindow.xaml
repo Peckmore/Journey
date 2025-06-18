@@ -1179,6 +1179,7 @@
                                              CoreWebView2InitializationCompleted="WebView_CoreWebView2InitializationCompleted"
                                              NavigationCompleted="WebView_Navigation"
                                              NavigationStarting="WebView_Navigation"
+                                             PreferredColorScheme="{Binding ElementName=WindowRoot, Path=PreferredColorScheme}"
                                              Source="{Binding Address, Mode=TwoWay, FallbackValue=about:blank}" />
 
                 </DataTemplate>
