@@ -665,6 +665,7 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
+
             </Style>
 
             <!-- DragablzItem Style -->
@@ -823,6 +824,7 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
+
             </Style>
 
             <!-- TabablzControl Style -->
@@ -1046,7 +1048,11 @@
                                                  KeyDown="AddressBar_KeyDown"
                                                  GotKeyboardFocus="AddressBar_GotFocus"
                                                  Style="{StaticResource AddressBarStyle}"
-                                                 Text="{Binding SelectedTab.Address, Mode=TwoWay, UpdateSourceTrigger=Explicit, FallbackValue='New Tab'}" />
+                                                 Text="{Binding SelectedTab.Address, 
+                                                                Mode=TwoWay,
+                                                                UpdateSourceTrigger=Explicit,
+                                                                FallbackValue='New Tab',
+                                                                Converter={StaticResource UrlSearchConverter}}" />
 
                                         <!-- Settings Button -->
                                         <ToggleButton x:Name="SettingsButton"
