@@ -99,7 +99,7 @@ namespace JourneyBrowser
         public MainWindow(string url)
             : this()
         {
-            CreateTab(HomePage);
+            CreateTab(url);
         }
 
         #endregion
