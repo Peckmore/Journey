@@ -855,250 +855,251 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type dragablz:TabablzControl}">
 
-                            <Border Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}">
+                            <Grid Background="Transparent"
+                                  ClipToBounds="True"
+                                  SnapsToDevicePixels="True">
 
-                                <Grid ClipToBounds="True"
-                                      SnapsToDevicePixels="True">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
 
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="*" />
-                                    </Grid.RowDefinitions>
+                                <!-- Tabs -->
+                                <Grid Grid.Row="0"
+                                      Background="Transparent">
 
-                                    <!-- Tabs -->
-                                    <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
 
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition x:Name="ColumnMargin" Width="4" />
-                                        </Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
 
-                                        <!--  Tabs Area -->
-                                        <dragablz:DragablzItemsControl x:Name="PART_HeaderItemsControl"
-                                                                       Grid.Column="1"
-                                                                       Panel.ZIndex="1"
-                                                                       ItemContainerStyle="{TemplateBinding ItemContainerStyle}"
-                                                                       ItemTemplate="{TemplateBinding HeaderItemTemplate}"
-                                                                       ItemsOrganiser="{TemplateBinding HeaderItemsOrganiser}"
-                                                                       ItemsSource="{Binding Items, RelativeSource={RelativeSource TemplatedParent}}"
-                                                                       Style="{StaticResource TabItemsControlStyle}">
+                                        <ColumnDefinition Width="Auto" />
 
-                                            <dragablz:DragablzItemsControl.MaxWidth>
-                                                <MultiBinding>
+                                        <ColumnDefinition x:Name="WindowChromeColumn"
+                                                          Width="200" />
 
-                                                    <MultiBinding.Converter>
-                                                        <dragablz:TabablzHeaderSizeConverter Orientation="Horizontal" />
-                                                    </MultiBinding.Converter>
+                                    </Grid.ColumnDefinitions>
 
-                                                    <Binding Path="ActualWidth"
-                                                             RelativeSource="{RelativeSource TemplatedParent}" />
+                                    <!--  Tabs Area -->
+                                    <dragablz:DragablzItemsControl x:Name="PART_HeaderItemsControl"
+                                                                   Grid.Column="0"
+                                                                   Panel.ZIndex="1"
+                                                                   ItemContainerStyle="{TemplateBinding ItemContainerStyle}"
+                                                                   ItemTemplate="{TemplateBinding HeaderItemTemplate}"
+                                                                   ItemsOrganiser="{TemplateBinding HeaderItemsOrganiser}"
+                                                                   ItemsSource="{Binding Items, RelativeSource={RelativeSource TemplatedParent}}"
+                                                                   Style="{StaticResource TabItemsControlStyle}">
 
-                                                    <Binding Path="ItemsPresenterWidth"
-                                                             RelativeSource="{RelativeSource Self}" />
+                                        <dragablz:DragablzItemsControl.MaxWidth>
+                                            <MultiBinding>
 
-                                                    <Binding ElementName="ColumnMargin"
-                                                             Path="ActualWidth" />
+                                                <MultiBinding.Converter>
+                                                    <dragablz:TabablzHeaderSizeConverter Orientation="Horizontal" />
+                                                </MultiBinding.Converter>
 
-                                                </MultiBinding>
-                                            </dragablz:DragablzItemsControl.MaxWidth>
-                                        </dragablz:DragablzItemsControl>
+                                                <Binding Path="ActualWidth"
+                                                         RelativeSource="{RelativeSource TemplatedParent}" />
 
-                                        <!-- New Tab Button -->
-                                        <Button Grid.Column="2"
-                                                Command="{x:Static dragablz:TabablzControl.AddItemCommand}"
-                                                Margin="2"
-                                                Style="{StaticResource TabBarButtonStyle}"
-                                                VerticalAlignment="Bottom"
-                                                Visibility="{TemplateBinding ShowDefaultAddButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <Binding Path="ItemsPresenterWidth"
+                                                         RelativeSource="{RelativeSource Self}" />
 
-                                            <Image Source="{DynamicResource AddImage}"
-                                                   Style="{StaticResource ButtonBarButtonImageStyle}" />
+                                                <Binding ElementName="WindowChromeColumn"
+                                                         Path="ActualWidth" />
 
-                                        </Button>
+                                            </MultiBinding>
+                                        </dragablz:DragablzItemsControl.MaxWidth>
 
-                                    </Grid>
+                                    </dragablz:DragablzItemsControl>
 
-                                    <!-- Button Bar -->
-                                    <Border x:Name="ButtonBar"
-                                            Grid.Row="1"
-                                            Background="{StaticResource ShellBrush}"
-                                            BorderBrush="{StaticResource ShellBorderBrush}"
-                                            BorderThickness="0,0,0,1"
-                                            Padding="10,6">
+                                    <!-- New Tab Button -->
+                                    <Button Grid.Column="1"
+                                            Command="{x:Static dragablz:TabablzControl.AddItemCommand}"
+                                            IsHitTestVisible="True"
+                                            Margin="2"
+                                            Style="{StaticResource TabBarButtonStyle}"
+                                            VerticalAlignment="Bottom"
+                                            Visibility="{TemplateBinding ShowDefaultAddButton, Converter={StaticResource BooleanToVisibilityConverter}}">
 
-                                        <Grid DataContext="{Binding ElementName=WindowRoot}">
+                                        <Image Source="{DynamicResource AddImage}"
+                                               Style="{StaticResource ButtonBarButtonImageStyle}" />
 
-                                            <Grid.ColumnDefinitions>
-
-                                                <ColumnDefinition MinWidth="180"
-                                                                  MaxWidth="230" />
-
-                                                <ColumnDefinition Width="*"
-                                                                  MinWidth="300" />
-
-                                                <ColumnDefinition MaxWidth="230" />
-
-                                            </Grid.ColumnDefinitions>
-
-                                            <!-- Navigation Buttons -->
-                                            <Grid Grid.Column="0">
-
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="5"/>
-                                                    <ColumnDefinition Width="1"/>
-                                                    <ColumnDefinition Width="5"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="5"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="5"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition Width="5"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-
-                                                <!-- Home Button -->
-                                                <Button x:Name="HomeButton"
-                                                        Grid.Column="0"
-                                                        Command="{x:Static local:MainWindow.HomeCommand}"
-                                                        Style="{StaticResource ButtonBarButtonStyle}"
-                                                        ToolTip="{x:Static resources:Strings.Home}">
-
-                                                    <Image Source="{DynamicResource HomeImage}"
-                                                           Style="{StaticResource ButtonBarButtonImageStyle}" />
-
-                                                </Button>
-
-                                                <!-- Separator -->
-                                                <Line Grid.Column="2"
-                                                      SnapsToDevicePixels="True"
-                                                      Stroke="{StaticResource SeparatorBrush}"
-                                                      StrokeThickness="1"
-                                                      X1="0"
-                                                      X2="0"
-                                                      Y1="5"
-                                                      Y2="30" />
-
-                                                <!-- Back Button -->
-                                                <Button x:Name="BackButton"
-                                                        Grid.Column="4"
-                                                        Command="{Binding BackCommand}"
-                                                        Style="{StaticResource ButtonBarButtonStyle}"
-                                                        ToolTip="{x:Static resources:Strings.Back}">
-
-                                                    <Image Source="{DynamicResource BackImage}"
-                                                           Style="{StaticResource ButtonBarButtonImageStyle}" />
-
-                                                </Button>
-
-                                                <!-- Journey Button -->
-                                                <Button x:Name="JourneyButton"
-                                                        Grid.Column="6"
-                                                        Command="{Binding ElementName=WindowRoot, Path=JourneyCommand}"
-                                                        Style="{StaticResource ButtonBarButtonStyle}"
-                                                        ToolTip="{x:Static resources:Strings.Journey}">
-
-                                                    <Image Source="{DynamicResource JourneyImage}"
-                                                           Style="{StaticResource ButtonBarButtonImageStyle}" />
-
-                                                </Button>
-
-                                                <!-- Forward Button -->
-                                                <Button x:Name="ForwardButton"
-                                                        Grid.Column="8"
-                                                        Command="{Binding ForwardCommand}"
-                                                        Style="{StaticResource ButtonBarButtonStyle}"
-                                                        ToolTip="{x:Static resources:Strings.Forward}">
-
-                                                    <Image Source="{DynamicResource ForwardImage}"
-                                                           Style="{StaticResource ButtonBarButtonImageStyle}" />
-
-                                                </Button>
-
-                                                <!-- Refresh Button -->
-                                                <Button x:Name="RefreshButton"
-                                                        Grid.Column="10"
-                                                        Command="{x:Static local:MainWindow.RefreshCommand}"
-                                                        Style="{StaticResource ButtonBarButtonStyle}"
-                                                        ToolTip="{x:Static resources:Strings.Refresh}">
-
-                                                    <Image Source="{DynamicResource RefreshImage}"
-                                                           Style="{StaticResource ButtonBarButtonImageStyle}" />
-
-                                                </Button>
-
-                                            </Grid>
-
-                                            <!-- Address Bar -->
-                                            <TextBox Name="AddressBar"
-                                                     DataContext="{Binding ElementName=WindowRoot}"
-                                                     GotFocus="AddressBar_GotFocus"
-                                                     Grid.Column="1"
-                                                     KeyDown="AddressBar_KeyDown"
-                                                     GotKeyboardFocus="AddressBar_GotFocus"
-                                                     Style="{StaticResource AddressBarStyle}"
-                                                     Text="{Binding SelectedTab.Address, Mode=TwoWay, UpdateSourceTrigger=Explicit, FallbackValue='New Tab'}" />
-
-                                            <!-- Settings Button -->
-                                            <ToggleButton x:Name="SettingsButton"
-                                                          Click="SettingsButton_Click"
-                                                          Grid.Column="2"
-                                                          HorizontalAlignment="Right"
-                                                          Style="{StaticResource ButtonBarToggleButtonStyle}"
-                                                          ToolTip="{x:Static resources:Strings.Settings}">
-
-                                                <ToggleButton.ContextMenu>
-
-                                                    <ContextMenu Name="SettingsMenu"
-                                                                 Closed="SettingsMenu_Closed"
-                                                                 Opened="SettingsMenu_Opened"
-                                                                 Style="{StaticResource SettingsMenuStyle}">
-
-                                                        <MenuItem Command="{x:Static local:MainWindow.AutoModeCommand}"
-                                                                  Header="{x:Static resources:Strings.Settings_Auto}"
-                                                                  Style="{StaticResource SettingsMenuItemStyle}"/>
-
-                                                        <Separator Style="{StaticResource SettingsMenuSeparatorStyle}" />
-
-                                                        <MenuItem Command="{x:Static local:MainWindow.LightModeCommand}"
-                                                                  Header="{x:Static resources:Strings.Settings_Light}"
-                                                                  Style="{StaticResource SettingsMenuItemStyle}"/>
-
-                                                        <MenuItem Command="{x:Static local:MainWindow.DarkModeCommand}"
-                                                                  Header="{x:Static resources:Strings.Settings_Dark}"
-                                                                  Style="{StaticResource SettingsMenuItemStyle}"/>
-
-                                                    </ContextMenu>
-                                                </ToggleButton.ContextMenu>
-
-                                                <Image Source="{DynamicResource DarkModeImage}"
-                                                       Style="{StaticResource ButtonBarButtonImageStyle}" />
-
-                                            </ToggleButton>
-
-                                        </Grid>
-                                    </Border>
-
-                                    <!-- Tab Content -->
-                                    <Border x:Name="contentPanel"
-                                            Grid.Row="2"
-                                            BorderThickness="0">
-
-                                        <Grid x:Name="PART_ItemsHolder"
-                                              Margin="0"
-                                              Background="Transparent" />
-
-                                    </Border>
+                                    </Button>
 
                                 </Grid>
 
-                            </Border>
+                                <!-- Button Bar -->
+                                <Border x:Name="ButtonBar"
+                                        Grid.Row="1"
+                                        Background="{StaticResource ShellBrush}"
+                                        BorderBrush="{StaticResource ShellBorderBrush}"
+                                        BorderThickness="0,0,0,1"
+                                        Padding="10,6">
+
+                                    <Grid DataContext="{Binding ElementName=WindowRoot}">
+
+                                        <Grid.ColumnDefinitions>
+
+                                            <ColumnDefinition MinWidth="180"
+                                                              MaxWidth="230" />
+
+                                            <ColumnDefinition Width="*"
+                                                              MinWidth="300" />
+
+                                            <ColumnDefinition MaxWidth="230" />
+
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Navigation Buttons -->
+                                        <Grid Grid.Column="0">
+
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="5"/>
+                                                <ColumnDefinition Width="1"/>
+                                                <ColumnDefinition Width="5"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="5"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="5"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="5"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Home Button -->
+                                            <Button x:Name="HomeButton"
+                                                    Grid.Column="0"
+                                                    Command="{x:Static local:MainWindow.HomeCommand}"
+                                                    Style="{StaticResource ButtonBarButtonStyle}"
+                                                    ToolTip="{x:Static resources:Strings.Home}">
+
+                                                <Image Source="{DynamicResource HomeImage}"
+                                                       Style="{StaticResource ButtonBarButtonImageStyle}" />
+
+                                            </Button>
+
+                                            <!-- Separator -->
+                                            <Line Grid.Column="2"
+                                                  SnapsToDevicePixels="True"
+                                                  Stroke="{StaticResource SeparatorBrush}"
+                                                  StrokeThickness="1"
+                                                  X1="0"
+                                                  X2="0"
+                                                  Y1="5"
+                                                  Y2="30" />
+
+                                            <!-- Back Button -->
+                                            <Button x:Name="BackButton"
+                                                    Grid.Column="4"
+                                                    Command="{Binding BackCommand}"
+                                                    Style="{StaticResource ButtonBarButtonStyle}"
+                                                    ToolTip="{x:Static resources:Strings.Back}">
+
+                                                <Image Source="{DynamicResource BackImage}"
+                                                       Style="{StaticResource ButtonBarButtonImageStyle}" />
+
+                                            </Button>
+
+                                            <!-- Journey Button -->
+                                            <Button x:Name="JourneyButton"
+                                                    Grid.Column="6"
+                                                    Command="{Binding ElementName=WindowRoot, Path=JourneyCommand}"
+                                                    Style="{StaticResource ButtonBarButtonStyle}"
+                                                    ToolTip="{x:Static resources:Strings.Journey}">
+
+                                                <Image Source="{DynamicResource JourneyImage}"
+                                                       Style="{StaticResource ButtonBarButtonImageStyle}" />
+
+                                            </Button>
+
+                                            <!-- Forward Button -->
+                                            <Button x:Name="ForwardButton"
+                                                    Grid.Column="8"
+                                                    Command="{Binding ForwardCommand}"
+                                                    Style="{StaticResource ButtonBarButtonStyle}"
+                                                    ToolTip="{x:Static resources:Strings.Forward}">
+
+                                                <Image Source="{DynamicResource ForwardImage}"
+                                                       Style="{StaticResource ButtonBarButtonImageStyle}" />
+
+                                            </Button>
+
+                                            <!-- Refresh Button -->
+                                            <Button x:Name="RefreshButton"
+                                                    Grid.Column="10"
+                                                    Command="{x:Static local:MainWindow.RefreshCommand}"
+                                                    Style="{StaticResource ButtonBarButtonStyle}"
+                                                    ToolTip="{x:Static resources:Strings.Refresh}">
+
+                                                <Image Source="{DynamicResource RefreshImage}"
+                                                       Style="{StaticResource ButtonBarButtonImageStyle}" />
+
+                                            </Button>
+
+                                        </Grid>
+
+                                        <!-- Address Bar -->
+                                        <TextBox Name="AddressBar"
+                                                 DataContext="{Binding ElementName=WindowRoot}"
+                                                 GotFocus="AddressBar_GotFocus"
+                                                 Grid.Column="1"
+                                                 KeyDown="AddressBar_KeyDown"
+                                                 GotKeyboardFocus="AddressBar_GotFocus"
+                                                 Style="{StaticResource AddressBarStyle}"
+                                                 Text="{Binding SelectedTab.Address, Mode=TwoWay, UpdateSourceTrigger=Explicit, FallbackValue='New Tab'}" />
+
+                                        <!-- Settings Button -->
+                                        <ToggleButton x:Name="SettingsButton"
+                                                      Click="SettingsButton_Click"
+                                                      Grid.Column="2"
+                                                      HorizontalAlignment="Right"
+                                                      Style="{StaticResource ButtonBarToggleButtonStyle}"
+                                                      ToolTip="{x:Static resources:Strings.Settings}">
+
+                                            <ToggleButton.ContextMenu>
+
+                                                <ContextMenu Name="SettingsMenu"
+                                                             Closed="SettingsMenu_Closed"
+                                                             Opened="SettingsMenu_Opened"
+                                                             Style="{StaticResource SettingsMenuStyle}">
+
+                                                    <MenuItem Command="{x:Static local:MainWindow.AutoModeCommand}"
+                                                              Header="{x:Static resources:Strings.Settings_Auto}"
+                                                              Style="{StaticResource SettingsMenuItemStyle}"/>
+
+                                                    <Separator Style="{StaticResource SettingsMenuSeparatorStyle}" />
+
+                                                    <MenuItem Command="{x:Static local:MainWindow.LightModeCommand}"
+                                                              Header="{x:Static resources:Strings.Settings_Light}"
+                                                              Style="{StaticResource SettingsMenuItemStyle}"/>
+
+                                                    <MenuItem Command="{x:Static local:MainWindow.DarkModeCommand}"
+                                                              Header="{x:Static resources:Strings.Settings_Dark}"
+                                                              Style="{StaticResource SettingsMenuItemStyle}"/>
+
+                                                </ContextMenu>
+                                            </ToggleButton.ContextMenu>
+
+                                            <Image Source="{DynamicResource DarkModeImage}"
+                                                   Style="{StaticResource ButtonBarButtonImageStyle}" />
+
+                                        </ToggleButton>
+
+                                    </Grid>
+                                </Border>
+
+                                <!-- Tab Content -->
+                                <Border x:Name="contentPanel"
+                                        Grid.Row="2"
+                                        BorderThickness="0">
+
+                                    <Grid x:Name="PART_ItemsHolder"
+                                          Margin="0"
+                                          Background="Transparent" />
+
+                                </Border>
+
+                            </Grid>
 
                         </ControlTemplate>
                     </Setter.Value>
