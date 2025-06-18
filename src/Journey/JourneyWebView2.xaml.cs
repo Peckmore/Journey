@@ -106,6 +106,10 @@ namespace Journey
         /// </summary>
         public static readonly DependencyProperty JourneyZoomFactorProperty = DependencyProperty.Register(nameof(JourneyZoomFactor), typeof(double), typeof(JourneyWebView2), new PropertyMetadata(1d));
         /// <summary>
+        /// The WPF <see cref="DependencyProperty" /> which backs the <see cref="PreferredColorScheme" /> property.
+        /// </summary>
+        public static readonly DependencyProperty PreferredColorSchemeProperty = DependencyProperty.Register(nameof(PreferredColorScheme), typeof(CoreWebView2PreferredColorScheme), typeof(JourneyWebView2), new(CoreWebView2PreferredColorScheme.Auto, OnPreferredColorSchemePropertyChanged));
+        /// <summary>
         /// Command to reset the Journey view to the currently selected step, with the zoom factor set to 1 and the canvas panned to the home position.
         /// </summary>
         public static readonly ICommand ResetJourneyViewCommand = new RoutedCommand();
@@ -349,12 +353,8 @@ namespace Journey
         [Category("Common")]
         public CoreWebView2PreferredColorScheme PreferredColorScheme
         {
-            get => CoreWebView2.Profile.PreferredColorScheme;
-            set
-            {
-                CoreWebView2.Profile.PreferredColorScheme = value;
-                ApplyTheme();
-            }
+            get => (CoreWebView2PreferredColorScheme)GetValue(PreferredColorSchemeProperty);
+            set => SetValue(PreferredColorSchemeProperty, value);
         }
         /// <inheritdoc />
         [Category("Common")]
@@ -535,12 +535,12 @@ namespace Journey
         {
             // Set a flag to indicate whether we should use dark mode.
             var isDark = false;
-            if (CoreWebView2?.Profile.PreferredColorScheme == CoreWebView2PreferredColorScheme.Dark)
+            if (PreferredColorScheme == CoreWebView2PreferredColorScheme.Dark)
             {
                 // If the WebView2 profile is set to dark mode, we'll use that.
                 isDark = true;
             }
-            else if (CoreWebView2?.Profile.PreferredColorScheme == CoreWebView2PreferredColorScheme.Auto)
+            else if (PreferredColorScheme == CoreWebView2PreferredColorScheme.Auto)
             {
                 // If the WebView2 profile is set to auto, we'll check the registry to see whether the app should be in light or dark mode.
                 using (var themeRegistryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
@@ -557,8 +557,9 @@ namespace Journey
             };
 
             var dictionariesToRemove = Resources.MergedDictionaries
-                                       .Where(d => d.Source != null && (d.Source.OriginalString.Contains("Theme.Dark.xaml")
-                                                                        || d.Source.OriginalString.Contains("Theme.Light.xaml"))).ToList();
+                                                                    .Where(d => d.Source != null 
+                                                                            && (d.Source.OriginalString.Contains("Theme.Dark.xaml")
+                                                                                || d.Source.OriginalString.Contains("Theme.Light.xaml"))).ToList();
 
             foreach (var dict in dictionariesToRemove)
             {
@@ -1215,6 +1216,15 @@ namespace Journey
             {
                 await ShowJourney();
             }
+        }
+
+        #endregion
+
+        #region Private Static
+
+        private static void OnPreferredColorSchemePropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
+        {
+            (sender as JourneyWebView2)?.ApplyTheme();
         }
 
         #endregion
