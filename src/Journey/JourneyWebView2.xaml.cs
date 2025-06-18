@@ -517,6 +517,9 @@ namespace Journey
 
             WebView.CoreWebView2InitializationCompleted -= WebView_CoreWebView2InitializationCompleted;
             WebView.CoreWebView2.HistoryChanged += CoreWebView2_HistoryChanged;
+
+            // We can also update the CoreWebView2 color scheme.
+            WebView.CoreWebView2.Profile.PreferredColorScheme = PreferredColorScheme;
         }
         private void WebView_NavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
         {
@@ -533,6 +536,12 @@ namespace Journey
 
         private void ApplyTheme()
         {
+            // Apply the chosen theme to the CoreWebView2 instance (if initialised).
+            if (WebView.CoreWebView2 != null)
+            {
+                WebView.CoreWebView2.Profile.PreferredColorScheme = PreferredColorScheme;
+            }
+
             // Set a flag to indicate whether we should use dark mode.
             var isDark = false;
             if (PreferredColorScheme == CoreWebView2PreferredColorScheme.Dark)
