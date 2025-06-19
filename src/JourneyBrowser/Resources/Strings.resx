@@ -132,6 +132,15 @@
   <data name="Journey" xml:space="preserve">
     <value>Show the current journey (Alt+J)</value>
   </data>
+  <data name="JourneyIntro_GotIt" xml:space="preserve">
+    <value>Got it!</value>
+  </data>
+  <data name="JourneyIntro_Text" xml:space="preserve">
+    <value>Press this button at any time to see your journey through the websites you have visited within a tab.</value>
+  </data>
+  <data name="JourneyIntro_Title" xml:space="preserve">
+    <value>Welcome to Journey!</value>
+  </data>
   <data name="Refresh" xml:space="preserve">
     <value>Reload the page (Ctrl+R)</value>
   </data>

@@ -106,6 +106,33 @@ namespace JourneyBrowser.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Got it!.
+        /// </summary>
+        public static string JourneyIntro_GotIt {
+            get {
+                return ResourceManager.GetString("JourneyIntro_GotIt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Press this button at any time to see your journey through the websites you have visited within a tab..
+        /// </summary>
+        public static string JourneyIntro_Text {
+            get {
+                return ResourceManager.GetString("JourneyIntro_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Welcome to Journey!.
+        /// </summary>
+        public static string JourneyIntro_Title {
+            get {
+                return ResourceManager.GetString("JourneyIntro_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reload the page (Ctrl+R).
         /// </summary>
         public static string Refresh {

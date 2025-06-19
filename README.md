@@ -384,6 +384,8 @@ Journey icon created by [Freepik - Flaticon](https://www.flaticon.com/free-icon/
 
 Other icons created by [Google Fonts](https://fonts.google.com/icons)
 
+Lottie animation created by [shivani bai](https://lottiefiles.com/free-animation/travel-is-fun-IYcVDUVlkE)
+
 Reingold-Tilford implementation adapted from the work of [Rachel Lim](https://rachel53461.wordpress.com/2014/04/20/algorithm-for-drawing-trees/)
 
 

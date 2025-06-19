@@ -319,20 +319,22 @@ namespace JourneyBrowser
                 // Remove any previously merged dictionary and merge in the appropriate dictionary based on the current light/dark mode.
                 var themeDictionary = new ResourceDictionary
                 {
-                    Source = new Uri(darkModeRequested ? "pack://application:,,,/Resources/Themes/Theme.Dark.xaml"
-                                            : "pack://application:,,,/Resources/Themes/Theme.Light.xaml", UriKind.Absolute)
+                    Source = new Uri(darkModeRequested ? "pack://application:,,,/Resources/Themes/Theme.dark.xaml"
+                                            : "pack://application:,,,/Resources/Themes/Theme.light.xaml", UriKind.Absolute)
                 };
 
                 var dictionariesToRemove = Resources.MergedDictionaries
-                                                                         .Where(d => d.Source != null && (d.Source.OriginalString.Contains("Theme.Dark.xaml")
-                                                                             || d.Source.OriginalString.Contains("Theme.Light.xaml"))).ToList();
+                                                                         .Where(d => d.Source != null && (d.Source.OriginalString.Contains("Theme.dark.xaml")
+                                                                             || d.Source.OriginalString.Contains("Theme.light.xaml"))).ToList();
 
-                foreach (var dict in dictionariesToRemove)
+                foreach (var dictionaryToRemove in dictionariesToRemove)
                 {
-                    Resources.MergedDictionaries.Remove(dict);
+                    Resources.MergedDictionaries.Remove(dictionaryToRemove);
+                    _journeyIntroWindow?.Resources.Remove(dictionaryToRemove);
                 }
 
                 Resources.MergedDictionaries.Add(themeDictionary);
+                _journeyIntroWindow?.Resources.MergedDictionaries.Add(themeDictionary);
             }
         }
         private bool CanExecuteBackCommand()

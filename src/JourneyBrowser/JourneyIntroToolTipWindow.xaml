@@ -2,6 +2,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:resources="clr-namespace:JourneyBrowser.Resources"
         xmlns:wpf="clr-namespace:LottieSharp.WPF;assembly=LottieSharp"
         mc:Ignorable="d"
         x:Class="JourneyBrowser.JourneyIntroToolTipWindow"
@@ -10,8 +11,8 @@
         Focusable="False"
         Height="420"
         ShowInTaskbar="False"
-        WindowStyle="None"
-        Width="320">
+        Width="320"
+        WindowStyle="None">
 
     <Window.Resources>
 
@@ -37,7 +38,7 @@
 
                     <CombinedGeometry.Geometry1>
 
-                        <RectangleGeometry Rect="10,15,300,385"
+                        <RectangleGeometry Rect="10,15,300,360"
                                            RadiusX="12"
                                            RadiusY="12"/>
 
@@ -70,26 +71,45 @@
             </Path.Effect>
         </Path>
 
-        <Grid Margin="30,10,30,30">
+        <Grid Margin="30">
 
             <Grid.RowDefinitions>
-                <RowDefinition Height="20" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="210" />
+                <RowDefinition Height="125" />
             </Grid.RowDefinitions>
 
-            <wpf:LottieAnimationView Grid.Row="1"
+            <wpf:LottieAnimationView Grid.Row="0"
                                      AutoPlay="True"
-                                     Height="280"
+                                     Height="210"
                                      HorizontalAlignment="Stretch"
                                      RepeatCount="-1"
                                      ResourcePath="pack://application:,,,/Resources/Animations/journey_intro.json"
-                                     VerticalAlignment="Stretch"
-                                     Width="280"/>
+                                     VerticalAlignment="Top" />
 
-            <TextBlock Grid.Row="2" 
-                       FontSize="16"
-                       Text="This is a custom window!" />
+            <TextBlock Grid.Row="1"
+                       FontFamily="{StaticResource RobotoRegular}"
+                       FontSize="14"
+                       Foreground="{StaticResource ShellTextBrush}"
+                       TextWrapping="Wrap">
+
+                <Run Text="{x:Static resources:Strings.JourneyIntro_Title}" />
+
+                <LineBreak/><LineBreak/>
+
+                <Run Text="{x:Static resources:Strings.JourneyIntro_Text}" />
+
+                <LineBreak/><LineBreak/>
+
+                <Hyperlink Click="Hyperlink_RequestNavigate"
+                           TextDecorations="None">
+
+                    <TextBlock Foreground="{StaticResource HighlightBrush}"
+                               Text="{x:Static resources:Strings.JourneyIntro_GotIt}"
+                               TextAlignment="Center" />
+
+                </Hyperlink>
+
+            </TextBlock>
 
         </Grid>
 

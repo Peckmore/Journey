@@ -16,10 +16,13 @@ namespace JourneyBrowser
 
         #endregion
 
+        #region Methods
 
-        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        private void Hyperlink_RequestNavigate(object sender, EventArgs e)
         {
             Close();
         }
+
+        #endregion
     }
 }

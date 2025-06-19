@@ -28,8 +28,10 @@
     <SolidColorBrush x:Key="SeparatorBrush" Color="{DynamicResource SeparatorColor}" />
 
     <SolidColorBrush x:Key="ShellBrush" Color="{DynamicResource ShellColor}" />
-    
+
     <SolidColorBrush x:Key="ShellBorderBrush" Color="{DynamicResource ControlHoverColor}" />
+
+    <SolidColorBrush x:Key="ShellTextBrush" Color="{DynamicResource ControlNormalTextColor}" />
 
     <SolidColorBrush x:Key="TabActiveBrush" Color="{DynamicResource ShellColor}" />
     <SolidColorBrush x:Key="TabActiveTextBrush" Color="{DynamicResource ControlPressedTextColor}" />
