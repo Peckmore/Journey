@@ -8,7 +8,7 @@ A UI/UX experiment in visual, branching browser history.
 _“The journey is the reward.”_  
 **Lao Tzu**
 
-SCREENSHOT
+![Demo](res/images/demo_animation.gif)
 
 </div>
 
