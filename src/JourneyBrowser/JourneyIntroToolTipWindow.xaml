@@ -7,9 +7,9 @@
         x:Class="JourneyBrowser.JourneyIntroToolTipWindow"
         AllowsTransparency="True"
         Background="Transparent"
+        Focusable="False"
         Height="420"
         ShowInTaskbar="False"
-        Topmost="True"
         WindowStyle="None"
         Width="320">
 
