@@ -16,7 +16,7 @@
     <SolidColorBrush x:Key="ButtonPressedBrush" Color="{DynamicResource ControlPressedColor}" />
     <SolidColorBrush x:Key="ButtonPressedTextBrush" Color="{DynamicResource ControlPressedTextColor}" />
 
-    <SolidColorBrush x:Key="HighlightBrush" Color="#FF557FF3" />
+    <SolidColorBrush x:Key="HighlightBrush" Color="{DynamicResource HighlightColor}" />
 
     <SolidColorBrush x:Key="MenuItemHoverBrush" Color="{DynamicResource ControlHoverColor}" />
     <SolidColorBrush x:Key="MenuItemHoverTextBrush" Color="{DynamicResource ControlHoverTextColor}" />
@@ -39,6 +39,9 @@
     <SolidColorBrush x:Key="TabInactiveTextBrush" Color="{DynamicResource ControlPressedTextColor}" />
 
     <SolidColorBrush x:Key="TabControlTabAreaBackgroundBrush" Color="Transparent" />
+
+    <!-- Colors -->
+    <Color x:Key="HighlightColor">#FF557FF3</Color>
 
     <!-- Fonts -->
     <FontFamily x:Key="RobotoRegular">
