@@ -307,6 +307,12 @@ In order to optimise traversal of the tree (in anticipation of node positioning)
 
 Our tree visualisation is arranged using the Reingold-Tilford algorithm [^tidier-drawings]. A detailed explanation of the algorithm was provided by _Kay Jan Wong_ [^rt-walkthrough], but a special mention must be given to _Rachel Lim_ [^rt-rachel], whose implementation was used as the basis of the implementation in this project.
 
+### Journey Browser
+
+Although Journey is an `IWebView2` control, in order to test the effectiveness of the final implementation we also create a browser to host the control in, given the monicker _Journey Browser_.
+
+_Journey Browser_ is enough of a browser to be sufficiently "transparent" to the end user compared to their regular browser, but kept simple enough that it is fairly quick to implement. It is again implemented in **C#** and **WPF**, using some basic MVVM [^mvvm], and leveraging **LottieSharp** [^lottiesharp] for the introduction animation, and **Dragablz** [^dragablz] for the tab control. The only features implemented are _Back_, _Forward_, _Home_, _Refresh_, and _Light/Dark Mode_.
+
 ## Challenges
 
 ### WebView2 History
@@ -432,6 +438,12 @@ Reingold-Tilford implementation adapted from the work of [Rachel Lim](https://ra
 [^rt-walkthrough]: [Reingold Tilford Algorithm Explained With Walkthrough](https://towardsdatascience.com/reingold-tilford-algorithm-explained-with-walkthrough-be5810e8ed93/)
 
 [^rt-rachel]: [Algorithm for Drawing Trees](https://rachel53461.wordpress.com/2014/04/20/algorithm-for-drawing-trees/)
+
+[^mvvm]: [Patterns - WPF Apps With The Model-View-ViewModel Design Pattern](https://learn.microsoft.com/en-us/archive/msdn-magazine/2009/february/patterns-wpf-apps-with-the-model-view-viewmodel-design-pattern)
+
+[^lottiesharp]: [LottieSharp](https://github.com/quicoli/LottieSharp)
+
+[^dragablz]: [Dragablz](https://github.com/ButchersBoy/Dragablz)
 
 [^devtools-protocol]: [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/tot/)
 
