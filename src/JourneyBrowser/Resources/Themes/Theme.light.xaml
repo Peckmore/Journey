@@ -18,6 +18,8 @@
 
     <Color x:Key="SeparatorColor">#FFDDDDDD</Color>
 
+    <Color x:Key="ShadowColor">#FFCCCCCC</Color>
+
     <Color x:Key="ShellColor">#FFFFFFFF</Color>
 
     <Color x:Key="TabHoverColor">#FFCCCCCC</Color>

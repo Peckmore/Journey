@@ -24,9 +24,11 @@
         WindowStartupLocation="CenterScreen">
 
     <WindowChrome.WindowChrome>
+
         <WindowChrome CaptionHeight="35"
                       ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}"
                       GlassFrameThickness="-1"/>
+
     </WindowChrome.WindowChrome>
 
     <Window.CommandBindings>
@@ -217,7 +219,7 @@
                                 <Border.Effect>
 
                                     <DropShadowEffect BlurRadius="12"
-                                                      Color="{StaticResource ShadowColor}"
+                                                      Color="{DynamicResource ShadowColor}"
                                                       Direction="315"
                                                       ShadowDepth="3"/>
 
@@ -1085,6 +1087,7 @@
                                                               Style="{StaticResource SettingsMenuItemStyle}"/>
 
                                                 </ContextMenu>
+
                                             </ToggleButton.ContextMenu>
 
                                             <Image Source="{DynamicResource DarkModeImage}"

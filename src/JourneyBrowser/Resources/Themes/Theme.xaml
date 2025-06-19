@@ -40,9 +40,6 @@
 
     <SolidColorBrush x:Key="TabControlTabAreaBackgroundBrush" Color="Transparent" />
 
-    <!-- Colors -->
-    <Color x:Key="ShadowColor">#FFCCCCCC</Color>
-
     <!-- Fonts -->
     <FontFamily x:Key="RobotoRegular">
         pack://application:,,,/Journey;component/Resources/Fonts/Roboto-Regular.ttf#Roboto

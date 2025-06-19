@@ -63,7 +63,7 @@
             <Path.Effect>
 
                 <DropShadowEffect BlurRadius="8"
-                                  Color="{StaticResource ShadowColor}"
+                                  Color="{DynamicResource ShadowColor}"
                                   Direction="315"
                                   ShadowDepth="5"/>
 
