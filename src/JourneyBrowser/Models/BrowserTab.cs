@@ -13,7 +13,11 @@ namespace JourneyBrowser.Models
         private bool _canGoForward;
         private bool _canShowJourney;
         private BitmapSource? _favIcon;
+        private Action? _goBackAction;
+        private Action? _goForwardAction;
+        private Action? _reloadAction;
         private string _title;
+        private Func<Task>? _toggleJourneyFunction;
 
         #endregion
 
@@ -117,6 +121,41 @@ namespace JourneyBrowser.Models
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #endregion
+
+        #region Public
+
+        public void GoBack()
+        {
+            _goBackAction?.Invoke();
+        }
+        public void GoForward()
+        {
+            _goForwardAction?.Invoke();
+        }
+        public void GoHome()
+        {
+            Address = MainWindow.HomePage;
+        }
+        public void Reload()
+        {
+            _reloadAction?.Invoke();
+        }
+        public void SetupActions(Action goBackAction,
+                                 Action goForwardAction,
+                                 Action reloadAction,
+                                 Func<Task> toggleJourneyFunction)
+        {
+            _goBackAction = goBackAction;
+            _goForwardAction = goForwardAction;
+            _reloadAction = reloadAction;
+            _toggleJourneyFunction = toggleJourneyFunction;
+        }
+        public void ToggleJourney()
+        {
+            _toggleJourneyFunction?.Invoke();
         }
 
         #endregion

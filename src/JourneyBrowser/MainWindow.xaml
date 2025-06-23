@@ -1170,10 +1170,10 @@
             <TabControl.ContentTemplate>
                 <DataTemplate DataType="{x:Type models:BrowserTab}">
 
-                    <journey:JourneyWebView2 x:Name="WebView"
-                                             CoreWebView2InitializationCompleted="WebView_CoreWebView2InitializationCompleted"
+                    <journey:JourneyWebView2 CoreWebView2InitializationCompleted="WebView_CoreWebView2InitializationCompleted"
                                              JourneyActiveStepBackground="{StaticResource HighlightBrush}"
                                              JourneyHighlightBackground="{StaticResource HighlightBrush}"
+                                             Loaded="WebView_Loaded"
                                              NavigationCompleted="WebView_Navigation"
                                              NavigationStarting="WebView_Navigation"
                                              PreferredColorScheme="{Binding ElementName=WindowRoot, Path=PreferredColorScheme}"

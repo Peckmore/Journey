@@ -230,6 +230,13 @@ namespace JourneyBrowser
                 webView2.CoreWebView2.NewWindowRequested += WebView_NewWindowRequested;
             }
         }
+        private void WebView_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is JourneyWebView2 { DataContext: BrowserTab browserTab } webView2)
+            {
+                browserTab.SetupActions(webView2.GoBack, webView2.GoForward, webView2.Reload, webView2.ToggleJourney);
+            }
+        }
         private async void WebView_Navigation(object? sender, EventArgs e)
         {
             if (sender is JourneyWebView2 { DataContext: BrowserTab tabViewModel } webView)
@@ -385,7 +392,7 @@ namespace JourneyBrowser
         }
         private void ExecutedBackCommand()
         {
-            GetCurrentWebView()?.GoBack();
+            SelectedTab?.GoBack();
         }
         private void ExecutedCloseTabCommand(object sender, ExecutedRoutedEventArgs e)
         {
@@ -398,21 +405,15 @@ namespace JourneyBrowser
         }
         private void ExecutedForwardCommand()
         {
-            GetCurrentWebView()?.GoForward();
+            SelectedTab?.GoForward();
         }
         private void ExecutedHomeCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            if (GetCurrentWebView() is { } webView)
-            {
-                webView.Source = new(HomePage);
-            }
+            SelectedTab?.GoHome();
         }
-        private async void ExecutedJourneyCommand()
+        private void ExecutedJourneyCommand()
         {
-            if (GetCurrentWebView() is JourneyWebView2 webView)
-            {
-                await webView.ToggleJourney();
-            }
+            SelectedTab?.ToggleJourney();
         }
         private void ExecutedLightModeCommand(object sender, ExecutedRoutedEventArgs e)
         {
@@ -425,36 +426,7 @@ namespace JourneyBrowser
         }
         private void ExecutedRefreshCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            GetCurrentWebView()?.Reload();
-        }
-        private T? FindVisualChild<T>(DependencyObject obj) where T : DependencyObject
-        {
-            for (var i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
-            {
-                var child = VisualTreeHelper.GetChild(obj, i);
-                if (child is T typedChild)
-                {
-                    return typedChild;
-                }
-
-                var childOfChild = FindVisualChild<T>(child);
-                if (childOfChild != null)
-                {
-                    return childOfChild;
-                }
-            }
-
-            return null;
-        }
-        private IWebView2? GetCurrentWebView()
-        {
-            //if (BrowserTabControl.ItemContainerGenerator.ContainerFromItem(BrowserTabControl.SelectedItem) is not null)
-            {
-                var webView = FindVisualChild<JourneyWebView2>(BrowserTabControl);
-                return webView;
-            }
-
-            return null;
+            SelectedTab?.Reload();
         }
         private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
