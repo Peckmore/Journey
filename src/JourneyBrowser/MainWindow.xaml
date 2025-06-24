@@ -9,6 +9,7 @@
         xmlns:converters="clr-namespace:JourneyBrowser.Converters"
         xmlns:models="clr-namespace:JourneyBrowser.Models"
         xmlns:resources="clr-namespace:JourneyBrowser.Resources"
+        xmlns:viewmodels="clr-namespace:JourneyBrowser.ViewModels"
         mc:Ignorable="d"
         x:Class="JourneyBrowser.MainWindow"
         x:ClassModifier="internal"
@@ -31,63 +32,51 @@
 
     </WindowChrome.WindowChrome>
 
-    <Window.CommandBindings>
+    <!--<Window.CommandBindings>
 
-        <CommandBinding Command="{x:Static local:MainWindow.AutoModeCommand}"
+        <CommandBinding Command="{Binding AutoModeCommand}"
                         Executed="ExecutedAutoModeCommand" />
 
-        <CommandBinding Command="{x:Static local:MainWindow.CloseTabCommand}"
-                        Executed="ExecutedCloseTabCommand" />
-
-        <CommandBinding Command="{x:Static local:MainWindow.DarkModeCommand}"
+        <CommandBinding Command="{Binding DarkModeCommand}"
                         Executed="ExecutedDarkModeCommand" />
 
-        <CommandBinding Command="{x:Static local:MainWindow.HomeCommand}"
-                        Executed="ExecutedHomeCommand" />
-
-        <CommandBinding Command="{x:Static local:MainWindow.LightModeCommand}"
+        <CommandBinding Command="{Binding LightModeCommand}"
                         Executed="ExecutedLightModeCommand" />
 
-        <CommandBinding Command="{x:Static local:MainWindow.NewTabCommand}"
-                        Executed="ExecutedNewTabCommand" />
-
-        <CommandBinding Command="{x:Static local:MainWindow.RefreshCommand}"
-                        Executed="ExecutedRefreshCommand" />
-
-    </Window.CommandBindings>
+    </Window.CommandBindings>-->
 
     <Window.InputBindings>
 
         <KeyBinding Key="Left"
                     Modifiers="Alt"
-                    Command="{Binding ElementName=WindowRoot, Path=BackCommand}" />
+                    Command="{Binding BackCommand}" />
 
         <KeyBinding Key="F4"
                     Modifiers="Control"
-                    Command="{x:Static local:MainWindow.CloseTabCommand}" />
+                    Command="{Binding CloseTabCommand}" />
 
         <KeyBinding Key="Right"
                     Modifiers="Alt"
-                    Command="{Binding ElementName=WindowRoot, Path=ForwardCommand}" />
+                    Command="{Binding ForwardCommand}" />
 
         <KeyBinding Key="Home"
                     Modifiers="Alt"
-                    Command="{x:Static local:MainWindow.HomeCommand}" />
+                    Command="{Binding HomeCommand}" />
 
         <KeyBinding Key="J"
                     Modifiers="Alt"
-                    Command="{Binding ElementName=WindowRoot, Path=JourneyCommand}" />
+                    Command="{Binding JourneyCommand}" />
 
         <KeyBinding Key="T"
                     Modifiers="Control"
-                    Command="{x:Static local:MainWindow.NewTabCommand}" />
+                    Command="{Binding NewTabCommand}" />
 
         <KeyBinding Key="R"
                     Modifiers="Control"
-                    Command="{x:Static local:MainWindow.RefreshCommand}" />
+                    Command="{Binding ReloadCommand}" />
 
         <KeyBinding Key="F5"
-                    Command="{x:Static local:MainWindow.RefreshCommand}" />
+                    Command="{Binding ReloadCommand}" />
 
     </Window.InputBindings>
 
@@ -940,7 +929,7 @@
                                         BorderThickness="0,0,0,1"
                                         Padding="10,6">
 
-                                    <Grid DataContext="{Binding ElementName=WindowRoot}">
+                                    <Grid>
 
                                         <Grid.ColumnDefinitions>
 
@@ -974,7 +963,7 @@
                                             <!-- Home Button -->
                                             <Button x:Name="HomeButton"
                                                     Grid.Column="0"
-                                                    Command="{x:Static local:MainWindow.HomeCommand}"
+                                                    Command="{Binding HomeCommand}"
                                                     Style="{StaticResource ButtonBarButtonStyle}"
                                                     ToolTip="{x:Static resources:Strings.Home}">
 
@@ -1008,7 +997,7 @@
                                             <!-- Journey Button -->
                                             <Button x:Name="JourneyButton"
                                                     Grid.Column="6"
-                                                    Command="{Binding ElementName=WindowRoot, Path=JourneyCommand}"
+                                                    Command="{Binding JourneyCommand}"
                                                     Style="{StaticResource ButtonBarButtonStyle}"
                                                     ToolTip="{x:Static resources:Strings.Journey}">
 
@@ -1032,7 +1021,7 @@
                                             <!-- Refresh Button -->
                                             <Button x:Name="RefreshButton"
                                                     Grid.Column="10"
-                                                    Command="{x:Static local:MainWindow.RefreshCommand}"
+                                                    Command="{Binding ReloadCommand}"
                                                     Style="{StaticResource ButtonBarButtonStyle}"
                                                     ToolTip="{x:Static resources:Strings.Refresh}">
 
@@ -1045,7 +1034,6 @@
 
                                         <!-- Address Bar -->
                                         <TextBox Name="AddressBar"
-                                                 DataContext="{Binding ElementName=WindowRoot}"
                                                  GotFocus="AddressBar_GotFocus"
                                                  Grid.Column="1"
                                                  KeyDown="AddressBar_KeyDown"
@@ -1072,17 +1060,17 @@
                                                              Opened="SettingsMenu_Opened"
                                                              Style="{StaticResource SettingsMenuStyle}">
 
-                                                    <MenuItem Command="{x:Static local:MainWindow.AutoModeCommand}"
+                                                    <MenuItem Command="{Binding AutoModeCommand}"
                                                               Header="{x:Static resources:Strings.Settings_Auto}"
                                                               Style="{StaticResource SettingsMenuItemStyle}"/>
 
                                                     <Separator Style="{StaticResource SettingsMenuSeparatorStyle}" />
 
-                                                    <MenuItem Command="{x:Static local:MainWindow.LightModeCommand}"
+                                                    <MenuItem Command="{Binding LightModeCommand}"
                                                               Header="{x:Static resources:Strings.Settings_Light}"
                                                               Style="{StaticResource SettingsMenuItemStyle}"/>
 
-                                                    <MenuItem Command="{x:Static local:MainWindow.DarkModeCommand}"
+                                                    <MenuItem Command="{Binding DarkModeCommand}"
                                                               Header="{x:Static resources:Strings.Settings_Dark}"
                                                               Style="{StaticResource SettingsMenuItemStyle}"/>
 
@@ -1125,7 +1113,6 @@
     <Grid Style="{StaticResource WindowStyle}">
 
         <dragablz:TabablzControl x:Name="BrowserTabControl"
-                                 DataContext="{Binding ElementName=WindowRoot}"
                                  IsSynchronizedWithCurrentItem="True"
                                  ItemsSource="{Binding Tabs}"
                                  NewItemFactory="{Binding TabFactory}"
@@ -1176,7 +1163,7 @@
                                              Loaded="WebView_Loaded"
                                              NavigationCompleted="WebView_Navigation"
                                              NavigationStarting="WebView_Navigation"
-                                             PreferredColorScheme="{Binding ElementName=WindowRoot, Path=PreferredColorScheme}"
+                                             PreferredColorScheme="{Binding DataContext.PreferredColorScheme, ElementName=WindowRoot}"
                                              Source="{Binding Address, Mode=TwoWay, FallbackValue=about:blank}" />
 
                 </DataTemplate>

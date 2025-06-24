@@ -1,13 +1,10 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using Journey;
+﻿using Journey;
 using JourneyBrowser.Interop;
 using JourneyBrowser.Models;
+using JourneyBrowser.ViewModels;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 using Microsoft.Win32;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -18,7 +15,7 @@ using System.Windows.Media.Imaging;
 
 namespace JourneyBrowser
 {
-    internal partial class MainWindow : Window, INotifyPropertyChanged
+    internal partial class MainWindow : Window
     {
         #region Constants
 
@@ -28,54 +25,9 @@ namespace JourneyBrowser
 
         #region Fields
 
-        #region Private
-
         private bool? _isDarkMode;
         private JourneyIntroToolTipWindow? _journeyIntroWindow;
-        private CoreWebView2PreferredColorScheme _preferredColorScheme;
-        private BrowserTab? _selectedTab;
-
-        #endregion
-
-        #region Public Static
-
-        /// <summary>
-        /// Command to switch dark/light mode to match system.
-        /// </summary>
-        public static readonly ICommand AutoModeCommand = new RoutedCommand();
-        /// <summary>
-        /// Command to close a browsing tab.
-        /// </summary>
-        public static readonly ICommand CloseTabCommand = new RoutedCommand();
-        /// <summary>
-        /// Command to switch to dark mode.
-        /// </summary>
-        public static readonly ICommand DarkModeCommand = new RoutedCommand();
-        /// <summary>
-        /// Command to navigate the current tab to the Home page.
-        /// </summary>
-        public static readonly ICommand HomeCommand = new RoutedCommand();
-        /// <summary>
-        /// Command to switch to light mode.
-        /// </summary>
-        public static readonly ICommand LightModeCommand = new RoutedCommand();
-        /// <summary>
-        /// Command to create a new browsing tab.
-        /// </summary>
-        public static readonly ICommand NewTabCommand = new RoutedCommand();
-        /// <summary>
-        /// Command to refresh the current tab.
-        /// </summary>
-        public static readonly ICommand RefreshCommand = new RoutedCommand();
-
-        #endregion
-
-        #endregion
-
-        #region Events
-
-        /// <inheritdoc />
-        public event PropertyChangedEventHandler? PropertyChanged;
+        private readonly MainWindowViewModel _viewModel;
 
         #endregion
 
@@ -83,71 +35,23 @@ namespace JourneyBrowser
 
         public MainWindow()
         {
-            // Set fields and properties
-            PreferredColorScheme = CoreWebView2PreferredColorScheme.Auto;
-            Tabs = new();
-
-            // Wire up our commands
-            BackCommand = new RelayCommand(ExecutedBackCommand, CanExecuteBackCommand);
-            ForwardCommand = new RelayCommand(ExecutedForwardCommand, CanExecuteForwardCommand);
-            JourneyCommand = new RelayCommand(ExecutedJourneyCommand, CanExecuteJourneyCommand);
-
             // Initialize window.
             InitializeComponent();
 
+            _viewModel = new MainWindowViewModel();
+            DataContext = _viewModel;
             SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
         }
+
         public MainWindow(string url)
             : this()
         {
-            CreateTab(url);
+            _viewModel.CreateTab(url);
         }
 
         #endregion
 
-        #region Properties
 
-        /// <summary>
-        /// Command to navigate the current tab back one step in it's session history.
-        /// </summary>
-        public IRelayCommand BackCommand { get; }
-        /// <summary>
-        /// Command to navigate the current tab forward one step in it's session history.
-        /// </summary>
-        public IRelayCommand ForwardCommand { get; }
-        /// <summary>
-        /// Command to open the Journey view for the current tab.
-        /// </summary>
-        public IRelayCommand JourneyCommand { get; }
-        public CoreWebView2PreferredColorScheme PreferredColorScheme
-        {
-            get => _preferredColorScheme;
-            set
-            {
-                if (_preferredColorScheme != value)
-                {
-                    _preferredColorScheme = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        public BrowserTab? SelectedTab
-        {
-            get => _selectedTab;
-            set
-            {
-                if (_selectedTab != value)
-                {
-                    _selectedTab = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-        public Func<BrowserTab> TabFactory => () => new BrowserTab(HomePage);
-        public ObservableCollection<BrowserTab> Tabs { get; }
-
-        #endregion
 
         #region Methods
 
@@ -162,14 +66,11 @@ namespace JourneyBrowser
         }
         private void AddressBar_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            if (e.Key == Key.Enter && sender is TextBox textBox)
             {
-                if (sender is TextBox textBox)
-                {
-                    var binding = textBox.GetBindingExpression(TextBox.TextProperty);
-                    binding?.UpdateSource();
-                    BrowserTabControl.Focus();
-                }
+                var binding = textBox.GetBindingExpression(TextBox.TextProperty);
+                binding?.UpdateSource();
+                BrowserTabControl.Focus();
             }
         }
         private void JourneyIntroWindow_Closed(object? sender, EventArgs e)
@@ -250,15 +151,13 @@ namespace JourneyBrowser
                     tabViewModel.FavIcon = stream == null || stream.Length == 0 ? null : BitmapFrame.Create(stream);
                 }
 
-                BackCommand.NotifyCanExecuteChanged();
-                ForwardCommand.NotifyCanExecuteChanged();
-                JourneyCommand.NotifyCanExecuteChanged();
+                _viewModel.UpdateCommandStates(tabViewModel);
             }
         }
         private void WebView_NewWindowRequested(object? sender, CoreWebView2NewWindowRequestedEventArgs e)
         {
             e.Handled = true;
-            CreateTab(e.Uri);
+            _viewModel.CreateTab(e.Uri);
         }
         private void Window_ContentRendered(object? sender, EventArgs e)
         {
@@ -294,7 +193,7 @@ namespace JourneyBrowser
         {
             PositionJourneyIntroWindow();
         }
-        
+
         #endregion
 
         #region Private
@@ -303,12 +202,12 @@ namespace JourneyBrowser
         {
             // Set a flag to indicate whether we should use dark mode.
             var darkModeRequested = false;
-            if (_preferredColorScheme == CoreWebView2PreferredColorScheme.Dark)
+            if (_viewModel.PreferredColorScheme == CoreWebView2PreferredColorScheme.Dark)
             {
                 // If the WebView2 profile is set to dark mode, we'll use that.
                 darkModeRequested = true;
             }
-            else if (_preferredColorScheme == CoreWebView2PreferredColorScheme.Auto)
+            else if (_viewModel.PreferredColorScheme == CoreWebView2PreferredColorScheme.Auto)
             {
                 // If the WebView2 profile is set to auto, we'll check the registry to see whether the app should be in light or dark mode.
                 using (var themeRegistryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
@@ -337,100 +236,12 @@ namespace JourneyBrowser
                 foreach (var dictionaryToRemove in dictionariesToRemove)
                 {
                     Resources.MergedDictionaries.Remove(dictionaryToRemove);
-                    _journeyIntroWindow?.Resources.Remove(dictionaryToRemove);
+                        _journeyIntroWindow?.Resources.Remove(dictionaryToRemove);
                 }
 
                 Resources.MergedDictionaries.Add(themeDictionary);
-                _journeyIntroWindow?.Resources.MergedDictionaries.Add(themeDictionary);
-            }
-        }
-        private bool CanExecuteBackCommand()
-        {
-            return SelectedTab?.CanGoBack ?? false;
-        }
-        private bool CanExecuteForwardCommand()
-        {
-            return SelectedTab?.CanGoForward ?? false;
-        }
-        private bool CanExecuteJourneyCommand()
-        {
-            return SelectedTab?.CanShowJourney ?? false;
-        }
-        private void CloseTab()
-        {
-            var tab = SelectedTab;
-            if (tab != null)
-            {
-                var selectedIndex = Tabs.IndexOf(tab);
-                if (selectedIndex > 0)
-                {
-                    SelectedTab = Tabs[selectedIndex - 1];
+                    _journeyIntroWindow?.Resources.MergedDictionaries.Add(themeDictionary);
                 }
-                else if (selectedIndex == 0 && Tabs.Count > 1)
-                {
-                    SelectedTab = Tabs[selectedIndex + 1];
-                }
-
-                Tabs.Remove(tab);
-
-                if (Tabs.Count == 0)
-                {
-                    Close();
-                }
-            }
-        }
-        private void CreateTab(string address)
-        {
-            var newTab = new BrowserTab(address);
-            Tabs.Add(newTab);
-            BrowserTabControl.SelectedItem = newTab;
-        }
-        private void ExecutedAutoModeCommand(object sender, ExecutedRoutedEventArgs e)
-        {
-            PreferredColorScheme = CoreWebView2PreferredColorScheme.Auto;
-            ApplyTheme();
-        }
-        private void ExecutedBackCommand()
-        {
-            SelectedTab?.GoBack();
-        }
-        private void ExecutedCloseTabCommand(object sender, ExecutedRoutedEventArgs e)
-        {
-            CloseTab();
-        }
-        private void ExecutedDarkModeCommand(object sender, ExecutedRoutedEventArgs e)
-        {
-            PreferredColorScheme = CoreWebView2PreferredColorScheme.Dark;
-            ApplyTheme();
-        }
-        private void ExecutedForwardCommand()
-        {
-            SelectedTab?.GoForward();
-        }
-        private void ExecutedHomeCommand(object sender, ExecutedRoutedEventArgs e)
-        {
-            SelectedTab?.GoHome();
-        }
-        private void ExecutedJourneyCommand()
-        {
-            SelectedTab?.ToggleJourney();
-        }
-        private void ExecutedLightModeCommand(object sender, ExecutedRoutedEventArgs e)
-        {
-            PreferredColorScheme = CoreWebView2PreferredColorScheme.Light;
-            ApplyTheme();
-        }
-        private void ExecutedNewTabCommand(object sender, ExecutedRoutedEventArgs e)
-        {
-            CreateTab(HomePage);
-        }
-        private void ExecutedRefreshCommand(object sender, ExecutedRoutedEventArgs e)
-        {
-            SelectedTab?.Reload();
-        }
-        private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         private void PositionJourneyIntroWindow()
         {
@@ -458,7 +269,7 @@ namespace JourneyBrowser
             if (_journeyIntroWindow == null)
             {
                 _journeyIntroWindow = new JourneyIntroToolTipWindow
-                {
+            {
                     Owner = this
                 };
 
