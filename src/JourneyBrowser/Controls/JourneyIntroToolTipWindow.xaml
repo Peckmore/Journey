@@ -5,7 +5,7 @@
         xmlns:resources="clr-namespace:JourneyBrowser.Resources"
         xmlns:wpf="clr-namespace:LottieSharp.WPF;assembly=LottieSharp"
         mc:Ignorable="d"
-        x:Class="JourneyBrowser.JourneyIntroToolTipWindow"
+        x:Class="JourneyBrowser.Controls.JourneyIntroToolTipWindow"
         AllowsTransparency="True"
         Background="Transparent"
         Focusable="False"

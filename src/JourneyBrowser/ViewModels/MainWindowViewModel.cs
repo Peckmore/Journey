@@ -27,7 +27,7 @@ namespace JourneyBrowser.ViewModels
         public MainWindowViewModel()
         {
             // Set fields
-            PreferredColorScheme = CoreWebView2PreferredColorScheme.Auto;
+            PreferredColorScheme = Settings.ColorScheme;
 
             // Set properties
             BackCommand = new RelayCommand(ExecutedBackCommand, CanExecuteBackCommand);
@@ -76,7 +76,7 @@ namespace JourneyBrowser.ViewModels
                 }
             }
         }
-        public Func<BrowserTab> TabFactory => () => new BrowserTab(MainWindow.HomePage);
+        public Func<BrowserTab> TabFactory => () => new BrowserTab(Settings.HomePage);
         public ObservableCollection<BrowserTab> Tabs { get; }
 
         #endregion
@@ -119,7 +119,7 @@ namespace JourneyBrowser.ViewModels
         }
         private void ExecutedNewTabCommand()
         {
-            CreateTab(MainWindow.HomePage);
+            CreateTab(Settings.HomePage);
         }
         private void ExecutedReloadCommand()
         {

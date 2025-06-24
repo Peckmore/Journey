@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using JourneyBrowser.Views;
+using System.Windows;
 
 namespace JourneyBrowser
 {
@@ -8,7 +9,7 @@ namespace JourneyBrowser
 
         private void AppStartup(object sender, StartupEventArgs e)
         {
-            var mainWindow = new MainWindow(JourneyBrowser.MainWindow.HomePage);
+            var mainWindow = new MainWindow(Settings.HomePage);
             mainWindow.Show();
         }
 

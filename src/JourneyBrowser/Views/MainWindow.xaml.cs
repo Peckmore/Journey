@@ -1,4 +1,5 @@
 ﻿using Journey;
+using JourneyBrowser.Controls;
 using JourneyBrowser.Interop;
 using JourneyBrowser.Models;
 using JourneyBrowser.ViewModels;
@@ -13,16 +14,10 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace JourneyBrowser
+namespace JourneyBrowser.Views
 {
     internal partial class MainWindow : Window
     {
-        #region Constants
-
-        public const string HomePage = @"https://start.duckduckgo.com";
-
-        #endregion
-
         #region Fields
 
         private bool? _isDarkMode;

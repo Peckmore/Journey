@@ -1,10 +1,7 @@
 ﻿using System.Windows;
 
-namespace JourneyBrowser
+namespace JourneyBrowser.Controls
 {
-    /// <summary>
-    /// Interaction logic for ToolTipWindow.xaml
-    /// </summary>
     public partial class JourneyIntroToolTipWindow : Window
     {
         #region Construction

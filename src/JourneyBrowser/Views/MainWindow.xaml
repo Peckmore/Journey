@@ -11,7 +11,7 @@
         xmlns:resources="clr-namespace:JourneyBrowser.Resources"
         xmlns:viewmodels="clr-namespace:JourneyBrowser.ViewModels"
         mc:Ignorable="d"
-        x:Class="JourneyBrowser.MainWindow"
+        x:Class="JourneyBrowser.Views.MainWindow"
         x:ClassModifier="internal"
         x:Name="WindowRoot"
         Background="Transparent"
