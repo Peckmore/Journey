@@ -11,7 +11,7 @@ namespace JourneyBrowser
 
         #region Properties
 
-        public static CoreWebView2PreferredColorScheme ColorScheme => CoreWebView2PreferredColorScheme.Auto;
+        public static CoreWebView2PreferredColorScheme ColorScheme { get; set; } = CoreWebView2PreferredColorScheme.Auto;
         public static string HomePage => "https://start.duckduckgo.com";
 
         #endregion

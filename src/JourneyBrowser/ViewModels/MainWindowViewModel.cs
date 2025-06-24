@@ -11,7 +11,6 @@ namespace JourneyBrowser.ViewModels
     {
         #region Fields
 
-        private CoreWebView2PreferredColorScheme _preferredColorScheme;
         private BrowserTab? _selectedTab;
 
         #endregion
@@ -26,9 +25,6 @@ namespace JourneyBrowser.ViewModels
 
         public MainWindowViewModel()
         {
-            // Set fields
-            PreferredColorScheme = Settings.ColorScheme;
-
             // Set properties
             BackCommand = new RelayCommand(ExecutedBackCommand, CanExecuteBackCommand);
             CloseTabCommand = new RelayCommand(ExecutedCloseTabCommand);
@@ -52,14 +48,11 @@ namespace JourneyBrowser.ViewModels
         public IRelayCommand NewTabCommand { get; }
         public CoreWebView2PreferredColorScheme PreferredColorScheme
         {
-            get => _preferredColorScheme;
+            get => Settings.ColorScheme;
             set
             {
-                if (_preferredColorScheme != value)
-                {
-                    _preferredColorScheme = value;
-                    NotifyPropertyChanged();
-                }
+                Settings.ColorScheme = value;
+                NotifyPropertyChanged();
             }
         }
         public IRelayCommand ReloadCommand { get; }
