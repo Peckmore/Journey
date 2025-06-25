@@ -9,7 +9,7 @@ namespace JourneyBrowser
 
         private void AppStartup(object sender, StartupEventArgs e)
         {
-            var mainWindow = new MainWindow(Settings.HomePage);
+            var mainWindow = new MainWindow(Settings.Singleton.HomePage);
             mainWindow.Show();
         }
 

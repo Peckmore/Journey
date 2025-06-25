@@ -44,6 +44,7 @@ namespace JourneyBrowser.ViewModels
             ReloadCommand = new RelayCommand(ExecutedReloadCommand);
 
             // Add our event handlers.
+            Settings.Singleton.PropertyChanged += Settings_PropertyChanged;
             SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
         }
 
@@ -64,7 +65,7 @@ namespace JourneyBrowser.ViewModels
                     throw new ObjectDisposedException("Object has been disposed.");
                 }
 
-                switch (Settings.ColorScheme)
+                switch (Settings.Singleton.ColorScheme)
                 {
                     case CoreWebView2PreferredColorScheme.Auto:
                         // If the preferred color scheme is set to auto, we'll check the registry to see whether the app should be in
@@ -126,7 +127,7 @@ namespace JourneyBrowser.ViewModels
                     throw new ObjectDisposedException("Object has been disposed.");
                 }
 
-                return () => new BrowserTab(Settings.HomePage);
+                return () => new BrowserTab(Settings.Singleton.HomePage);
             }
         }
         public ObservableCollection<BrowserTab> Tabs
@@ -148,6 +149,14 @@ namespace JourneyBrowser.ViewModels
 
         #region Event Handlers
 
+        private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            // If the setting for color scheme has changed, raised our event from the view model so our bound window will update.
+            if (e.PropertyName == nameof(Settings.ColorScheme))
+            {
+                NotifyPropertyChanged(nameof(DarkMode));
+            }
+        }
         private void SystemEvents_UserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
         {
             // If the user has updated their OS preferences, trigger a theme change event in-case the theme needs refreshing.
@@ -180,6 +189,7 @@ namespace JourneyBrowser.ViewModels
                 if (disposing)
                 {
                     // Unhook from events.
+                    Settings.Singleton.PropertyChanged -= Settings_PropertyChanged;
                     SystemEvents.UserPreferenceChanged -= SystemEvents_UserPreferenceChanged;
 
                     // Clear any fields we can.
@@ -203,7 +213,7 @@ namespace JourneyBrowser.ViewModels
         }
         private void ExecutedAutoColorSchemeCommand()
         {
-            Settings.ColorScheme = CoreWebView2PreferredColorScheme.Auto;
+            Settings.Singleton.ColorScheme = CoreWebView2PreferredColorScheme.Auto;
             NotifyPropertyChanged(nameof(DarkMode));
         }
         private void ExecutedBackCommand()
@@ -230,7 +240,7 @@ namespace JourneyBrowser.ViewModels
         }
         private void ExecutedDarkColorSchemeCommand()
         {
-            Settings.ColorScheme = CoreWebView2PreferredColorScheme.Dark;
+            Settings.Singleton.ColorScheme = CoreWebView2PreferredColorScheme.Dark;
             NotifyPropertyChanged(nameof(DarkMode));
         }
         private void ExecutedForwardCommand()
@@ -247,12 +257,12 @@ namespace JourneyBrowser.ViewModels
         }
         private void ExecutedLightColorSchemeCommand()
         {
-            Settings.ColorScheme = CoreWebView2PreferredColorScheme.Light;
+            Settings.Singleton.ColorScheme = CoreWebView2PreferredColorScheme.Light;
             NotifyPropertyChanged(nameof(DarkMode));
         }
         private void ExecutedNewTabCommand()
         {
-            CreateTab(Settings.HomePage);
+            CreateTab(Settings.Singleton.HomePage);
         }
         private void ExecutedReloadCommand()
         {

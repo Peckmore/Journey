@@ -137,7 +137,7 @@ namespace JourneyBrowser.Models
         }
         public void GoHome()
         {
-            Address = Settings.HomePage;
+            Address = Settings.Singleton.HomePage;
         }
         public void Reload()
         {
