@@ -14,19 +14,15 @@ namespace JourneyBrowser.Converters
         {
             if (value is string valueString)
             {
-                try
+                // Parse the address into a Uri object.
+                if (Uri.TryCreate(valueString, UriKind.Absolute, out var uri))
                 {
-                    // Parse the address into a Uri object.
-                    var uri = new Uri(valueString);
-
                     // Return just the "host" segment of the parsed Uri, which is what we want to display for neatness.
                     return uri.Host;
                 }
-                catch
-                {
-                    // We couldn't parse the string, so just return it as is.
-                    return valueString;
-                }
+
+                // We couldn't parse the string, so just return it as is.
+                return valueString;
             }
 
             // The value isn't a string, so return it as-is.
