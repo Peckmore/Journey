@@ -51,7 +51,7 @@
 
         <KeyBinding Key="F4"
                     Modifiers="Control"
-                    Command="{Binding CloseTabCommand}" />
+                    Command="{Binding CloseSelectedTabCommand}" />
 
         <KeyBinding Key="Right"
                     Modifiers="Alt"

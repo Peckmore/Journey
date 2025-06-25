@@ -27,7 +27,7 @@ namespace JourneyBrowser.ViewModels
         {
             // Set properties
             BackCommand = new RelayCommand(ExecutedBackCommand, CanExecuteBackCommand);
-            CloseTabCommand = new RelayCommand(ExecutedCloseTabCommand);
+            CloseSelectedTabCommand = new RelayCommand(ExecutedCloseSelectedTabCommand);
             ForwardCommand = new RelayCommand(ExecutedForwardCommand, CanExecuteForwardCommand);
             HomeCommand = new RelayCommand(ExecutedHomeCommand);
             JourneyCommand = new RelayCommand(ExecutedJourneyCommand, CanExecuteJourneyCommand);
@@ -41,7 +41,7 @@ namespace JourneyBrowser.ViewModels
         #region Properties
 
         public IRelayCommand BackCommand { get; }
-        public IRelayCommand CloseTabCommand { get; }
+        public IRelayCommand CloseSelectedTabCommand { get; }
         public IRelayCommand ForwardCommand { get; }
         public IRelayCommand HomeCommand { get; }
         public IRelayCommand JourneyCommand { get; }
@@ -64,8 +64,10 @@ namespace JourneyBrowser.ViewModels
                 if (_selectedTab != value)
                 {
                     _selectedTab = value;
-                    UpdateCommandStates();
                     NotifyPropertyChanged();
+
+                    // If the selected tab has changed, the UI will need to update it's buttons.
+                    UpdateCommandStates();
                 }
             }
         }
@@ -94,9 +96,23 @@ namespace JourneyBrowser.ViewModels
         {
             _selectedTab?.GoBack();
         }
-        private void ExecutedCloseTabCommand()
+        private void ExecutedCloseSelectedTabCommand()
         {
-            CloseTab();
+            var tab = _selectedTab;
+            if (tab != null)
+            {
+                var selectedIndex = Tabs.IndexOf(tab);
+                if (selectedIndex > 0)
+                {
+                    SelectedTab = Tabs[selectedIndex - 1];
+                }
+                else if (selectedIndex == 0 && Tabs.Count > 1)
+                {
+                    SelectedTab = Tabs[selectedIndex + 1];
+                }
+
+                Tabs.Remove(tab);
+            }
         }
         private void ExecutedForwardCommand()
         {
@@ -132,25 +148,7 @@ namespace JourneyBrowser.ViewModels
         #endregion
 
         #region Public
-
-        public void CloseTab()
-        {
-            var tab = _selectedTab;
-            if (tab != null)
-            {
-                var selectedIndex = Tabs.IndexOf(tab);
-                if (selectedIndex > 0)
-                {
-                    SelectedTab = Tabs[selectedIndex - 1];
-                }
-                else if (selectedIndex == 0 && Tabs.Count > 1)
-                {
-                    SelectedTab = Tabs[selectedIndex + 1];
-                }
-
-                Tabs.Remove(tab);
-            }
-        }
+        
         public void CreateTab(string address)
         {
             var newTab = new BrowserTab(address);
