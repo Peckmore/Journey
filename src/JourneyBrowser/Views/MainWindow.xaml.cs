@@ -51,7 +51,7 @@ namespace JourneyBrowser.Views
 
         private void AddressBar_GotFocus(object sender, RoutedEventArgs e)
         {
-            // If our address bar textbox gets focus, select all of the text. This is a UI layer activity, so we don't move this to
+            // If our address bar TextBox gets focus, select all of the text. This is a UI layer activity, so we don't put this in
             // the viewmodel.
             if (sender is TextBox textBox)
             {
@@ -60,8 +60,8 @@ namespace JourneyBrowser.Views
         }
         private void AddressBar_KeyDown(object sender, KeyEventArgs e)
         {
-            // We want our address bar textbox to only update its binding source when the user presses enter, so we'll handle that here in
-            // the `KeyDown` event. This is a UI layer activity, so we don't move this to the viewmodel.
+            // We want our address bar TextBox to only update its binding source when the user presses enter, so we'll handle that here in
+            // the `KeyDown` event. This is a UI layer activity, so we don't put this in the viewmodel.
             if (e.Key == Key.Enter && sender is TextBox textBox)
             {
                 var binding = textBox.GetBindingExpression(TextBox.TextProperty);
@@ -165,6 +165,7 @@ namespace JourneyBrowser.Views
         }
         private void Window_Closed(object? sender, EventArgs e)
         {
+            // When our window closes, unhook events and cleanup the viewmodel.
             _viewModel.PropertyChanged -= ViewModel_PropertyChanged;
             _viewModel.Dispose();
             DataContext = null;
@@ -185,7 +186,7 @@ namespace JourneyBrowser.Views
                 windowHandleSource.CompositionTarget.BackgroundColor = Color.FromArgb(0, 0, 0, 0);
 
                 // Set the window attribute to Acrylic.
-                NativeMethods.SetWindowAttribute(windowHandle, DWMWINDOWATTRIBUTE.DWMWA_SYSTEMBACKDROP_TYPE, 3); // 3 => DWMSBT_TRANSIENTWINDOW = Acrylic
+                NativeMethods.SetWindowAttribute(windowHandle, DWMWINDOWATTRIBUTE.DWMWA_SYSTEMBACKDROP_TYPE, 3); // 3 => DWMSBT_TRANSIENTWINDOW == Acrylic
             }
 
             // Merge in the appropriate resource dictionary dependent upon whether the OS is in light or dark mode.

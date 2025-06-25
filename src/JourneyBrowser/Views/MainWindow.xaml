@@ -348,6 +348,7 @@
                             </Border>
 
                             <ControlTemplate.Triggers>
+
                                 <Trigger Property="IsMouseOver"
                                          Value="true">
 
@@ -1150,7 +1151,9 @@
                                              Loaded="WebView_Loaded"
                                              NavigationCompleted="WebView_Navigation"
                                              NavigationStarting="WebView_Navigation"
-                                             PreferredColorScheme="{Binding DataContext.DarkMode, ElementName=WindowRoot, Converter={StaticResource BooleanToColorSchemeConverter}}"
+                                             PreferredColorScheme="{Binding DataContext.DarkMode,
+                                                                            ElementName=WindowRoot,
+                                                                            Converter={StaticResource BooleanToColorSchemeConverter}}"
                                              Source="{Binding Address, Mode=TwoWay, FallbackValue=about:blank}" />
 
                 </DataTemplate>
