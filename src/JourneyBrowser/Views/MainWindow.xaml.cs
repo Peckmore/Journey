@@ -21,7 +21,7 @@ namespace JourneyBrowser.Views
         #region Fields
 
         private bool? _isDarkMode;
-        private JourneyIntroToolTipWindow? _journeyIntroWindow;
+        private JourneyIntroToolTip? _journeyIntroWindow;
         private readonly MainWindowViewModel _viewModel;
 
         #endregion
@@ -45,8 +45,6 @@ namespace JourneyBrowser.Views
         }
 
         #endregion
-
-
 
         #region Methods
 
@@ -221,7 +219,7 @@ namespace JourneyBrowser.Views
                 var themeDictionary = new ResourceDictionary
                 {
                     Source = new Uri(darkModeRequested ? "pack://application:,,,/Resources/Themes/Theme.dark.xaml"
-                                            : "pack://application:,,,/Resources/Themes/Theme.light.xaml", UriKind.Absolute)
+                                                       : "pack://application:,,,/Resources/Themes/Theme.light.xaml", UriKind.Absolute)
                 };
 
                 var dictionariesToRemove = Resources.MergedDictionaries
@@ -231,12 +229,12 @@ namespace JourneyBrowser.Views
                 foreach (var dictionaryToRemove in dictionariesToRemove)
                 {
                     Resources.MergedDictionaries.Remove(dictionaryToRemove);
-                        _journeyIntroWindow?.Resources.Remove(dictionaryToRemove);
+                    _journeyIntroWindow?.Resources.Remove(dictionaryToRemove);
                 }
 
                 Resources.MergedDictionaries.Add(themeDictionary);
-                    _journeyIntroWindow?.Resources.MergedDictionaries.Add(themeDictionary);
-                }
+                _journeyIntroWindow?.Resources.MergedDictionaries.Add(themeDictionary);
+            }
         }
         private void PositionJourneyIntroWindow()
         {
@@ -263,8 +261,8 @@ namespace JourneyBrowser.Views
         {
             if (_journeyIntroWindow == null)
             {
-                _journeyIntroWindow = new JourneyIntroToolTipWindow
-            {
+                _journeyIntroWindow = new JourneyIntroToolTip
+                {
                     Owner = this
                 };
 

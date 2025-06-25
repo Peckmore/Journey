@@ -5,7 +5,8 @@
         xmlns:resources="clr-namespace:JourneyBrowser.Resources"
         xmlns:wpf="clr-namespace:LottieSharp.WPF;assembly=LottieSharp"
         mc:Ignorable="d"
-        x:Class="JourneyBrowser.Controls.JourneyIntroToolTipWindow"
+        x:Class="JourneyBrowser.Controls.JourneyIntroToolTip"
+        x:ClassModifier="internal"
         AllowsTransparency="True"
         Background="Transparent"
         Focusable="False"
@@ -14,21 +15,26 @@
         Width="320"
         WindowStyle="None">
 
+    <!-- Although this is technically a Window/view, we're treating it as a control as we use it as a control, and the only reason it
+         is implemented as a Window is to prevent airspace issues with the WebView2 control. -->
+
     <Window.Resources>
 
         <ResourceDictionary>
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Resources/Themes/Theme.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Resources/Themes/Theme.light.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
         </ResourceDictionary>
 
     </Window.Resources>
 
+    <!-- Root Container Grid -->
     <Grid>
 
+        <!-- Window Shape Path -->
+        <!-- A path to define the shape of our window, which will be a rounded rectangle with a point (triangle) at the top. -->
         <Path Fill="{StaticResource ShellBrush}"
               Stroke="{StaticResource ShellBorderBrush}"
               StrokeThickness="1">
@@ -36,6 +42,7 @@
             <Path.Data>
                 <CombinedGeometry GeometryCombineMode="Union">
 
+                    <!-- Rounded Rectangle -->
                     <CombinedGeometry.Geometry1>
 
                         <RectangleGeometry Rect="10,15,300,360"
@@ -44,6 +51,7 @@
 
                     </CombinedGeometry.Geometry1>
 
+                    <!-- Point/Triangle -->
                     <CombinedGeometry.Geometry2>
                         <PathGeometry>
 
@@ -58,9 +66,11 @@
 
                         </PathGeometry>
                     </CombinedGeometry.Geometry2>
+
                 </CombinedGeometry>
             </Path.Data>
 
+            <!-- Window Shadow -->
             <Path.Effect>
 
                 <DropShadowEffect BlurRadius="8"
@@ -69,8 +79,10 @@
                                   ShadowDepth="5"/>
 
             </Path.Effect>
+
         </Path>
 
+        <!-- Window Content -->
         <Grid Margin="30">
 
             <Grid.RowDefinitions>
@@ -78,6 +90,7 @@
                 <RowDefinition Height="125" />
             </Grid.RowDefinitions>
 
+            <!-- Journey Animation -->
             <wpf:LottieAnimationView Grid.Row="0"
                                      AutoPlay="True"
                                      Height="210"
@@ -86,6 +99,7 @@
                                      ResourcePath="pack://application:,,,/Resources/Animations/journey_intro.json"
                                      VerticalAlignment="Top" />
 
+            <!-- Journey Description Text -->
             <TextBlock Grid.Row="1"
                        FontFamily="{StaticResource RobotoRegular}"
                        FontSize="14"

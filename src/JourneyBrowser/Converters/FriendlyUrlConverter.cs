@@ -3,6 +3,9 @@ using System.Windows.Data;
 
 namespace JourneyBrowser.Converters
 {
+    /// <summary>
+    /// Used to convert a string containing a URL into a "friendly" URL, which contains just the "host" segment.
+    /// </summary>
     internal class FriendlyUrlConverter : IValueConverter
     {
         #region Methods
@@ -26,10 +29,13 @@ namespace JourneyBrowser.Converters
                 }
             }
 
+            // The value isn't a string, so return it as-is.
             return value;
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            // We don't/can't support reverse conversions.
+
             return value;
         }
 

@@ -5,6 +5,9 @@ using System.Windows.Data;
 
 namespace JourneyBrowser.Converters
 {
+    /// <summary>
+    /// Converts text into either a URL or search query, depending on the value of the text.
+    /// </summary>
     internal class UrlSearchConverter : IValueConverter
     {
         #region Methods
@@ -13,6 +16,8 @@ namespace JourneyBrowser.Converters
 
         private static bool IsValidDnsName(string name)
         {
+            // We'll do a simple Regex here to try and determine whether a string is a valid DNS name.
+
             if (!string.IsNullOrWhiteSpace(name))
             {
                 if (name.Length <= 253)
@@ -55,7 +60,7 @@ namespace JourneyBrowser.Converters
                 // If the input doesn't contain a scheme delimiter then we'll check whether it looks like a valid URL or not.
                 try
                 {
-                    // Split the string to try and get the Host element or the input.
+                    // Split the string to try and get the Host element of the input.
                     var valueStringParts = valueString.Split('/');
                     if (valueStringParts.Length > 0)
                     {

@@ -2,11 +2,11 @@
 
 namespace JourneyBrowser.Controls
 {
-    public partial class JourneyIntroToolTipWindow : Window
+    internal partial class JourneyIntroToolTip : Window
     {
         #region Construction
 
-        public JourneyIntroToolTipWindow()
+        public JourneyIntroToolTip()
         {
             InitializeComponent();
         }
@@ -17,6 +17,7 @@ namespace JourneyBrowser.Controls
 
         private void Hyperlink_RequestNavigate(object sender, EventArgs e)
         {
+            // There is only one link in our text, and when the user clicks it we close the window.
             Close();
         }
 

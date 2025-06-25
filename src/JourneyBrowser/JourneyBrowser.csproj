@@ -16,9 +16,6 @@
 	<ItemGroup>
 		<None Remove="Resources\**\*" />
 	</ItemGroup>
-	<ItemGroup>
-	  <Content Remove="D:\packages\NuGet\cache\lottiesharp\2.4.3\contentFiles\any\net8.0-windows7.0\lottie_sharp.ico" />
-	</ItemGroup>
 
 	<!-- Animations -->
 	<ItemGroup>
