@@ -58,7 +58,8 @@ namespace JourneyBrowser.ViewModels
                 switch (Settings.ColorScheme)
                 {
                     case CoreWebView2PreferredColorScheme.Auto:
-                        // If the WebView2 profile is set to auto, we'll check the registry to see whether the app should be in light or dark mode.
+                        // If the preferred color scheme is set to auto, we'll check the registry to see whether the app should be in
+                        // light or dark mode.
                         using (var themeRegistryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
                         {
                             return (themeRegistryKey?.GetValue("AppsUseLightTheme") as int? ?? 1) == 0;
@@ -105,6 +106,7 @@ namespace JourneyBrowser.ViewModels
 
         private void SystemEvents_UserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
         {
+            // If the user has updated their OS preferences, trigger a theme change event in-case the theme needs refreshing.
             if (e.Category == UserPreferenceCategory.General)
             {
                 NotifyPropertyChanged(nameof(DarkMode));
@@ -198,7 +200,7 @@ namespace JourneyBrowser.ViewModels
         #endregion
 
         #region Public
-        
+
         public void CreateTab(string address)
         {
             var newTab = new BrowserTab(address);
@@ -207,6 +209,7 @@ namespace JourneyBrowser.ViewModels
         }
         public void UpdateCommandStates(BrowserTab tab)
         {
+            // Only update the button states if the tab is the currently active/selected tab.
             if (tab == _selectedTab)
             {
                 UpdateCommandStates();

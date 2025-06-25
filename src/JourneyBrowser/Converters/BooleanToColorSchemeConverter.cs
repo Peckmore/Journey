@@ -15,6 +15,7 @@ namespace JourneyBrowser.Converters
         {
             if (value is bool valueBool)
             {
+                // If the value is true, we want to use dark mode.
                 return valueBool ? CoreWebView2PreferredColorScheme.Dark : CoreWebView2PreferredColorScheme.Light;
             }
 

@@ -32,7 +32,7 @@ namespace JourneyBrowser.Views
             // Initialize window.
             InitializeComponent();
 
-            // Set the viewmodel.
+            // Set the viewmodel and subscribe to it's property changed events.
             _viewModel = new MainWindowViewModel();
             _viewModel.PropertyChanged += ViewModel_PropertyChanged;
             DataContext = _viewModel;
@@ -51,6 +51,8 @@ namespace JourneyBrowser.Views
 
         private void AddressBar_GotFocus(object sender, RoutedEventArgs e)
         {
+            // If our address bar textbox gets focus, select all of the text. This is a UI layer activity, so we don't move this to
+            // the viewmodel.
             if (sender is TextBox textBox)
             {
                 textBox.SelectAll();
@@ -58,6 +60,8 @@ namespace JourneyBrowser.Views
         }
         private void AddressBar_KeyDown(object sender, KeyEventArgs e)
         {
+            // We want our address bar textbox to only update its binding source when the user presses enter, so we'll handle that here in
+            // the `KeyDown` event. This is a UI layer activity, so we don't move this to the viewmodel.
             if (e.Key == Key.Enter && sender is TextBox textBox)
             {
                 var binding = textBox.GetBindingExpression(TextBox.TextProperty);
@@ -67,6 +71,7 @@ namespace JourneyBrowser.Views
         }
         private void JourneyIntroWindow_Closed(object? sender, EventArgs e)
         {
+            // When the Journey intro window is closed, unhook all of the events on the main window as they are no longer needed.
             if (_journeyIntroWindow != null)
             {
                 _journeyIntroWindow.Closed -= JourneyIntroWindow_Closed;
@@ -112,11 +117,14 @@ namespace JourneyBrowser.Views
         {
             if (e.PropertyName == nameof(MainWindowViewModel.DarkMode))
             {
+                // If the `DarkMode` property on the viewmodel changes, re-apply our theme.
                 ApplyTheme();
             }
         }
         private void WebView_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
         {
+            // We could/should move this into the viewmodel, but for an app this small we'll just roll with it in the code behind.
+
             if (sender is IWebView2 webView2)
             {
                 webView2.CoreWebView2InitializationCompleted -= WebView_CoreWebView2InitializationCompleted;
@@ -125,6 +133,8 @@ namespace JourneyBrowser.Views
         }
         private void WebView_Loaded(object sender, RoutedEventArgs e)
         {
+            // We could/should move this into the viewmodel, but for an app this small we'll just roll with it in the code behind.
+
             if (sender is JourneyWebView2 { DataContext: BrowserTab browserTab } webView2)
             {
                 browserTab.SetupActions(webView2.GoBack, webView2.GoForward, webView2.Reload, webView2.ToggleJourney);
@@ -132,6 +142,8 @@ namespace JourneyBrowser.Views
         }
         private async void WebView_Navigation(object? sender, EventArgs e)
         {
+            // We could/should move this into the viewmodel, but for an app this small we'll just roll with it in the code behind.
+
             if (sender is JourneyWebView2 { DataContext: BrowserTab tabViewModel } webView)
             {
                 tabViewModel.CanGoBack = webView.CanGoBack;
@@ -192,6 +204,7 @@ namespace JourneyBrowser.Views
 
         private void ApplyTheme()
         {
+            // We only apply the theme if our current theme does not match the theme requested by the viewmodel.
             if (_isDarkMode != _viewModel.DarkMode)
             {
                 _isDarkMode = _viewModel.DarkMode;
@@ -245,20 +258,26 @@ namespace JourneyBrowser.Views
         }
         private void ShowJourneyIntro()
         {
+            // Only show the Journey intro window if it isn't already shown.
             if (_journeyIntroWindow == null)
             {
+                // Create an instance of the window.
                 _journeyIntroWindow = new JourneyIntroToolTip
                 {
                     Owner = this
                 };
 
+                // Hook up our required events for when the window closes (to clean up), and also when our main window moves so we can
+                // update the position of the Journey intro window.
                 _journeyIntroWindow.Closed += JourneyIntroWindow_Closed;
                 LocationChanged += Window_LocationChanged;
                 SizeChanged += Window_SizeChanged;
                 StateChanged += Window_StateChanged;
 
+                // Set the initial position for the Journey window.
                 PositionJourneyIntroWindow();
-                
+
+                // Apply the appropriate theme dictionary to the Journey window now that it has been created.
                 var themeDictionary = new ResourceDictionary
                 {
                     Source = new Uri(_viewModel.DarkMode ? "pack://application:,,,/Resources/Themes/Theme.dark.xaml"
@@ -266,6 +285,7 @@ namespace JourneyBrowser.Views
                 };
                 _journeyIntroWindow?.Resources.MergedDictionaries.Add(themeDictionary);
 
+                // Now all the setup is done, we can show the intro window.
                 _journeyIntroWindow?.Show();
             }
         }

@@ -148,6 +148,9 @@ namespace JourneyBrowser.Models
                                  Action reloadAction,
                                  Func<Task> toggleJourneyFunction)
         {
+            // Set our action variables, which we invoke when the user requests one of the commands that is carried out by the
+            // WebView2 instance.
+
             _goBackAction = goBackAction;
             _goForwardAction = goForwardAction;
             _reloadAction = reloadAction;
