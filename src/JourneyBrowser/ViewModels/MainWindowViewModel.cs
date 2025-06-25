@@ -8,11 +8,13 @@ using System.Runtime.CompilerServices;
 
 namespace JourneyBrowser.ViewModels
 {
-    internal class MainWindowViewModel : INotifyPropertyChanged
+    internal class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     {
         #region Fields
 
+        private bool _isDisposed;
         private BrowserTab? _selectedTab;
+        private readonly ObservableCollection<BrowserTab> _tabs;
 
         #endregion
 
@@ -26,7 +28,10 @@ namespace JourneyBrowser.ViewModels
 
         public MainWindowViewModel()
         {
-            // Set properties
+            // Set fields.
+            _tabs = new();
+
+            // Set properties.
             AutoColorSchemeCommand = new RelayCommand(ExecutedAutoColorSchemeCommand);
             BackCommand = new RelayCommand(ExecutedBackCommand, CanExecuteBackCommand);
             CloseSelectedTabCommand = new RelayCommand(ExecutedCloseSelectedTabCommand);
@@ -37,9 +42,8 @@ namespace JourneyBrowser.ViewModels
             LightColorSchemeCommand = new RelayCommand(ExecutedLightColorSchemeCommand);
             NewTabCommand = new RelayCommand(ExecutedNewTabCommand);
             ReloadCommand = new RelayCommand(ExecutedReloadCommand);
-            Tabs = new();
 
-            // Add our event handlers
+            // Add our event handlers.
             SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
         }
 
@@ -47,14 +51,19 @@ namespace JourneyBrowser.ViewModels
 
         #region Properties
 
-        public IRelayCommand AutoColorSchemeCommand { get; }
-        public IRelayCommand BackCommand { get; }
-        public IRelayCommand CloseSelectedTabCommand { get; }
-        public IRelayCommand DarkColorSchemeCommand { get; }
+        public IRelayCommand? AutoColorSchemeCommand { get; private set; }
+        public IRelayCommand? BackCommand { get; private set; }
+        public IRelayCommand? CloseSelectedTabCommand { get; private set; }
+        public IRelayCommand? DarkColorSchemeCommand { get; private set; }
         public bool DarkMode
         {
             get
             {
+                if (_isDisposed)
+                {
+                    throw new ObjectDisposedException("Object has been disposed.");
+                }
+
                 switch (Settings.ColorScheme)
                 {
                     case CoreWebView2PreferredColorScheme.Auto:
@@ -74,17 +83,30 @@ namespace JourneyBrowser.ViewModels
                 }
             }
         }
-        public IRelayCommand ForwardCommand { get; }
-        public IRelayCommand HomeCommand { get; }
-        public IRelayCommand JourneyCommand { get; }
-        public IRelayCommand LightColorSchemeCommand { get; }
-        public IRelayCommand NewTabCommand { get; }
-        public IRelayCommand ReloadCommand { get; }
+        public IRelayCommand? ForwardCommand { get; private set; }
+        public IRelayCommand? HomeCommand { get; private set; }
+        public IRelayCommand? JourneyCommand { get; private set; }
+        public IRelayCommand? LightColorSchemeCommand { get; private set; }
+        public IRelayCommand? NewTabCommand { get; private set; }
+        public IRelayCommand? ReloadCommand { get; private set; }
         public BrowserTab? SelectedTab
         {
-            get => _selectedTab;
+            get
+            {
+                if (_isDisposed)
+                {
+                    throw new ObjectDisposedException("Object has been disposed.");
+                }
+
+                return _selectedTab;
+            }
             set
             {
+                if (_isDisposed)
+                {
+                    throw new ObjectDisposedException("Object has been disposed.");
+                }
+
                 if (_selectedTab != value)
                 {
                     _selectedTab = value;
@@ -95,8 +117,30 @@ namespace JourneyBrowser.ViewModels
                 }
             }
         }
-        public Func<BrowserTab> TabFactory => () => new BrowserTab(Settings.HomePage);
-        public ObservableCollection<BrowserTab> Tabs { get; }
+        public Func<BrowserTab> TabFactory
+        {
+            get
+            {
+                if (_isDisposed)
+                {
+                    throw new ObjectDisposedException("Object has been disposed.");
+                }
+
+                return () => new BrowserTab(Settings.HomePage);
+            }
+        }
+        public ObservableCollection<BrowserTab> Tabs
+        {
+            get
+            {
+                if (_isDisposed)
+                {
+                    throw new ObjectDisposedException("Object has been disposed.");
+                }
+
+                return _tabs;
+            }
+        }
 
         #endregion
 
@@ -128,6 +172,34 @@ namespace JourneyBrowser.ViewModels
         private bool CanExecuteJourneyCommand()
         {
             return _selectedTab?.CanShowJourney ?? false;
+        }
+        private void Dispose(bool disposing)
+        {
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    // Unhook from events.
+                    SystemEvents.UserPreferenceChanged -= SystemEvents_UserPreferenceChanged;
+
+                    // Clear any fields we can.
+                    _selectedTab = null;
+                    AutoColorSchemeCommand = null;
+                    BackCommand = null;
+                    CloseSelectedTabCommand = null;
+                    DarkColorSchemeCommand = null;
+                    ForwardCommand = null;
+                    HomeCommand = null;
+                    JourneyCommand = null;
+                    LightColorSchemeCommand = null;
+                    NewTabCommand = null;
+                    ReloadCommand = null;
+                }
+
+                _tabs.Clear();
+
+                _isDisposed = true;
+            }
         }
         private void ExecutedAutoColorSchemeCommand()
         {
@@ -192,9 +264,9 @@ namespace JourneyBrowser.ViewModels
         }
         private void UpdateCommandStates()
         {
-            BackCommand.NotifyCanExecuteChanged();
-            ForwardCommand.NotifyCanExecuteChanged();
-            JourneyCommand.NotifyCanExecuteChanged();
+            BackCommand?.NotifyCanExecuteChanged();
+            ForwardCommand?.NotifyCanExecuteChanged();
+            JourneyCommand?.NotifyCanExecuteChanged();
         }
 
         #endregion
@@ -203,12 +275,27 @@ namespace JourneyBrowser.ViewModels
 
         public void CreateTab(string address)
         {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException("Object has been disposed.");
+            }
+
             var newTab = new BrowserTab(address);
             Tabs.Add(newTab);
             SelectedTab = newTab;
         }
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
         public void UpdateCommandStates(BrowserTab tab)
         {
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException("Object has been disposed.");
+            }
+
             // Only update the button states if the tab is the currently active/selected tab.
             if (tab == _selectedTab)
             {

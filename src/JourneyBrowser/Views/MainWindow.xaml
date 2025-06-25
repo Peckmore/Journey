@@ -13,6 +13,7 @@
         x:ClassModifier="internal"
         x:Name="WindowRoot"
         Background="Transparent"
+        Closed="Window_Closed"
         ContentRendered="Window_ContentRendered"
         Height="720"
         Loaded="Window_Loaded"

@@ -163,6 +163,12 @@ namespace JourneyBrowser.Views
             e.Handled = true;
             _viewModel.CreateTab(e.Uri);
         }
+        private void Window_Closed(object? sender, EventArgs e)
+        {
+            _viewModel.PropertyChanged -= ViewModel_PropertyChanged;
+            _viewModel.Dispose();
+            DataContext = null;
+        }
         private void Window_ContentRendered(object? sender, EventArgs e)
         {
             // Once the window is on-screen, show the Journey intro tooltip.
