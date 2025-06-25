@@ -695,6 +695,14 @@
                                     Margin="0"
                                     SnapsToDevicePixels="true">
 
+                                <Border.InputBindings>
+
+                                    <MouseBinding Command="{x:Static dragablz:TabablzControl.CloseItemCommand}"
+                                                  CommandParameter="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                                                  MouseAction="MiddleClick"/>
+
+                                </Border.InputBindings>
+
                                 <Grid>
 
                                     <Grid.ColumnDefinitions>
