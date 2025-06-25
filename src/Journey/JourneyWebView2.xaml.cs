@@ -1148,6 +1148,8 @@ namespace Journey
 
                         // Finally, our show transition is completed, so release our semaphore.
                         _journeySemaphore.Release();
+
+                        JourneyCanvas.InvalidateVisual();
                     };
 
                     // Now that our animations are set, we move the selected step to fill the browser area, so that the image is the same
