@@ -5,7 +5,6 @@ using JourneyBrowser.Models;
 using JourneyBrowser.ViewModels;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
-using Microsoft.Win32;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -16,7 +15,7 @@ using System.Windows.Media.Imaging;
 
 namespace JourneyBrowser.Views
 {
-    internal partial class MainWindow : Window
+    internal partial class MainWindow
     {
         #region Fields
 
@@ -33,11 +32,11 @@ namespace JourneyBrowser.Views
             // Initialize window.
             InitializeComponent();
 
+            // Set the viewmodel.
             _viewModel = new MainWindowViewModel();
+            _viewModel.PropertyChanged += ViewModel_PropertyChanged;
             DataContext = _viewModel;
-            SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
         }
-
         public MainWindow(string url)
             : this()
         {
@@ -109,9 +108,9 @@ namespace JourneyBrowser.Views
                 menu.VerticalOffset = -10;
             }
         }
-        private void SystemEvents_UserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
+        private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.Category == UserPreferenceCategory.General)
+            if (e.PropertyName == nameof(MainWindowViewModel.DarkMode))
             {
                 ApplyTheme();
             }
@@ -193,33 +192,17 @@ namespace JourneyBrowser.Views
 
         private void ApplyTheme()
         {
-            // Set a flag to indicate whether we should use dark mode.
-            var darkModeRequested = false;
-            if (_viewModel.PreferredColorScheme == CoreWebView2PreferredColorScheme.Dark)
+            if (_isDarkMode != _viewModel.DarkMode)
             {
-                // If the WebView2 profile is set to dark mode, we'll use that.
-                darkModeRequested = true;
-            }
-            else if (_viewModel.PreferredColorScheme == CoreWebView2PreferredColorScheme.Auto)
-            {
-                // If the WebView2 profile is set to auto, we'll check the registry to see whether the app should be in light or dark mode.
-                using (var themeRegistryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
-                {
-                    darkModeRequested = (themeRegistryKey?.GetValue("AppsUseLightTheme") as int? ?? 1) == 0;
-                }
-            }
+                _isDarkMode = _viewModel.DarkMode;
 
-            if (_isDarkMode != darkModeRequested)
-            {
-                _isDarkMode = darkModeRequested;
-
-                NativeMethods.SetWindowAttribute(new WindowInteropHelper(this).Handle, DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, darkModeRequested ? 1 : 0);
+                NativeMethods.SetWindowAttribute(new WindowInteropHelper(this).Handle, DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE, _viewModel.DarkMode ? 1 : 0);
 
                 // Remove any previously merged dictionary and merge in the appropriate dictionary based on the current light/dark mode.
                 var themeDictionary = new ResourceDictionary
                 {
-                    Source = new Uri(darkModeRequested ? "pack://application:,,,/Resources/Themes/Theme.dark.xaml"
-                                                       : "pack://application:,,,/Resources/Themes/Theme.light.xaml", UriKind.Absolute)
+                    Source = new Uri(_viewModel.DarkMode ? "pack://application:,,,/Resources/Themes/Theme.dark.xaml"
+                                                         : "pack://application:,,,/Resources/Themes/Theme.light.xaml", UriKind.Absolute)
                 };
 
                 var dictionariesToRemove = Resources.MergedDictionaries
@@ -243,18 +226,21 @@ namespace JourneyBrowser.Views
                 // Grab the journey button, as we want to anchor the tooltip to this button.
                 var journeyButton = (Button)BrowserTabControl.Template.FindName("JourneyButton", BrowserTabControl);
 
-                // Get the bottom-left point of the button (relative to itself).
-                var bottomLeft = new Point(0, journeyButton.ActualHeight);
+                if (GetWindow(journeyButton) is { } journeyButtonWindow)
+                {
+                    // Get the bottom-left point of the button (relative to itself).
+                    var bottomLeft = new Point(0, journeyButton.ActualHeight);
 
-                // Transform to window coordinates.
-                var bottomLeftInWindow = journeyButton.TransformToAncestor(Window.GetWindow(journeyButton)).Transform(bottomLeft);
+                    // Transform to window coordinates.
+                    var bottomLeftInWindow = journeyButton.TransformToAncestor(journeyButtonWindow).Transform(bottomLeft);
 
-                // Translate the point from window coordinates to screen coordinates.
-                var mainPos = PointToScreen(bottomLeftInWindow);
+                    // Translate the point from window coordinates to screen coordinates.
+                    var mainPos = PointToScreen(bottomLeftInWindow);
 
-                // Now position the window onscreen in the correct location.
-                _journeyIntroWindow.Left = mainPos.X - 30;
-                _journeyIntroWindow.Top = mainPos.Y;
+                    // Now position the window onscreen in the correct location.
+                    _journeyIntroWindow.Left = mainPos.X - 30;
+                    _journeyIntroWindow.Top = mainPos.Y;
+                }
             }
         }
         private void ShowJourneyIntro()
@@ -272,8 +258,15 @@ namespace JourneyBrowser.Views
                 StateChanged += Window_StateChanged;
 
                 PositionJourneyIntroWindow();
+                
+                var themeDictionary = new ResourceDictionary
+                {
+                    Source = new Uri(_viewModel.DarkMode ? "pack://application:,,,/Resources/Themes/Theme.dark.xaml"
+                                                         : "pack://application:,,,/Resources/Themes/Theme.light.xaml", UriKind.Absolute)
+                };
+                _journeyIntroWindow?.Resources.MergedDictionaries.Add(themeDictionary);
 
-                _journeyIntroWindow.Show();
+                _journeyIntroWindow?.Show();
             }
         }
 

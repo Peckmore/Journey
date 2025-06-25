@@ -30,19 +30,6 @@
 
     </WindowChrome.WindowChrome>
 
-    <!--<Window.CommandBindings>
-
-        <CommandBinding Command="{Binding AutoModeCommand}"
-                        Executed="ExecutedAutoModeCommand" />
-
-        <CommandBinding Command="{Binding DarkModeCommand}"
-                        Executed="ExecutedDarkModeCommand" />
-
-        <CommandBinding Command="{Binding LightModeCommand}"
-                        Executed="ExecutedLightModeCommand" />
-
-    </Window.CommandBindings>-->
-
     <Window.InputBindings>
 
         <KeyBinding Key="Left"
@@ -88,6 +75,7 @@
 
             <!-- Converters -->
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converters:BooleanToColorSchemeConverter  x:Key="BooleanToColorSchemeConverter" />
             <converters:FriendlyUrlConverter x:Key="FriendlyUrlConverter"/>
             <converters:UrlSearchConverter x:Key="UrlSearchConverter"/>
             <dragablzConverters:ShowDefaultCloseButtonConverter x:Key="ShowDefaultCloseButtonConverter" />
@@ -1058,17 +1046,17 @@
                                                              Opened="SettingsMenu_Opened"
                                                              Style="{StaticResource SettingsMenuStyle}">
 
-                                                    <MenuItem Command="{Binding AutoModeCommand}"
+                                                    <MenuItem Command="{Binding AutoColorSchemeCommand}"
                                                               Header="{x:Static resources:Strings.Settings_Auto}"
                                                               Style="{StaticResource SettingsMenuItemStyle}"/>
 
                                                     <Separator Style="{StaticResource SettingsMenuSeparatorStyle}" />
 
-                                                    <MenuItem Command="{Binding LightModeCommand}"
+                                                    <MenuItem Command="{Binding LightColorSchemeCommand}"
                                                               Header="{x:Static resources:Strings.Settings_Light}"
                                                               Style="{StaticResource SettingsMenuItemStyle}"/>
 
-                                                    <MenuItem Command="{Binding DarkModeCommand}"
+                                                    <MenuItem Command="{Binding DarkColorSchemeCommand}"
                                                               Header="{x:Static resources:Strings.Settings_Dark}"
                                                               Style="{StaticResource SettingsMenuItemStyle}"/>
 
@@ -1161,7 +1149,7 @@
                                              Loaded="WebView_Loaded"
                                              NavigationCompleted="WebView_Navigation"
                                              NavigationStarting="WebView_Navigation"
-                                             PreferredColorScheme="{Binding DataContext.PreferredColorScheme, ElementName=WindowRoot}"
+                                             PreferredColorScheme="{Binding DataContext.DarkMode, ElementName=WindowRoot, Converter={StaticResource BooleanToColorSchemeConverter}}"
                                              Source="{Binding Address, Mode=TwoWay, FallbackValue=about:blank}" />
 
                 </DataTemplate>

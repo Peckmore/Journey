@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.Input;
 using JourneyBrowser.Models;
 using Microsoft.Web.WebView2.Core;
+using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -26,35 +27,57 @@ namespace JourneyBrowser.ViewModels
         public MainWindowViewModel()
         {
             // Set properties
+            AutoColorSchemeCommand = new RelayCommand(ExecutedAutoColorSchemeCommand);
             BackCommand = new RelayCommand(ExecutedBackCommand, CanExecuteBackCommand);
             CloseSelectedTabCommand = new RelayCommand(ExecutedCloseSelectedTabCommand);
+            DarkColorSchemeCommand = new RelayCommand(ExecutedDarkColorSchemeCommand);
             ForwardCommand = new RelayCommand(ExecutedForwardCommand, CanExecuteForwardCommand);
             HomeCommand = new RelayCommand(ExecutedHomeCommand);
             JourneyCommand = new RelayCommand(ExecutedJourneyCommand, CanExecuteJourneyCommand);
+            LightColorSchemeCommand = new RelayCommand(ExecutedLightColorSchemeCommand);
             NewTabCommand = new RelayCommand(ExecutedNewTabCommand);
             ReloadCommand = new RelayCommand(ExecutedReloadCommand);
             Tabs = new();
+
+            // Add our event handlers
+            SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
         }
 
         #endregion
 
         #region Properties
 
+        public IRelayCommand AutoColorSchemeCommand { get; }
         public IRelayCommand BackCommand { get; }
         public IRelayCommand CloseSelectedTabCommand { get; }
+        public IRelayCommand DarkColorSchemeCommand { get; }
+        public bool DarkMode
+        {
+            get
+            {
+                switch (Settings.ColorScheme)
+                {
+                    case CoreWebView2PreferredColorScheme.Auto:
+                        // If the WebView2 profile is set to auto, we'll check the registry to see whether the app should be in light or dark mode.
+                        using (var themeRegistryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
+                        {
+                            return (themeRegistryKey?.GetValue("AppsUseLightTheme") as int? ?? 1) == 0;
+                        }
+
+                    case CoreWebView2PreferredColorScheme.Dark:
+                        return true;
+
+                    case CoreWebView2PreferredColorScheme.Light:
+                    default:
+                        return false;
+                }
+            }
+        }
         public IRelayCommand ForwardCommand { get; }
         public IRelayCommand HomeCommand { get; }
         public IRelayCommand JourneyCommand { get; }
+        public IRelayCommand LightColorSchemeCommand { get; }
         public IRelayCommand NewTabCommand { get; }
-        public CoreWebView2PreferredColorScheme PreferredColorScheme
-        {
-            get => Settings.ColorScheme;
-            set
-            {
-                Settings.ColorScheme = value;
-                NotifyPropertyChanged();
-            }
-        }
         public IRelayCommand ReloadCommand { get; }
         public BrowserTab? SelectedTab
         {
@@ -78,6 +101,18 @@ namespace JourneyBrowser.ViewModels
 
         #region Methods
 
+        #region Event Handlers
+
+        private void SystemEvents_UserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
+        {
+            if (e.Category == UserPreferenceCategory.General)
+            {
+                NotifyPropertyChanged(nameof(DarkMode));
+            }
+        }
+
+        #endregion
+
         #region Private
 
         private bool CanExecuteBackCommand()
@@ -91,6 +126,11 @@ namespace JourneyBrowser.ViewModels
         private bool CanExecuteJourneyCommand()
         {
             return _selectedTab?.CanShowJourney ?? false;
+        }
+        private void ExecutedAutoColorSchemeCommand()
+        {
+            Settings.ColorScheme = CoreWebView2PreferredColorScheme.Auto;
+            NotifyPropertyChanged(nameof(DarkMode));
         }
         private void ExecutedBackCommand()
         {
@@ -114,6 +154,11 @@ namespace JourneyBrowser.ViewModels
                 Tabs.Remove(tab);
             }
         }
+        private void ExecutedDarkColorSchemeCommand()
+        {
+            Settings.ColorScheme = CoreWebView2PreferredColorScheme.Dark;
+            NotifyPropertyChanged(nameof(DarkMode));
+        }
         private void ExecutedForwardCommand()
         {
             _selectedTab?.GoForward();
@@ -125,6 +170,11 @@ namespace JourneyBrowser.ViewModels
         private void ExecutedJourneyCommand()
         {
             _selectedTab?.ToggleJourney();
+        }
+        private void ExecutedLightColorSchemeCommand()
+        {
+            Settings.ColorScheme = CoreWebView2PreferredColorScheme.Light;
+            NotifyPropertyChanged(nameof(DarkMode));
         }
         private void ExecutedNewTabCommand()
         {
