@@ -719,7 +719,7 @@
                         Value="200"/>
 
                 <Setter Property="MinWidth"
-                        Value="50"/>
+                        Value="200"/>
 
                 <Setter Property="Padding"
                         Value="10,0,10,0" />
