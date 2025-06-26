@@ -8,6 +8,7 @@
         xmlns:converters="clr-namespace:JourneyBrowser.Converters"
         xmlns:models="clr-namespace:JourneyBrowser.Models"
         xmlns:resources="clr-namespace:JourneyBrowser.Resources"
+        xmlns:local="clr-namespace:JourneyBrowser.Views"
         mc:Ignorable="d"
         x:Class="JourneyBrowser.Views.MainWindow"
         x:ClassModifier="internal"
@@ -31,19 +32,22 @@
 
     </WindowChrome.WindowChrome>
 
+    <Window.CommandBindings>
+
+        <CommandBinding Command="{x:Static local:MainWindow.FocusCommand}"
+                        Executed="ExecutedFocusCommand" />
+
+    </Window.CommandBindings>
+
     <Window.InputBindings>
+
+        <KeyBinding Key="D"
+                    Modifiers="Alt"
+                    Command="{x:Static local:MainWindow.FocusCommand}" />
 
         <KeyBinding Key="Left"
                     Modifiers="Alt"
                     Command="{Binding BackCommand}" />
-
-        <KeyBinding Key="F4"
-                    Modifiers="Control"
-                    Command="{Binding CloseSelectedTabCommand}" />
-
-        <KeyBinding Key="Right"
-                    Modifiers="Alt"
-                    Command="{Binding ForwardCommand}" />
 
         <KeyBinding Key="Home"
                     Modifiers="Alt"
@@ -52,6 +56,14 @@
         <KeyBinding Key="J"
                     Modifiers="Alt"
                     Command="{Binding JourneyCommand}" />
+
+        <KeyBinding Key="Right"
+                    Modifiers="Alt"
+                    Command="{Binding ForwardCommand}" />
+
+        <KeyBinding Key="F4"
+                    Modifiers="Control"
+                    Command="{Binding CloseSelectedTabCommand}" />
 
         <KeyBinding Key="T"
                     Modifiers="Control"

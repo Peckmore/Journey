@@ -19,9 +19,22 @@ namespace JourneyBrowser.Views
     {
         #region Fields
 
+        #region Private
+
         private bool? _isDarkMode;
         private JourneyIntroToolTip? _journeyIntroWindow;
         private readonly MainWindowViewModel _viewModel;
+
+        #endregion
+
+        #region Public Static
+
+        /// <summary>
+        /// Command to focus the address bar.
+        /// </summary>
+        public static readonly ICommand FocusCommand = new RoutedCommand();
+
+        #endregion
 
         #endregion
 
@@ -67,6 +80,15 @@ namespace JourneyBrowser.Views
                 var binding = textBox.GetBindingExpression(TextBox.TextProperty);
                 binding?.UpdateSource();
                 BrowserTabControl.Focus();
+            }
+        }
+        private void ExecutedFocusCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            var addressBar = FindVisualChildByName<TextBox>(this, "AddressBar");
+            if (addressBar != null)
+            {
+                addressBar.Focus();
+                addressBar.SelectAll();
             }
         }
         private void JourneyIntroWindow_Closed(object? sender, EventArgs e)
@@ -238,6 +260,25 @@ namespace JourneyBrowser.Views
                 Resources.MergedDictionaries.Add(themeDictionary);
                 _journeyIntroWindow?.Resources.MergedDictionaries.Add(themeDictionary);
             }
+        }
+        private T? FindVisualChildByName<T>(DependencyObject obj, string name) where T : FrameworkElement
+        {
+            for (var i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(obj, i);
+                if (child is T childDependencyObject && childDependencyObject.Name == name)
+                {
+                    return childDependencyObject;
+                }
+
+                var childOfChild = FindVisualChildByName<T>(child, name);
+                if (childOfChild != null)
+                {
+                    return childOfChild;
+                }
+            }
+
+            return null;
         }
         private void PositionJourneyIntroWindow()
         {
