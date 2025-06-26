@@ -311,7 +311,9 @@ Our tree visualisation is arranged using the Reingold-Tilford algorithm [^tidier
 
 Although Journey is an `IWebView2` control, in order to test the effectiveness of the final implementation we also create a browser to host the control in, given the monicker _Journey Browser_.
 
-_Journey Browser_ is enough of a browser to be sufficiently "transparent" to the end user compared to their regular browser, but kept simple enough that it is fairly quick to implement. It is again implemented in **C#** and **WPF**, using some basic MVVM [^mvvm], and leveraging **LottieSharp** [^lottiesharp] for the introduction animation, and **Dragablz** [^dragablz] for the tab control. The only features implemented are _Back_, _Forward_, _Home_, _Refresh_, and _Light/Dark Mode_.
+_Journey Browser_ is implemented to be sufficiently "transparent" to the end user compared to their regular browser, but kept simple enough that it is fairly quick to implement. It is again implemented in **C#** and **WPF**, using some basic MVVM [^mvvm], and leveraging **LottieSharp** [^lottiesharp] for the introduction animation, and **Dragablz** [^dragablz] for the tab control.
+
+Limitations with the implementation include tabs that do not resize (only scroll), and history not being preserved when tabs are moved into a new Window, alongside a lack of any functionality other than _Back_, _Forward_, _Home_, _Refresh_, and _Light/Dark Mode_. However, _Journey Browser_ meets our goal of being enough of a browser to test the **Journey** concept.
 
 ## Challenges
 
