@@ -481,7 +481,6 @@
                                                Background="Transparent"
                                                Foreground="{StaticResource AddressBarNormalTextBrush}"
                                                HorizontalAlignment="Center"
-                                               IsHitTestVisible="False"
                                                Margin="{Binding ElementName=PART_ContentHost, Path=Margin}"
                                                Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource FriendlyUrlConverter}}"
                                                VerticalAlignment="Center"
@@ -515,8 +514,14 @@
                 <Setter Property="Background"
                         Value="{StaticResource TabInactiveBrush}" />
 
+                <Setter Property="Foreground"
+                        Value="{StaticResource TabInactiveTextBrush}" />
+
                 <Setter Property="Height"
                         Value="30" />
+
+                <Setter Property="Margin"
+                        Value="2" />
 
                 <Setter Property="Width"
                         Value="30" />
@@ -537,14 +542,19 @@
                                                   RecognizesAccessKey="True"
                                                   SnapsToDevicePixels="True"
                                                   VerticalAlignment="Center"/>
+
                             </Border>
 
                             <ControlTemplate.Triggers>
+
                                 <Trigger Property="IsMouseOver"
                                          Value="true">
 
                                     <Setter Property="Control.Background"
                                             Value="{StaticResource TabHoverBrush}" />
+
+                                    <Setter Property="Control.Foreground"
+                                            Value="{StaticResource TabHoverTextBrush}" />
 
                                 </Trigger>
 
@@ -554,10 +564,51 @@
                                     <Setter Property="Control.Background"
                                             Value="{StaticResource ButtonPressedBrush}" />
 
+                                    <Setter Property="Control.Foreground"
+                                            Value="{StaticResource ButtonPressedTextBrush}" />
+
                                 </Trigger>
 
                             </ControlTemplate.Triggers>
 
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+            </Style>
+
+            <!-- TabScrollBar Style -->
+            <!-- Explicit style for buttons on the tab area scroll bar. -->
+            <Style x:Key="TabScrollBarStyle"
+                   TargetType="ScrollBar">
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ScrollBar">
+                            <Grid>
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <RepeatButton Grid.Column="0"
+                                              Height="16"
+                                              Width="16"
+                                              Style="{StaticResource TabBarButtonStyle}"
+                                              VerticalAlignment="Center"
+                                              Command="ScrollBar.LineLeftCommand"
+                                              Content="&lt;" />
+
+                                <RepeatButton Grid.Column="1"
+                                              Height="16"
+                                              Width="16"
+                                              Style="{StaticResource TabBarButtonStyle}"
+                                              VerticalAlignment="Center"
+                                              Command="ScrollBar.LineRightCommand"
+                                              Content="&gt;" />
+
+                            </Grid>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
@@ -594,6 +645,7 @@
                                Maximum="{TemplateBinding ScrollableWidth}"
                                Minimum="0"
                                Orientation="Horizontal"
+                               Style="{StaticResource TabScrollBarStyle}"
                                Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
                                ViewportSize="{TemplateBinding ViewportWidth}"
                                Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
@@ -899,8 +951,6 @@
                                     <!-- New Tab Button -->
                                     <Button Grid.Column="1"
                                             Command="{x:Static dragablz:TabablzControl.AddItemCommand}"
-                                            IsHitTestVisible="True"
-                                            Margin="2"
                                             Style="{StaticResource TabBarButtonStyle}"
                                             VerticalAlignment="Bottom"
                                             Visibility="{TemplateBinding ShowDefaultAddButton, Converter={StaticResource BooleanToVisibilityConverter}}"
