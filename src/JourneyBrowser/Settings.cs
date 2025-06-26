@@ -55,7 +55,7 @@ namespace JourneyBrowser
                 }
             }
         }
-
+        public bool HasShownIntro { get; set; }
         public string HomePage => "https://start.duckduckgo.com";
 
         #endregion

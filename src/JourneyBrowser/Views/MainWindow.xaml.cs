@@ -307,7 +307,7 @@ namespace JourneyBrowser.Views
         private void ShowJourneyIntro()
         {
             // Only show the Journey intro window if it isn't already shown.
-            if (_journeyIntroWindow == null)
+            if (_journeyIntroWindow == null && !Settings.Singleton.HasShownIntro)
             {
                 // Create an instance of the window.
                 _journeyIntroWindow = new JourneyIntroToolTip
@@ -335,6 +335,9 @@ namespace JourneyBrowser.Views
 
                 // Now all the setup is done, we can show the intro window.
                 _journeyIntroWindow?.Show();
+
+                // Set our setting to prevent the intro being shown on future windows.
+                Settings.Singleton.HasShownIntro = true;
             }
         }
 
