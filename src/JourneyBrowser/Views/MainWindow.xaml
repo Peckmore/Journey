@@ -93,63 +93,6 @@
             <converters:UrlSearchConverter x:Key="UrlSearchConverter"/>
             <dragablzConverters:ShowDefaultCloseButtonConverter x:Key="ShowDefaultCloseButtonConverter" />
 
-            <!-- ScrollViewer Template -->
-            <!-- Explicit template for the scrollviewer on the browser tabs. -->
-            <ControlTemplate x:Key="TabablzScrollViewerControlTemplate"
-                             TargetType="{x:Type ScrollViewer}">
-
-                <Grid Background="{TemplateBinding Background}">
-
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-
-                    <ScrollContentPresenter x:Name="PART_ScrollContentPresenter"
-                                            Grid.Column="0"
-                                            Grid.Row="0"
-                                            CanContentScroll="{TemplateBinding CanContentScroll}"
-                                            CanHorizontallyScroll="False"
-                                            CanVerticallyScroll="False"
-                                            Content="{TemplateBinding Content}"
-                                            ContentTemplate="{TemplateBinding ContentTemplate}"
-                                            Margin="{TemplateBinding Padding}" />
-
-                    <ScrollBar x:Name="PART_VerticalScrollBar"
-                               Grid.Column="0"
-                               Grid.Row="1"
-                               AutomationProperties.AutomationId="VerticalScrollBar"
-                               Cursor="Arrow"
-                               Margin="0,1,0,0"
-                               Maximum="{TemplateBinding ScrollableHeight}"
-                               Minimum="0"
-                               Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
-                               ViewportSize="{TemplateBinding ViewportHeight}"
-                               Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" />
-
-                    <ScrollBar x:Name="PART_HorizontalScrollBar"
-                               Grid.Column="1"
-                               Grid.Row="0"
-                               AutomationProperties.AutomationId="HorizontalScrollBar"
-                               Cursor="Arrow"
-                               Height="20"
-                               Margin="1,0,0,0"
-                               Maximum="{TemplateBinding ScrollableWidth}"
-                               Minimum="0"
-                               Orientation="Horizontal"
-                               Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
-                               ViewportSize="{TemplateBinding ViewportWidth}"
-                               Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
-                               Width="36" />
-
-                </Grid>
-            </ControlTemplate>
-
             <!-- Window Style -->
             <!-- Used to set the margin when the window maximises, as we have extended into the window chrome. -->
             <Style x:Key="WindowStyle"
@@ -620,6 +563,63 @@
                 </Setter>
 
             </Style>
+
+            <!-- Tabablz ScrollViewer Template -->
+            <!-- Explicit template for the scrollviewer on the browser tabs. -->
+            <ControlTemplate x:Key="TabablzScrollViewerControlTemplate"
+                             TargetType="{x:Type ScrollViewer}">
+
+                <Grid Background="{TemplateBinding Background}">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <ScrollContentPresenter x:Name="PART_ScrollContentPresenter"
+                                            Grid.Column="0"
+                                            Grid.Row="0"
+                                            CanContentScroll="{TemplateBinding CanContentScroll}"
+                                            CanHorizontallyScroll="False"
+                                            CanVerticallyScroll="False"
+                                            Content="{TemplateBinding Content}"
+                                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                                            Margin="{TemplateBinding Padding}" />
+
+                    <ScrollBar x:Name="PART_VerticalScrollBar"
+                               Grid.Column="0"
+                               Grid.Row="1"
+                               AutomationProperties.AutomationId="VerticalScrollBar"
+                               Cursor="Arrow"
+                               Margin="0,1,0,0"
+                               Maximum="{TemplateBinding ScrollableHeight}"
+                               Minimum="0"
+                               Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
+                               ViewportSize="{TemplateBinding ViewportHeight}"
+                               Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" />
+
+                    <ScrollBar x:Name="PART_HorizontalScrollBar"
+                               Grid.Column="1"
+                               Grid.Row="0"
+                               AutomationProperties.AutomationId="HorizontalScrollBar"
+                               Cursor="Arrow"
+                               Height="20"
+                               Margin="1,0,0,0"
+                               Maximum="{TemplateBinding ScrollableWidth}"
+                               Minimum="0"
+                               Orientation="Horizontal"
+                               Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
+                               ViewportSize="{TemplateBinding ViewportWidth}"
+                               Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
+                               Width="36" />
+
+                </Grid>
+            </ControlTemplate>
 
             <!-- DragablzItemsControl Style -->
             <!-- Explicit style for the browser tab area. -->
