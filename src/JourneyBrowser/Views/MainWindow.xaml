@@ -869,7 +869,8 @@
 
                                 <!-- Tabs -->
                                 <Grid Grid.Row="0"
-                                      Background="Transparent">
+                                      Background="Transparent"
+                                      WindowChrome.IsHitTestVisibleInChrome="False">
 
                                     <Grid.ColumnDefinitions>
 
@@ -890,7 +891,8 @@
                                                                    ItemTemplate="{TemplateBinding HeaderItemTemplate}"
                                                                    ItemsOrganiser="{TemplateBinding HeaderItemsOrganiser}"
                                                                    ItemsSource="{Binding Items, RelativeSource={RelativeSource TemplatedParent}}"
-                                                                   Style="{StaticResource TabItemsControlStyle}">
+                                                                   Style="{StaticResource TabItemsControlStyle}"
+                                                                   WindowChrome.IsHitTestVisibleInChrome="True">
 
                                         <dragablz:DragablzItemsControl.MaxWidth>
                                             <MultiBinding>
@@ -920,7 +922,8 @@
                                             Margin="2"
                                             Style="{StaticResource TabBarButtonStyle}"
                                             VerticalAlignment="Bottom"
-                                            Visibility="{TemplateBinding ShowDefaultAddButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            Visibility="{TemplateBinding ShowDefaultAddButton, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                            WindowChrome.IsHitTestVisibleInChrome="True">
 
                                         <Image Source="{DynamicResource AddImage}"
                                                Style="{StaticResource ButtonBarButtonImageStyle}" />
