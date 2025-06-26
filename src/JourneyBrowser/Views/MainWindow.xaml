@@ -576,14 +576,8 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-
                     <ScrollContentPresenter x:Name="PART_ScrollContentPresenter"
                                             Grid.Column="0"
-                                            Grid.Row="0"
                                             CanContentScroll="{TemplateBinding CanContentScroll}"
                                             CanHorizontallyScroll="False"
                                             CanVerticallyScroll="False"
@@ -591,21 +585,8 @@
                                             ContentTemplate="{TemplateBinding ContentTemplate}"
                                             Margin="{TemplateBinding Padding}" />
 
-                    <ScrollBar x:Name="PART_VerticalScrollBar"
-                               Grid.Column="0"
-                               Grid.Row="1"
-                               AutomationProperties.AutomationId="VerticalScrollBar"
-                               Cursor="Arrow"
-                               Margin="0,1,0,0"
-                               Maximum="{TemplateBinding ScrollableHeight}"
-                               Minimum="0"
-                               Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
-                               ViewportSize="{TemplateBinding ViewportHeight}"
-                               Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" />
-
                     <ScrollBar x:Name="PART_HorizontalScrollBar"
                                Grid.Column="1"
-                               Grid.Row="0"
                                AutomationProperties.AutomationId="HorizontalScrollBar"
                                Cursor="Arrow"
                                Height="20"
@@ -879,7 +860,7 @@
                                         <ColumnDefinition Width="Auto" />
 
                                         <ColumnDefinition x:Name="WindowChromeColumn"
-                                                          Width="200" />
+                                                          MinWidth="200" />
 
                                     </Grid.ColumnDefinitions>
 
@@ -908,7 +889,7 @@
                                                          RelativeSource="{RelativeSource Self}" />
 
                                                 <Binding ElementName="WindowChromeColumn"
-                                                         Path="ActualWidth" />
+                                                         Path="MinWidth" />
 
                                             </MultiBinding>
                                         </dragablz:DragablzItemsControl.MaxWidth>
