@@ -5,8 +5,8 @@
 
 A UI/UX experiment in visual, branching browser history.
 
-_“The journey is the reward.”_  
-**Lao Tzu**
+_“Wherever you go, there you are.”_  
+**Thomas à Kempis**
 
 ![Demo](res/images/demo_animation.gif)
 
