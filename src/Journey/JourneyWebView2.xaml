@@ -159,7 +159,7 @@
         <!-- Journey Container -->
         <!-- Journey controls (canvas and toolbar) are within this grid to make it easy to control their visibility. -->
         <Grid x:Name="JourneyContainer"
-              Background="{DynamicResource JourneyBackgroundBrush}"
+              Background="{StaticResource JourneyBackgroundBrush}"
               Visibility="Collapsed">
 
             <!-- Journey Canvas -->
@@ -184,8 +184,8 @@
 
             <!-- Button Bar -->
             <Border x:Name="JourneyButtonBar"
-                    Background="{DynamicResource ButtonBarBrush}"
-                    BorderBrush="{DynamicResource ButtonBarBorderBrush}"
+                    Background="{StaticResource ButtonBarBrush}"
+                    BorderBrush="{StaticResource ButtonBarBorderBrush}"
                     BorderThickness="1.25"
                     CornerRadius="10"
                     HorizontalAlignment="Center"
@@ -243,7 +243,7 @@
 
                     <!-- Separator -->
                     <Line Grid.Column="6"
-                          Stroke="{DynamicResource LineBrush}"
+                          Stroke="{StaticResource LineBrush}"
                           StrokeThickness="1"
                           X1="0"
                           X2="0"

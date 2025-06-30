@@ -11,6 +11,18 @@
              x:ClassModifier="internal"
              x:Name="JourneyStepRoot">
 
+    <UserControl.Resources>
+
+        <ResourceDictionary>
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Journey;component/Themes/Theme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+        </ResourceDictionary>
+
+    </UserControl.Resources>
+
     <!-- Drop Shadow -->
     <themes:SystemDropShadowChrome CornerRadius="8">
         <Grid Background="White">
@@ -44,7 +56,7 @@
             <Border x:Name="TextArea"
                     x:FieldModifier="public"
                     Grid.Row="1"
-                    Background="{DynamicResource JourneyStepBannerBrush}"
+                    Background="{StaticResource JourneyStepBannerBrush}"
                     BorderThickness="0"
                     Opacity="0.9">
 
@@ -60,7 +72,7 @@
 
                         <!-- Step Page Title -->
                         <TextBlock Grid.Row="0"
-                                   Foreground="{DynamicResource JourneyStepTextBrush}"
+                                   Foreground="{StaticResource JourneyStepTextBrush}"
                                    FontSize="14"
                                    FontWeight="Bold"
                                    HorizontalAlignment="Left"
@@ -90,7 +102,7 @@
                             <!-- Document Title -->
                             <TextBlock Grid.Column="1"
                                        FontSize="12"
-                                       Foreground="{DynamicResource JourneyStepArchiveTextBrush}"
+                                       Foreground="{StaticResource JourneyStepArchiveTextBrush}"
                                        Height="25"
                                        Padding="5"
                                        Text="{Binding Url}"
@@ -153,7 +165,7 @@
                         <Style TargetType="Grid">
 
                             <Setter Property="Background"
-                                    Value="{DynamicResource JourneyHighlightBrush}"/>
+                                    Value="{StaticResource JourneyHighlightBrush}"/>
 
                             <Style.Triggers>
 
@@ -161,7 +173,7 @@
                                              Value="ArchivedStep">
 
                                     <Setter Property="Background"
-                                            Value="{DynamicResource JourneyStepBannerBrush}"/>
+                                            Value="{StaticResource JourneyStepBannerBrush}"/>
 
                                 </DataTrigger>
 
@@ -184,7 +196,7 @@
                                BasedOn="{StaticResource {x:Type Label}}">
 
                             <Setter Property="Foreground"
-                                    Value="{DynamicResource JourneyHighlightTextBrush}"/>
+                                    Value="{StaticResource JourneyHighlightTextBrush}"/>
 
                             <Style.Triggers>
 
@@ -202,7 +214,7 @@
                                     </Setter>
 
                                     <Setter Property="Foreground"
-                                            Value="{DynamicResource JourneyStepTextBrush}"/>
+                                            Value="{StaticResource JourneyStepTextBrush}"/>
 
                                 </DataTrigger>
 
