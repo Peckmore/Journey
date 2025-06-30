@@ -44,7 +44,7 @@
             <Border x:Name="TextArea"
                     x:FieldModifier="public"
                     Grid.Row="1"
-                    Background="{DynamicResource WindowBrush}"
+                    Background="{DynamicResource JourneyStepBannerBrush}"
                     BorderThickness="0"
                     Opacity="0.9">
 
@@ -60,7 +60,7 @@
 
                         <!-- Step Page Title -->
                         <TextBlock Grid.Row="0"
-                                   Foreground="{DynamicResource TextBrush}"
+                                   Foreground="{DynamicResource JourneyStepTextBrush}"
                                    FontSize="14"
                                    FontWeight="Bold"
                                    HorizontalAlignment="Left"
@@ -90,7 +90,7 @@
                             <!-- Document Title -->
                             <TextBlock Grid.Column="1"
                                        FontSize="12"
-                                       Foreground="{DynamicResource TextLightBrush}"
+                                       Foreground="{DynamicResource JourneyStepArchiveTextBrush}"
                                        Height="25"
                                        Padding="5"
                                        Text="{Binding Url}"
@@ -153,7 +153,7 @@
                         <Style TargetType="Grid">
 
                             <Setter Property="Background"
-                                    Value="{DynamicResource JourneyHighlightBackgroundBrush}"/>
+                                    Value="{DynamicResource JourneyHighlightBrush}"/>
 
                             <Style.Triggers>
 
@@ -161,7 +161,7 @@
                                              Value="ArchivedStep">
 
                                     <Setter Property="Background"
-                                            Value="{DynamicResource WindowBrush}"/>
+                                            Value="{DynamicResource JourneyStepBannerBrush}"/>
 
                                 </DataTrigger>
 
@@ -184,7 +184,7 @@
                                BasedOn="{StaticResource {x:Type Label}}">
 
                             <Setter Property="Foreground"
-                                    Value="{DynamicResource JourneyHighlightForegroundBrush}"/>
+                                    Value="{DynamicResource JourneyHighlightTextBrush}"/>
 
                             <Style.Triggers>
 
@@ -202,7 +202,7 @@
                                     </Setter>
 
                                     <Setter Property="Foreground"
-                                            Value="{DynamicResource TextBrush}"/>
+                                            Value="{DynamicResource JourneyStepTextBrush}"/>
 
                                 </DataTrigger>
 

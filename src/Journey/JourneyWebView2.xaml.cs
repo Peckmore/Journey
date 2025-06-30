@@ -299,8 +299,8 @@ namespace Journey
         [Category("Common")]
         public Brush JourneyActiveStepBackground
         {
-            get => (Brush)Resources["JourneyActiveStepBackgroundBrush"];
-            set => Resources["JourneyActiveStepBackgroundBrush"] = value;
+            get => (Brush)Resources["JourneyActiveStepBrush"];
+            set => Resources["JourneyActiveStepBrush"] = value;
         }
         /// <summary>
         /// The foreground color for the active step (the users current page) in the Journey view.
@@ -308,8 +308,8 @@ namespace Journey
         [Category("Common")]
         public Brush JourneyActiveStepForeground
         {
-            get => (Brush)Resources["JourneyActiveStepForegroundBrush"];
-            set => Resources["JourneyActiveStepForegroundBrush"] = value;
+            get => (Brush)Resources["JourneyActiveStepTextBrush"];
+            set => Resources["JourneyActiveStepTextBrush"] = value;
         }
         /// <summary>
         /// The default background color for the Journey view.
@@ -326,8 +326,8 @@ namespace Journey
         [Category("Common")]
         public Brush JourneyHighlightBackground
         {
-            get => (Brush)Resources["JourneyHighlightBackgroundBrush"];
-            set => Resources["JourneyHighlightBackgroundBrush"] = value;
+            get => (Brush)Resources["JourneyHighlightBrush"];
+            set => Resources["JourneyHighlightBrush"] = value;
         }
         /// <summary>
         /// The "highlight" foreground color, used for text displayed on top of highlighted elements in the Journey view.
@@ -335,8 +335,8 @@ namespace Journey
         [Category("Common")]
         public Brush JourneyHighlightForeground
         {
-            get => (Brush)Resources["JourneyHighlightForegroundBrush"];
-            set => Resources["JourneyHighlightForegroundBrush"] = value;
+            get => (Brush)Resources["JourneyHighlightTextBrush"];
+            set => Resources["JourneyHighlightTextBrush"] = value;
         }
         /// <summary>
         /// The zoom factor for Journey.
@@ -561,14 +561,14 @@ namespace Journey
             // Remove any previously merged dictionary and merge in the appropriate dictionary based on the current light/dark mode.
             var themeDictionary = new ResourceDictionary
             {
-                Source = new Uri(isDark ? "pack://application:,,,/Journey;component/Resources/Themes/Theme.Dark.xaml"
-                                        : "pack://application:,,,/Journey;component/Resources/Themes/Theme.Light.xaml", UriKind.Absolute)
+                Source = new Uri(isDark ? "pack://application:,,,/Journey;component/Themes/Theme.dark.xaml"
+                                        : "pack://application:,,,/Journey;component/Themes/Theme.light.xaml", UriKind.Absolute)
             };
 
             var dictionariesToRemove = Resources.MergedDictionaries
                                                                     .Where(d => d.Source != null 
-                                                                            && (d.Source.OriginalString.Contains("Theme.Dark.xaml")
-                                                                                || d.Source.OriginalString.Contains("Theme.Light.xaml"))).ToList();
+                                                                            && (d.Source.OriginalString.Contains("Theme.dark.xaml")
+                                                                                || d.Source.OriginalString.Contains("Theme.light.xaml"))).ToList();
 
             foreach (var dict in dictionariesToRemove)
             {
@@ -638,8 +638,8 @@ namespace Journey
                     Height = _journeyStepSize.Height + (8 * borderThickness),
                     Width = _journeyStepSize.Width + (2 * borderThickness)
                 };
-                border.SetResourceReference(Control.BackgroundProperty, "JourneyActiveStepBackgroundBrush");
-                border.SetResourceReference(Control.BorderBrushProperty, "JourneyActiveStepBackgroundBrush");
+                border.SetResourceReference(Control.BackgroundProperty, "JourneyActiveStepBrush");
+                border.SetResourceReference(Control.BorderBrushProperty, "JourneyActiveStepBrush");
 
                 Canvas.SetLeft(border, nodeRectX - borderThickness);
                 Canvas.SetTop(border, nodeRectY - borderThickness);
@@ -653,7 +653,7 @@ namespace Journey
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Bottom
                 };
-                label.SetResourceReference(Control.ForegroundProperty, "JourneyActiveStepForegroundBrush");
+                label.SetResourceReference(Control.ForegroundProperty, "JourneyActiveStepTextBrush");
                 border.Child = label;
             }
 
@@ -708,7 +708,7 @@ namespace Journey
             // Draw a line on the Journey canvas between two points, with an optional "active path" style, and rounded ends.
 
             // Determine the brush name and width based on whether this is an active path line or not.
-            var brushName = activePath ? "JourneyHighlightBackgroundBrush" : "LineBrush";
+            var brushName = activePath ? "JourneyHighlightBrush" : "LineBrush";
             var width = activePath ? 8 : 4;
 
             // Create our line and add it to the Journey canvas.

@@ -23,7 +23,7 @@
         <ResourceDictionary>
 
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Resources/Themes/Theme.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Themes/Theme.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
         </ResourceDictionary>

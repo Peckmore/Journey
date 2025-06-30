@@ -243,8 +243,8 @@ namespace JourneyBrowser.Views
                 // Remove any previously merged dictionary and merge in the appropriate dictionary based on the current light/dark mode.
                 var themeDictionary = new ResourceDictionary
                 {
-                    Source = new Uri(_viewModel.DarkMode ? "pack://application:,,,/Resources/Themes/Theme.dark.xaml"
-                                                         : "pack://application:,,,/Resources/Themes/Theme.light.xaml", UriKind.Absolute)
+                    Source = new Uri(_viewModel.DarkMode ? "pack://application:,,,/Themes/Theme.dark.xaml"
+                                                         : "pack://application:,,,/Themes/Theme.light.xaml", UriKind.Absolute)
                 };
 
                 var dictionariesToRemove = Resources.MergedDictionaries
@@ -328,8 +328,8 @@ namespace JourneyBrowser.Views
                 // Apply the appropriate theme dictionary to the Journey window now that it has been created.
                 var themeDictionary = new ResourceDictionary
                 {
-                    Source = new Uri(_viewModel.DarkMode ? "pack://application:,,,/Resources/Themes/Theme.dark.xaml"
-                                                         : "pack://application:,,,/Resources/Themes/Theme.light.xaml", UriKind.Absolute)
+                    Source = new Uri(_viewModel.DarkMode ? "pack://application:,,,/Themes/Theme.dark.xaml"
+                                                         : "pack://application:,,,/Themes/Theme.light.xaml", UriKind.Absolute)
                 };
                 _journeyIntroWindow?.Resources.MergedDictionaries.Add(themeDictionary);
 

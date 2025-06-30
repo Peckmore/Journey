@@ -1,13 +1,23 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!-- Brushes -->
-    <SolidColorBrush x:Key="ActiveBorderBrush" Color="#FFCCCCCC" />
-    <SolidColorBrush x:Key="LineBrush" Color="#FF777777" />
-    <SolidColorBrush x:Key="PressedBrush" Color="#FFE0E0E0" />
-    <SolidColorBrush x:Key="TextBrush" Color="#FF010101" />
-    <SolidColorBrush x:Key="TextLightBrush" Color="#FF444444" />
-    <SolidColorBrush x:Key="WindowBrush" Color="#FFF0F0F0" />
+    <!-- Colors -->
+
+    <Color x:Key="ButtonBarColor">#FFF0F0F0</Color>
+    <Color x:Key="ButtonBarBorderColor">#FFCCCCCC</Color>
+
+    <Color x:Key="ControlHoverColor">#FFE0E0E0</Color>
+    <Color x:Key="ControlNormalColor">Transparent</Color>
+    <Color x:Key="ControlPressedColor">#FFCCCCCC</Color>
+
+    <Color x:Key="HighlightColor">#FF557FF3</Color>
+    <Color x:Key="HighlightTextColor">#FFFEFEFE</Color>
+
+    <Color x:Key="LineColor">#FF777777</Color>
+
+    <Color x:Key="JourneyStepBannerColor">#FFF0F0F0</Color>
+    <Color x:Key="JourneyStepTextColor">#FF010101</Color>
+    <Color x:Key="JourneyStepArchiveTextColor">#FF444444</Color>
 
     <!-- Images -->
     <BitmapImage x:Key="ResetViewImage" UriSource="pack://application:,,,/Journey;component/Resources/Images/Light/reset_view.png" />

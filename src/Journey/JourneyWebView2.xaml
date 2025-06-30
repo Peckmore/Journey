@@ -61,13 +61,13 @@
         <ResourceDictionary>
 
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Journey;component/Resources/Themes/Theme.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Journey;component/Themes/Theme.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <Style TargetType="Button">
 
                 <Setter Property="Background"
-                        Value="Transparent" />
+                        Value="{StaticResource ButtonNormalBrush}" />
 
                 <Setter Property="Height"
                         Value="30" />
@@ -79,8 +79,7 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type Button}">
 
-                            <Border x:Name="ButtonBorder"
-                                    Background="{TemplateBinding Background}"
+                            <Border Background="{TemplateBinding Background}"
                                     BorderBrush="Transparent"
                                     BorderThickness="0"
                                     CornerRadius="3"
@@ -99,18 +98,16 @@
                                 <Trigger Property="IsMouseOver"
                                          Value="true">
 
-                                    <Setter Property="Background"
-                                            TargetName="ButtonBorder"
-                                            Value="{DynamicResource ActiveBorderBrush}"/>
+                                    <Setter Property="Control.Background"
+                                            Value="{StaticResource ButtonHoverBrush}" />
 
                                 </Trigger>
 
                                 <Trigger Property="IsPressed"
                                          Value="true">
 
-                                    <Setter Property="Background"
-                                            TargetName="ButtonBorder"
-                                            Value="{DynamicResource PressedBrush}"/>
+                                    <Setter Property="Control.Background"
+                                            Value="{StaticResource ButtonPressedBrush}" />
 
                                 </Trigger>
 
@@ -187,8 +184,8 @@
 
             <!-- Button Bar -->
             <Border x:Name="JourneyButtonBar"
-                    Background="{DynamicResource WindowBrush}"
-                    BorderBrush="{DynamicResource ActiveBorderBrush}"
+                    Background="{DynamicResource ButtonBarBrush}"
+                    BorderBrush="{DynamicResource ButtonBarBorderBrush}"
                     BorderThickness="1.25"
                     CornerRadius="10"
                     HorizontalAlignment="Center"

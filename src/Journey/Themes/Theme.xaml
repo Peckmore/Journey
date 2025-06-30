@@ -1,0 +1,38 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Brushes -->
+
+    <SolidColorBrush x:Key="ButtonHoverBrush" Color="{DynamicResource ControlHoverColor}" />
+    <SolidColorBrush x:Key="ButtonNormalBrush" Color="{DynamicResource ControlNormalColor}" />
+    <SolidColorBrush x:Key="ButtonPressedBrush" Color="{DynamicResource ControlPressedColor}" />
+
+    <SolidColorBrush x:Key="ButtonBarBrush" Color="{DynamicResource ButtonBarColor}" />
+    <SolidColorBrush x:Key="ButtonBarBorderBrush" Color="{DynamicResource ButtonBarBorderColor}" />
+
+    <SolidColorBrush x:Key="JourneyActiveStepBrush" Color="{DynamicResource HighlightColor}" />
+    <SolidColorBrush x:Key="JourneyActiveStepTextBrush" Color="{DynamicResource HighlightTextColor}" />
+
+    <SolidColorBrush x:Key="JourneyBackgroundBrush" Color="Transparent" />
+
+    <SolidColorBrush x:Key="JourneyHighlightBrush" Color="{DynamicResource HighlightColor}" />
+    <SolidColorBrush x:Key="JourneyHighlightTextBrush" Color="{DynamicResource HighlightTextColor}" />
+
+    <SolidColorBrush x:Key="LineBrush" Color="{DynamicResource LineColor}" />
+
+    <SolidColorBrush x:Key="JourneyStepBannerBrush" Color="{DynamicResource JourneyStepBannerColor}" />
+    <SolidColorBrush x:Key="JourneyStepTextBrush" Color="{DynamicResource JourneyStepTextColor}" />
+    <SolidColorBrush x:Key="JourneyStepArchiveTextBrush" Color="{DynamicResource JourneyStepArchiveTextColor}" />
+
+    <!-- Fonts -->
+
+    <FontFamily x:Key="RobotoRegular">
+        pack://application:,,,/Journey;component/Resources/Fonts/Roboto-Regular.ttf#Roboto
+    </FontFamily>
+
+    <!-- Styles -->
+    <Style TargetType="Label">
+        <Setter Property="FontFamily" Value="{StaticResource RobotoRegular}" />
+    </Style>
+
+</ResourceDictionary>
