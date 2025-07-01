@@ -26,6 +26,9 @@
 
     <!-- Fonts -->
 
+    <FontFamily x:Key="RobotoMedium">
+        pack://application:,,,/Journey;component/Resources/Fonts/Roboto-Medium.ttf#Roboto
+    </FontFamily>
     <FontFamily x:Key="RobotoRegular">
         pack://application:,,,/Journey;component/Resources/Fonts/Roboto-Regular.ttf#Roboto
     </FontFamily>
