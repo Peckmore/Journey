@@ -102,6 +102,10 @@ namespace Journey
         /// </summary>
         public static readonly ICommand HideJourneyCommand = new RoutedCommand();
         /// <summary>
+        /// The WPF <see cref="DependencyProperty" /> which backs the <see cref="JourneyStepStyle" /> property.
+        /// </summary>
+        public static readonly DependencyProperty JourneyStepStyleProperty = DependencyProperty.Register(nameof(JourneyStepStyle), typeof(Style), typeof(JourneyWebView2), new FrameworkPropertyMetadata(null));
+        /// <summary>
         /// The WPF <see cref="DependencyProperty" /> which backs the <see cref="JourneyZoomFactor" /> property.
         /// </summary>
         public static readonly DependencyProperty JourneyZoomFactorProperty = DependencyProperty.Register(nameof(JourneyZoomFactor), typeof(double), typeof(JourneyWebView2), new PropertyMetadata(1d));
@@ -337,6 +341,14 @@ namespace Journey
         {
             get => (Brush)Resources["JourneyHighlightTextBrush"];
             set => Resources["JourneyHighlightTextBrush"] = value;
+        }
+        /// <summary>
+        /// The style used for Journey steps.
+        /// </summary>
+        public Style JourneyStepStyle
+        {
+            get => (Style)GetValue(JourneyStepStyleProperty);
+            set => SetValue(JourneyStepStyleProperty, value);
         }
         /// <summary>
         /// The zoom factor for Journey.
@@ -616,6 +628,7 @@ namespace Journey
                 Height = _journeyStepSize.Height,
                 Opacity = node.Value.Type == NavigationEntryType.ArchivedStep ? InactiveOpacity : 1f
             };
+            nodeRect.Style = JourneyStepStyle;
             nodeRect.MouseUp += JourneyStep_MouseUp;
             var nodeRectX = node.X * (_journeyStepSize.Width + _journeyStepSpacing.Width);
             var nodeRectY = node.Y * (_journeyStepSize.Height + _journeyStepSpacing.Height);
@@ -1005,7 +1018,7 @@ namespace Journey
                     _selectedStep.BeginAnimation(Control.HeightProperty, scaleYAnimation, HandoffBehavior.Compose);
                     _selectedStep.BeginAnimation(Canvas.LeftProperty, translateXAnimation, HandoffBehavior.Compose);
                     _selectedStep.BeginAnimation(Canvas.TopProperty, translateYAnimation, HandoffBehavior.Compose);
-                    _selectedStep.TextArea.BeginAnimation(Control.OpacityProperty, titleAnimation, HandoffBehavior.Compose);
+                    _selectedStep.TextArea?.BeginAnimation(Control.OpacityProperty, titleAnimation, HandoffBehavior.Compose);
                     JourneyButtonBar.BeginAnimation(Control.OpacityProperty, buttonBarAnimation, HandoffBehavior.Compose);
 
                     // Return so we don't release our semaphore, as this will be released when our animation finishes.
@@ -1156,13 +1169,17 @@ namespace Journey
                     // size as the WebView2 control. This should result in a seamless transition when we switch visiblity between the
                     // WebView2 control and the Journey step. We also set `IsAnimating` to true, so that the hover effect is disabled
                     // whilst the animation is in progress.
-                    Canvas.SetLeft(_selectedStep, 0 - JourneyCanvasTranslateTransform.X);
-                    Canvas.SetTop(_selectedStep, 0 - JourneyCanvasTranslateTransform.Y);
                     if (_selectedStep != null)
                     {
+                        Canvas.SetLeft(_selectedStep, 0 - JourneyCanvasTranslateTransform.X);
+                        Canvas.SetTop(_selectedStep, 0 - JourneyCanvasTranslateTransform.Y);
+
                         _selectedStep.Width = WebView.ActualWidth;
                         _selectedStep.Height = WebView.ActualHeight;
-                        _selectedStep.TextArea.Opacity = 0;
+                        if (_selectedStep.TextArea != null)
+                        {
+                            _selectedStep.TextArea.Opacity = 0;
+                        }
                         _selectedStep.IsAnimating = true;
                     }
 
@@ -1192,7 +1209,7 @@ namespace Journey
                         _selectedStep.BeginAnimation(Control.HeightProperty, scaleYAnimation, HandoffBehavior.Compose);
                         _selectedStep.BeginAnimation(Canvas.LeftProperty, translateXAnimation, HandoffBehavior.Compose);
                         _selectedStep.BeginAnimation(Canvas.TopProperty, translateYAnimation, HandoffBehavior.Compose);
-                        _selectedStep.TextArea.BeginAnimation(Control.OpacityProperty, titleAnimation, HandoffBehavior.Compose);
+                        _selectedStep.TextArea?.BeginAnimation(Control.OpacityProperty, titleAnimation, HandoffBehavior.Compose);
                     }
                     JourneyButtonBar.BeginAnimation(Control.OpacityProperty, buttonBarAnimation, HandoffBehavior.Compose);
 

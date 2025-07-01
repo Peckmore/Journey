@@ -697,7 +697,8 @@
 
             <!-- DragablzItem Style -->
             <!-- Explicit style for the browser tabs. -->
-            <Style x:Key="TabStyle" TargetType="{x:Type dragablz:DragablzItem}">
+            <Style x:Key="TabStyle"
+                   TargetType="{x:Type dragablz:DragablzItem}">
 
                 <Setter Property="Background"
                         Value="{StaticResource TabInactiveBrush}"/>

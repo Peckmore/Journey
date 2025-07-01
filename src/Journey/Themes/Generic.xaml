@@ -1,0 +1,296 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Journey"
+                    xmlns:resources="clr-namespace:Journey.Resources"
+                    xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Classic">
+
+    <Style TargetType="{x:Type local:JourneyStep}"
+           x:Key="{x:Type local:JourneyStep}">
+
+        <Setter Property="CornerRadius"
+                Value="8" />
+
+        <Setter Property="FontFamily"
+                Value="{DynamicResource RobotoRegular}" />
+
+        <Setter Property="FontFamilyBold"
+                Value="{DynamicResource RobotoMedium}" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:JourneyStep}">
+
+                    <!-- Drop Shadow -->
+                    <themes:SystemDropShadowChrome CornerRadius="{TemplateBinding CornerRadius}">
+                        <Grid>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Use a VisualBrush as a mask to clip the border rounded corners -->
+                            <Grid.OpacityMask>
+                                <VisualBrush Visual="{Binding Source={x:Reference BorderMask}}"/>
+                            </Grid.OpacityMask>
+
+                            <!-- The border used as a mask to clip rounded corners -->
+                            <Border Name="BorderMask"
+                                    Grid.Row="0"
+                                    Grid.RowSpan="2"
+                                    Background="White"
+                                    CornerRadius="{TemplateBinding CornerRadius}"/>
+
+                            <!-- Snapshot Area -->
+                            <Image x:Name="SnapshotImage"
+                                   Grid.Row="0"
+                                   Grid.RowSpan="2"
+                                   RenderOptions.BitmapScalingMode="LowQuality"
+                                   Source="{Binding Snapshot}"
+                                   Stretch="UniformToFill"/>
+
+                            <!-- Text Area -->
+                            <!-- This overlaps the snapshot. -->
+                            <Border x:Name="PART_TextArea"
+                                    Grid.Row="1"
+                                    Background="{DynamicResource JourneyStepBannerBrush}"
+                                    BorderThickness="0"
+                                    Opacity="0.9">
+
+                                <Viewbox HorizontalAlignment="Left"
+                                         Stretch="UniformToFill">
+
+                                    <Grid Margin="5">
+
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!-- Step Page Title -->
+                                        <TextBlock Grid.Row="0"
+                                                   Foreground="{DynamicResource JourneyStepTextBrush}"
+                                                   FontFamily="{TemplateBinding FontFamilyBold}"
+                                                   FontSize="14"
+                                                   HorizontalAlignment="Left"
+                                                   MaxHeight="40"
+                                                   Padding="5"
+                                                   Text="{Binding Title}"
+                                                   TextWrapping="Wrap"
+                                                   VerticalAlignment="Center"
+                                                   Width="384"/>
+
+                                        <!-- Step Page URL -->
+                                        <Grid Grid.Row="1">
+
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- FavIcon -->
+                                            <Image Source="{Binding FavIcon}"
+                                                   Grid.Column="0"
+                                                   Height="16"
+                                                   Margin="5,0,5,0"
+                                                   VerticalAlignment="Center"
+                                                   Width="16"/>
+
+                                            <!-- URL -->
+                                            <TextBlock Grid.Column="1"
+                                                       FontFamily="{TemplateBinding FontFamily}"
+                                                       FontSize="12"
+                                                       Foreground="{DynamicResource JourneyStepArchiveTextBrush}"
+                                                       Height="25"
+                                                       Padding="5"
+                                                       Text="{Binding Url}"
+                                                       TextWrapping="NoWrap"
+                                                       Width="384"/>
+
+                                        </Grid>
+
+                                    </Grid>
+
+                                </Viewbox>
+
+                            </Border>
+
+                            <!-- Hover Effect -->
+                            <!-- Appears whenever the user hovers over the step. -->
+                            <Grid x:Name="HoverGrid"
+                                  Background="Transparent"
+                                  Grid.Row="0"
+                                  Grid.RowSpan="2">
+
+                                <Grid.Style>
+                                    <Style TargetType="Grid">
+
+                                        <Setter Property="Visibility"
+                                                Value="Collapsed"/>
+
+                                        <Style.Triggers>
+
+                                            <MultiDataTrigger>
+
+                                                <!-- We only show the hover effect when the user hovers over the step and the control is not animating. -->
+                                                <MultiDataTrigger.Conditions>
+
+                                                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}}"
+                                                              Value="True"/>
+
+                                                    <Condition Binding="{Binding IsAnimating, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:JourneyStep}}}"
+                                                               Value="False"/>
+
+                                                </MultiDataTrigger.Conditions>
+
+                                                <Setter Property="Visibility"
+                                                        Value="Visible"/>
+
+                                                <Setter Property="Cursor"
+                                                        Value="Hand"/>
+
+                                            </MultiDataTrigger>
+
+                                        </Style.Triggers>
+                                    </Style>
+                                </Grid.Style>
+
+                                <!-- Hover Background -->
+                                <!-- This is the "highlight" that appears when the user hovers over the step. -->
+                                <Grid Opacity="0.75">
+
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+
+                                            <Setter Property="Background"
+                                                    Value="{DynamicResource JourneyHighlightBrush}"/>
+
+                                            <Style.Triggers>
+
+                                                <DataTrigger Binding="{Binding Path=Type}"
+                                                             Value="ArchivedStep">
+
+                                                    <Setter Property="Background"
+                                                            Value="{DynamicResource JourneyStepBannerBrush}"/>
+
+                                                </DataTrigger>
+
+                                            </Style.Triggers>
+
+                                        </Style>
+                                    </Grid.Style>
+
+                                </Grid>
+
+                                <!-- Hover Text -->
+                                <!-- This is the text that appears when the user hovers over the step. This is not within the background element above so
+                                     that it can have an opacity of 1. -->
+                                <Label FontFamily="{TemplateBinding FontFamily}"
+                                       FontSize="28"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center">
+
+                                    <Label.Style>
+                                        <Style TargetType="Label"
+                                               BasedOn="{StaticResource {x:Type Label}}">
+
+                                            <Setter Property="Foreground"
+                                                    Value="{DynamicResource JourneyHighlightTextBrush}"/>
+
+                                            <Style.Triggers>
+
+                                                <DataTrigger Binding="{Binding Path=Type}"
+                                                             Value="ArchivedStep">
+
+                                                    <Setter Property="Content">
+                                                        <Setter.Value>
+                                                            <TextBlock TextAlignment="Center">
+                                                                <Run Text="⧉"/>
+                                                                <LineBreak/>
+                                                                <Run Text="{x:Static resources:Strings.JourneyStep_OpenInNewTab}"/>
+                                                            </TextBlock>
+                                                        </Setter.Value>
+                                                    </Setter>
+
+                                                    <Setter Property="Foreground"
+                                                            Value="{DynamicResource JourneyStepTextBrush}"/>
+
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding Path=Type}"
+                                                             Value="HistoryBack">
+
+                                                    <Setter Property="Content">
+                                                        <Setter.Value>
+                                                            <TextBlock TextAlignment="Center">
+                                                                <Run Text="←"/>
+                                                                <LineBreak/>
+                                                                <Run Text="{x:Static resources:Strings.JourneyStep_GoBack}"/>
+                                                            </TextBlock>
+                                                        </Setter.Value>
+                                                    </Setter>
+
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding Path=Type}"
+                                                             Value="HistoryForward">
+
+                                                    <Setter Property="Content">
+                                                        <Setter.Value>
+                                                            <TextBlock TextAlignment="Center">
+                                                                <Run Text="→"/>
+                                                                <LineBreak/>
+                                                                <Run Text="{x:Static resources:Strings.JourneyStep_GoForward}"/>
+                                                            </TextBlock>
+                                                        </Setter.Value>
+                                                    </Setter>
+
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding Path=Type}"
+                                                             Value="ActiveStep">
+
+                                                    <Setter Property="Content">
+                                                        <Setter.Value>
+                                                            <TextBlock TextAlignment="Center">
+                                                                <Run Text="↩"/>
+                                                                <LineBreak/>
+                                                                <Run Text="{x:Static resources:Strings.JourneyStep_Continue}"/>
+                                                            </TextBlock>
+                                                        </Setter.Value>
+                                                    </Setter>
+
+                                                </DataTrigger>
+
+                                            </Style.Triggers>
+
+                                        </Style>
+                                    </Label.Style>
+
+                                </Label>
+
+                            </Grid>
+
+                        </Grid>
+                    </themes:SystemDropShadowChrome>
+
+                    <!-- Triggers -->
+                    <ControlTemplate.Triggers>
+
+                        <DataTrigger Binding="{Binding Type}"
+                                     Value="{x:Static local:NavigationEntryType.ActiveStep}">
+
+                            <Setter Property="Opacity"
+                                    TargetName="PART_TextArea"
+                                    Value="0" />
+
+                        </DataTrigger>
+
+                    </ControlTemplate.Triggers>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>
