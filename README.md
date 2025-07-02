@@ -5,8 +5,8 @@
 
 A UI/UX experiment in visual, branching browser history.
 
-_“Wherever you go, there you are.”_  
-**Thomas à Kempis**
+_â€œWherever you go, there you are.â€_  
+**Thomas Ã  Kempis**
 
 ![Demo](res/images/demo_animation.gif)
 
@@ -171,7 +171,7 @@ When creating a tree diagram there are challenges around how to arrange nodes in
 
 For this project we will be working with a _layered_ tree, whereby all nodes of the same depth are visually drawn on the same "row". This is a common way of drawing trees, often referred to as _tidy trees_, and Wetherell and Shannon [^tidy-drawings] presented the first O(n) algorithm for drawing them in 1979, along with formalising three aesthetic rules for tree layout. Reingold and Tilford [^tidier-drawings] then continued this work, and in 1981 improved the algorithm and added a fourth aesthetic rule.
 
-Whilst much work has since been done in this area, such as by Walker [^walker], and Buchheim, Jünger, and Leipert [^buchheim], we find that the Reingold-Tilford algorithm continues to be one of the most popular and widely used for drawing tidy trees, and appropriate for the tree structures we will be drawing for this project.
+Whilst much work has since been done in this area, such as by Walker [^walker], and Buchheim, JÃ¼nger, and Leipert [^buchheim], we find that the Reingold-Tilford algorithm continues to be one of the most popular and widely used for drawing tidy trees, and appropriate for the tree structures we will be drawing for this project.
 
 ### Beautiful and Usable
 
@@ -187,7 +187,7 @@ The findings of this paper are summarised under the notion _"What is beautiful i
 
 However, there have also been studies into the counter-argument of _"What is usable is beautiful"_, with Tuch et al finding that:
 
-> "...Tractinsky’s notion ("what is beautiful is usable") can be reversed to a "what is usable is beautiful" effect under certain circumstances." [^usable]
+> "...Tractinskyâ€™s notion ("what is beautiful is usable") can be reversed to a "what is usable is beautiful" effect under certain circumstances." [^usable]
 
 Hamborg et al explored this counter-argument further and ultimately concluded that both usability and aesthetics are important to the end user experience:
 
@@ -205,7 +205,7 @@ Consistency was already highlighted as a goal for the project, but knowing _how_
 
 This is expanded upon by Rachel Krause (from Jakob Nielsen's Nielsen Norman Group):
 
-> "To be easy to learn and use, systems should adhere to both internal and external consistency — they should use the same patterns everywhere inside the system and should also follow web-, platform-, and domain-specific conventions." [^consistency-and-standards]
+> "To be easy to learn and use, systems should adhere to both internal and external consistency â€” they should use the same patterns everywhere inside the system and should also follow web-, platform-, and domain-specific conventions." [^consistency-and-standards]
 
 We see that consistency is key to a positive user experience, and that it is important to follow both internal and external conventions. Within the scope of this project our main focus will be on internal consistency, as conceptually the completed tool would be used within a browser.
 
@@ -355,8 +355,7 @@ Instead we continue to wrap the standard `WebView2` control, and modify our impl
 
 The completed implementation of **Journey** was used to gather feedback from users and evaluate both the design against the goals, and whether the tool was a useful addition to the users browsing experience.
 
-A selection of feedback is given below:
-
+Feedback from users will be shown below as it is obtained.
 
 ## Future Work
 
