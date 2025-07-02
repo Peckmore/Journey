@@ -359,6 +359,8 @@ Feedback from users is shown below:
 
 _"As someone who isn’t ‘techie’, I found this to be a really good feature, and one that I could genuinely see myself using in everyday life."_ - Sarah P.
 
+_"I think it would be very helpful and would cut down on the time spent trying to find the right items to purchase when online shopping."_ - Glenice P.
+
 Additional feedback will be added as it is obtained.
 
 ## Future Work
