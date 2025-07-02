@@ -12,7 +12,7 @@ _“Wherever you go, there you are.”_
 
 </div>
 
-**Journey** is a **C# WPF** user control which aims to provide the ability to view your browsing history as an interactive tree diagram.
+**Journey** is a **C# WPF** user control which aims to allow you to view your browsing history as an interactive tree diagram.
 
 This repo contains the following projects:
 
@@ -275,7 +275,7 @@ The initial project goals can be refined through the research undertaken, and bo
 
 ### Performant
 
-- Browsing performance **must** not be impacted by the tool being available within the browser.
+- Browsing performance **must not** be impacted by the tool being available within the browser.
 
 - The tool **must** remain performant when being used, ideally with no lag or delay when interacting with the tree structure.
 
@@ -283,7 +283,7 @@ The initial project goals can be refined through the research undertaken, and bo
 
 - The tool **should** transition in and out of the browsing area quickly, and not cause any noticeable lag or delay.
 
-- The tool **should** not consume any CPU cycles when not being used.
+- The tool **should not** consume any CPU cycles when not being used.
 
 ## Implementation
 
