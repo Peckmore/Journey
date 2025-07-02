@@ -355,7 +355,11 @@ Instead we continue to wrap the standard `WebView2` control, and modify our impl
 
 The completed implementation of **Journey** was used to gather feedback from users and evaluate both the design against the goals, and whether the tool was a useful addition to the users browsing experience.
 
-Feedback from users will be shown below as it is obtained.
+Feedback from users is shown below:
+
+_"As someone who isn’t ‘techie’, I found this to be a really good feature, and one that I could genuinely see myself using in everyday life."_ - Sarah P.
+
+Additional feedback will be added as it is obtained.
 
 ## Future Work
 
