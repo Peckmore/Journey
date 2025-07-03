@@ -365,6 +365,8 @@ _"Finally, a browser history that remembers the way **you** think."_ - [Nathanie
 
 _"I think it would be very helpful and would cut down on the time spent trying to find the right items to purchase when online shopping."_ - Glenice
 
+_"This seems really useful, something I didn't know I might want."_ - Steven
+
 ## Future Work
 
 ### History Access
