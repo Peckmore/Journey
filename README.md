@@ -355,13 +355,15 @@ Instead we continue to wrap the standard `WebView2` control, and modify our impl
 
 The completed implementation of **Journey** was used to gather feedback from users and evaluate both the design against the goals, and whether the tool was a useful addition to the users browsing experience.
 
-Feedback from users is shown below:
+A selection of feedback is shown below:
 
-_"As someone who isn’t ‘techie’, I found this to be a really good feature, and one that I could genuinely see myself using in everyday life."_ - Sarah P.
+_"As someone who isn’t ‘techy’, I found this to be a really good feature, and one that I could genuinely see myself using in everyday life."_ - Sarah
 
-_"I think it would be very helpful and would cut down on the time spent trying to find the right items to purchase when online shopping."_ - Glenice P.
+_"The intuitive navigation and history stack provides a great visual aid to users, from users who want speed of navigation to those who need reassurance, the design caters for both. Simon's attention to detail in executing this and other projects is a joy to follow, from the background research to exploring different implementation approaches all areas are tackled with enthusiasm and creativity whilst keeping his eye firmly on the goal."_ - Miles
 
-Additional feedback will be added as it is obtained.
+_"Finally, a browser history that remembers the way **you** think."_ - [NathanielJS1541](https://github.com/NathanielJS1541)
+
+_"I think it would be very helpful and would cut down on the time spent trying to find the right items to purchase when online shopping."_ - Glenice
 
 ## Future Work
 
